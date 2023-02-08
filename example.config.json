@@ -1,0 +1,13 @@
+{
+  "NODE_ENV": "development",
+  "HOST": "127.0.0.1",
+  "PORT": "3000",
+  "PRIVATE_KEY": "",
+  "PUBLIC_KEY": "",
+  "DEFAULT_AUDIENCE": "",
+  "DB_ENGINE": "postgres",
+  "DB_URL": "",
+  "DOMAIN": "",
+  "SOLANA_CLUSTER": "devnet",
+  "SWAP_PROGRAM_ADDRESS": ""
+}
