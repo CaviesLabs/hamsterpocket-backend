@@ -1,4 +1,4 @@
-# Beersup Backend
+# Hamsterpocket Backend
 ## Description
 
 
@@ -41,15 +41,3 @@ yarn install
 # Run single feature
 ./developments/bdd_test.bash features/solana_login.feature
 ```
-
-## Support
-
-Beersup is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please contact me ;)
-
-## Stay in touch
-
-- Author - [Richard](https://twitter.com/richard_ptit)
-
-## License
-
-Beersup is [MIT licensed](LICENSE).
