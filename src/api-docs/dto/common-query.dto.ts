@@ -2,7 +2,7 @@ import { Type } from 'class-transformer';
 import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 /**
- * DTO for common query params
+ * @dev DTO for common query params
  */
 export class CommonQueryDto {
   @IsNumber()

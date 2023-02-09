@@ -1,7 +1,14 @@
-import { ArgumentsHost, Catch, ContextType, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  ArgumentsHost,
+  Catch,
+  ContextType,
+  ExceptionFilter,
+  HttpException,
+  HttpStatus,
+  InternalServerErrorException,
+} from '@nestjs/common';
 
 import { AxiosError } from 'axios';
-import { ValidationError } from 'class-validator';
 import { FastifyRequest, FastifyReply } from 'fastify';
 
 interface IError {
@@ -19,7 +26,9 @@ class ExceptionResponseBuilder {
   message?: any;
 
   constructor(host: ArgumentsHost) {
-    /** Extracting contexts */
+    /**
+     * @dev Extracting contexts.
+     */
     this.type = host.getType();
     switch (this.type) {
       case 'http':
@@ -29,6 +38,10 @@ class ExceptionResponseBuilder {
     }
   }
 
+  /**
+   * @param exception The error of Axios
+   * @returns ExceptionResponseBuilder
+   */
   public fromAxiosError(exception: AxiosError): ExceptionResponseBuilder {
     this.error = exception.response.statusText;
     this.message = exception.response.data;
@@ -36,18 +49,10 @@ class ExceptionResponseBuilder {
     return this;
   }
 
-  public fromClassValidator(exception: ValidationError[]): ExceptionResponseBuilder {
-    const errors = [];
-    exception.forEach(({ constraints }) => {
-      errors.push(...Object.values(constraints));
-    });
-
-    this.error = 'Bad Request';
-    this.message = errors;
-    this.statusCode = HttpStatus.BAD_REQUEST;
-    return this;
-  }
-
+  /**
+   * @param exception Others exceptions
+   * @returns ExceptionResponseBuilder
+   */
   public fromOthers(exception: HttpException): ExceptionResponseBuilder {
     try {
       const error = exception.getResponse() as IError;
@@ -62,26 +67,21 @@ class ExceptionResponseBuilder {
     return this;
   }
 
+  /**
+   * @param exception any kind of the exception incoming
+   * @returns ExceptionResponseBuilder
+   */
   public detectException(exception: any): ExceptionResponseBuilder {
-    /**Get one sample */
-    let sample: any;
-    if (Array.isArray(exception)) {
-      sample = exception[0];
-    } else {
-      sample = exception;
-    }
-
-    /** Handle Class Validator exception */
-    if (sample instanceof ValidationError) {
-      return this.fromClassValidator(exception);
-    }
-
-    /** Handle Axios exception */
-    if ((sample as AxiosError).isAxiosError) {
+    /**
+     * @dev Handle Axios exception.
+     */
+    if ((exception as AxiosError).isAxiosError) {
       return this.fromAxiosError(exception as AxiosError);
     }
 
-    /** Handle other errors */
+    /**
+     * @dev Handle other errors.
+     */
     return this.fromOthers(exception);
   }
 
@@ -103,22 +103,21 @@ class ExceptionResponseBuilder {
 }
 
 /**
- * Handle exception filter and builder.
+ * @dev Handle exception filter and builder.
  */
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
-  catch(exception: HttpException, host: ArgumentsHost) {
+  catch(exception: InternalServerErrorException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
 
-    /** response builder */
+    /**
+     * @dev response builder
+     */
     const error = new ExceptionResponseBuilder(host).detectException(exception);
 
-    /** Log if internal error */
-    if (error.statusCode == HttpStatus.INTERNAL_SERVER_ERROR) {
-      console.error(exception);
-    }
-
-    /** Return response */
+    /**
+     * @dev Return response
+     */
     const response = ctx.getResponse<FastifyReply>();
     response.status(+error.statusCode).send(error.getResponseMessage());
   }

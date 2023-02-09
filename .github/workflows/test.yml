@@ -1,0 +1,25 @@
+name: 'Workflow'
+
+on:
+  pull_request_target:
+    types:
+      - opened
+    branches: [main, develop]
+  push:
+    branches: [main, develop]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    environment: test-env
+    env: # Or as an environment variable
+      HOST_URI: https://hamsterbox.xyz
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'yarn'
+      - run: yarn install
+      - run: yarn test
+      - run: yarn test:e2e

@@ -1,8 +1,8 @@
 # compiled output
 /dist
-/test-dist
 /node_modules
-
+.env
+credentials.json
 # Logs
 logs
 *.log
@@ -11,10 +11,12 @@ pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
-
+coverage/
 # OS
 .DS_Store
-
+server
+private_key
+publickey.crt
 # Tests
 /coverage
 /.nyc_output
@@ -35,6 +37,5 @@ lerna-debug.log*
 !.vscode/launch.json
 !.vscode/extensions.json
 
-/config.json
-deployments/*/config.json
-.env
+tsconfig.build.tsbuildinfo
+config.json

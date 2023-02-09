@@ -24,5 +24,9 @@ const CommonResponseMap: Record<CommonResponse, ApiResponseOptions> = {
 
 // Helper decorator to shorten usual common ApiResponse decorators
 export function CommonApiResponse(...commonResponses: CommonResponse[]) {
-  return applyDecorators(...commonResponses.map((commonResponse) => ApiResponse(CommonResponseMap[commonResponse])));
+  return applyDecorators(
+    ...commonResponses.map((commonResponse) =>
+      ApiResponse(CommonResponseMap[commonResponse]),
+    ),
+  );
 }

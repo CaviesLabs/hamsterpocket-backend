@@ -1,43 +1,48 @@
-# Hamsterpocket Backend
+<p align="center">
+  <a style="background: black; display: block; border-radius: 8px; padding: 4px" href="http://id.ancient8.gg/" target="blank"><img src="https://cavies.xyz/assets/images/older-hamster.png" width="320" alt="Nest Logo" /></a>
+</p>
+
+
 ## Description
 
-
+**Hamsterbox Passport** repository.
 
 ## Installation
 
-1. Make sure you have Docker and Docker Compose installed.
-
 ```bash
-yarn install
+$ npm install
 ```
 
-## Setup environment
+## Start Keycloak service
 
-1. Create `.env` following `.env.example`
-2. Create `config.json` following `example.config.json` file for deserved environment. Located at: `/deployments/local/`, `/deployments/<env>/`,...
+```bash
+cd keycloak/
+
+docker compose up -d
+```
 
 ## Running the app
 
 ```bash
-# Deploy local by Docker Compose
-./deployment/local/run.bash
+# development
+$ npm run start
 
-# Shutdown the local deployment
-./deployment/local/run.bash -d
-# or
-./deployment/local/run.bash --delete
+# watch mode
+$ npm run start:dev
 
-# Restart a service
-./deployment/local/run.bash -s backend
+# production mode
+$ npm run start:prod
 ```
 
-
-## Execute BDD tests
+## Test
 
 ```bash
-# Run all BDD test
-./developments/bdd_test.bash
+# unit tests
+$ npm run test
 
-# Run single feature
-./developments/bdd_test.bash features/solana_login.feature
+# e2e tests
+$ npm run test:e2e
+
+# test coverage
+$ npm run test:cov
 ```
