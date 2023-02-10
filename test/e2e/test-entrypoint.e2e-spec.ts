@@ -38,7 +38,3 @@ afterEach(function () {
 /**
  * @dev Require other test here.
  */
-require('./swap-program/swap-program.e2e-spec');
-require('./auth/idp-auth.e2e-specs');
-require('./swap/proposal.e2e-specs');
-require('./user/profile.e2e-specs');

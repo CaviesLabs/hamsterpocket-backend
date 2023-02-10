@@ -5,10 +5,11 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
 
-import { AppController } from './app.controller';
-import { AllExceptionsFilter } from './exception.filter';
-import { RegistryProvider } from './providers/registry.provider';
+import { TokenMetadataModule } from './token-metadata/token-metadata.module';
 import { getMemoryServerMongoUri } from './orm/helper';
+import { RegistryProvider } from './providers/registry.provider';
+import { AllExceptionsFilter } from './exception.filter';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -61,6 +62,7 @@ import { getMemoryServerMongoUri } from './orm/helper';
     /**
      * @dev Import other modules.
      */
+    TokenMetadataModule,
   ],
   /**
    * @dev Import controller.

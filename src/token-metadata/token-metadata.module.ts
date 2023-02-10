@@ -10,4 +10,4 @@ import { TokenMetadataService } from './services/token-metadata.service';
   controllers: [MetadataController],
   providers: [NetworkProvider, TokenMetadataProvider, TokenMetadataService],
 })
-export class SwapModule {}
+export class TokenMetadataModule {}

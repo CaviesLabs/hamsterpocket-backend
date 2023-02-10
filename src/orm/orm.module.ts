@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { RegistryProvider } from '../providers/registry.provider';
+import { PoolModel, PoolSchema } from './model/pool.model';
 
 import {
   TokenMetadataModel,
@@ -16,8 +18,10 @@ import {
      */
     MongooseModule.forFeature([
       { name: TokenMetadataModel.name, schema: TokenMetadataSchema },
+      { name: PoolModel.name, schema: PoolSchema },
     ]),
   ],
+  providers: [RegistryProvider],
   exports: [
     /**
      * @dev Need to re-export again the Mongoose module for re-use in other modules.
