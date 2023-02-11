@@ -10,6 +10,7 @@ import { getMemoryServerMongoUri } from './orm/helper';
 import { RegistryProvider } from './providers/registry.provider';
 import { AllExceptionsFilter } from './exception.filter';
 import { AppController } from './app.controller';
+import { PoolModule } from './pool/pool.module';
 
 @Module({
   imports: [
@@ -63,6 +64,7 @@ import { AppController } from './app.controller';
      * @dev Import other modules.
      */
     TokenMetadataModule,
+    PoolModule,
   ],
   /**
    * @dev Import controller.
