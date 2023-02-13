@@ -196,10 +196,10 @@ async function bootstrap() {
    */
   if (registry.getConfig().NODE_ENV !== 'test') {
     const config = new DocumentBuilder()
-      .setTitle('Hamsterpassport Broker API')
+      .setTitle('Hamsterpocket Broker API')
       .setDescription('Todo: update description')
       .setVersion('1.0')
-      .addTag('Hamsterpassport')
+      .addTag('Hamsterpocket')
       .addBearerAuth(
         { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
         'jwt',

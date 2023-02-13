@@ -2,10 +2,9 @@
   <a style="background: black; display: block; border-radius: 8px; padding: 4px" href="http://id.ancient8.gg/" target="blank"><img src="https://cavies.xyz/assets/images/older-hamster.png" width="320" alt="Nest Logo" /></a>
 </p>
 
-
 ## Description
 
-**Hamsterbox Passport** repository.
+**Hamsterbox Pocket** repository.
 
 ## Installation
 
