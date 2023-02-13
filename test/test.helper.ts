@@ -28,18 +28,14 @@ export class TestHelper {
    * @private
    */
   private async cleanTestDb(): Promise<void> {
-    try {
-      await new Promise<void>(async (resolve) => {
-        /* Connect to the DB */
-        mongoose.connect(await getMemoryServerMongoUri(), async function () {
-          /* Drop the DB */
-          await mongoose.connection.db.dropDatabase();
-          resolve();
-        });
+    return new Promise(async (resolve) => {
+      /* Connect to the DB */
+      mongoose.connect(await getMemoryServerMongoUri(), async function () {
+        /* Drop the DB */
+        await mongoose.connection.db.dropDatabase();
+        resolve();
       });
-    } catch (e) {
-      console.log(e);
-    }
+    });
   }
 
   /**
