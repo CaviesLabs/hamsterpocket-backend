@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { DateTime, DurationObjectUnits } from 'luxon';
 import { Document } from 'mongoose';
@@ -9,6 +10,7 @@ import {
 } from '../../pool/entities/pool.entity';
 import { BaseModel } from '../base.model';
 
+@Injectable()
 @Schema({ collection: 'pools', timestamps: true, autoIndex: true })
 export class PoolModel extends BaseModel implements PoolEntity {
   @Prop({ type: Number, default: () => DateTime.now().toMillis() })

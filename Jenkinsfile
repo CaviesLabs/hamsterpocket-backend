@@ -37,7 +37,7 @@ pipeline {
         CURRENT_VERSION = sh(returnStdout: true, script: "git tag --sort version:refname | tail -1").trim()
 
         // Registry
-        REGISTRY_NAME = 'hamsterswap'
+        REGISTRY_NAME = 'hamsterpocket'
 
         // dokku deployment credential
         DOKKU_DEV_REMOTE = credentials('dokku-dev-remote')

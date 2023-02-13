@@ -6,6 +6,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Keypair } from '@solana/web3.js';
 import * as Tws from 'tweetnacl';
 import * as bs from 'bs58';
+import mongoose from 'mongoose';
 
 /**
  * @dev Import modules
@@ -13,6 +14,7 @@ import * as bs from 'bs58';
 import { AppModule } from '../src/app.module';
 import { globalApply } from '../src/main';
 import { FastifyAdapter } from '@nestjs/platform-fastify';
+import { getMemoryServerMongoUri } from '../src/orm/helper';
 
 /**
  * @dev Test helper to setup fixtures and other helpers.
@@ -22,16 +24,34 @@ export class TestHelper {
   public moduleFixture: TestingModule;
 
   /**
+   * @dev Should clean test db
+   * @private
+   */
+  private async cleanTestDb(): Promise<void> {
+    try {
+      await new Promise<void>(async (resolve) => {
+        /* Connect to the DB */
+        mongoose.connect(await getMemoryServerMongoUri(), async function () {
+          /* Drop the DB */
+          await mongoose.connection.db.dropDatabase();
+          resolve();
+        });
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  /**
    * @dev Boot the app
    */
   public async bootTestingApp() {
+    await this.cleanTestDb();
     this.moduleFixture = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
-
     this.app = this.moduleFixture.createNestApplication(new FastifyAdapter());
     await globalApply(this.app);
-
     await this.app.init();
     await this.app.getHttpAdapter().getInstance().ready();
     // import fixtures
@@ -44,6 +64,7 @@ export class TestHelper {
   public async shutDownTestingApp() {
     await this.moduleFixture.close();
     await this.app.close();
+    await mongoose.connection.close();
   }
 
   /**

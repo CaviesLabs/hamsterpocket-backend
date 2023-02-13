@@ -1,9 +1,11 @@
+import { Injectable } from '@nestjs/common';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
 import { TokenMetadataEntity } from '../../token-metadata/entities/token-metadata.entity';
 import { BaseModel } from '../base.model';
 
+@Injectable()
 @Schema({ collection: 'token-metadata', timestamps: true, autoIndex: true })
 export class TokenMetadataModel
   extends BaseModel
