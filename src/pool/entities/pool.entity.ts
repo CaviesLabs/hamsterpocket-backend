@@ -1,24 +1,19 @@
+import { Type } from 'class-transformer';
 import { DurationObjectUnits } from 'luxon';
+import { ObjectId } from 'mongoose';
 
-export class PoolEntity {
-  numberId: number;
+export enum ProgressionType {
+  END_TIME = 'END_TIME',
+  TARGET_BASE_AMOUNT = 'TARGET_BASE_AMOUNT',
+  TARGET_TOKEN_AMOUNT = 'TARGET_TOKEN_AMOUNT',
+  TIMES = 'TIMES',
+}
 
-  address: string;
-
-  ownerAddress: string;
-
-  name: string;
-
-  startTime: Date;
-
-  paxAmount: number;
-
-  // seconds duration
-  frequency: DurationObjectUnits;
-
-  buyCondition: BuyCondition | undefined;
-
-  stopConditions: StopConditions | undefined;
+export enum PoolStatus {
+  ACTIVE = 'POOL_STATUS::ACTIVE',
+  PAUSED = 'POOL_STATUS::PAUSED',
+  CLOSED = 'POOL_STATUS::CLOSED',
+  ENDED = 'POOL_STATUS::ENDED',
 }
 
 export enum PriceConditionType {
@@ -40,13 +35,6 @@ export class BuyCondition {
   value: number | number[];
 }
 
-export enum ProgressionType {
-  END_TIME = 'END_TIME',
-  TARGET_BASE_AMOUNT = 'TARGET_BASE_AMOUNT',
-  TARGET_TOKEN_AMOUNT = 'TARGET_TOKEN_AMOUNT',
-  TIMES = 'TIMES',
-}
-
 export class StopConditions {
   endTime?: Date;
 
@@ -55,6 +43,32 @@ export class StopConditions {
   tokenAmount?: number;
 
   times?: number;
+}
+
+export class PoolEntity {
+  _id: ObjectId;
+
+  address: string;
+
+  ownerAddress: string;
+
+  name: string;
+
+  status: PoolStatus;
+
+  pair: string[];
+
+  startTime: Date;
+
+  paxAmount: number;
+
+  frequency: DurationObjectUnits;
+
+  @Type(() => BuyCondition)
+  buyCondition: BuyCondition | undefined;
+
+  @Type(() => StopConditions)
+  stopConditions: StopConditions | undefined;
 
   progressionBy?: ProgressionType;
 }

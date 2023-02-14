@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { DateTime, DurationObjectUnits } from 'luxon';
+import { DurationObjectUnits } from 'luxon';
 import { Document } from 'mongoose';
 
 import {
   BuyCondition,
   PoolEntity,
+  PoolStatus,
+  ProgressionType,
   StopConditions,
 } from '../../pool/entities/pool.entity';
 import { BaseModel } from '../base.model';
@@ -13,8 +15,11 @@ import { BaseModel } from '../base.model';
 @Injectable()
 @Schema({ collection: 'pools', timestamps: true, autoIndex: true })
 export class PoolModel extends BaseModel implements PoolEntity {
-  @Prop({ type: Number, default: () => DateTime.now().toMillis() })
-  numberId: number;
+  @Prop({ enum: PoolStatus })
+  status: PoolStatus;
+
+  @Prop()
+  pair: string[];
 
   /** Enforce unique of docs with address field presented */
   @Prop({ type: String, unique: true, sparse: true })
@@ -23,7 +28,7 @@ export class PoolModel extends BaseModel implements PoolEntity {
   @Prop({ type: String })
   ownerAddress: string;
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String })
   name: string;
 
   @Prop({ type: Date })
@@ -35,11 +40,14 @@ export class PoolModel extends BaseModel implements PoolEntity {
   @Prop({ type: Object })
   frequency: DurationObjectUnits;
 
-  @Prop({ type: BuyCondition, required: false })
+  @Prop({ type: Object })
   buyCondition: BuyCondition;
 
-  @Prop({ type: StopConditions, required: false })
+  @Prop({ type: Object })
   stopConditions: StopConditions;
+
+  @Prop({ enum: ProgressionType })
+  progressionBy?: ProgressionType;
 }
 
 /**

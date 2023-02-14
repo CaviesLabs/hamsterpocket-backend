@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { OrmModule } from '../orm/orm.module';
 import { RegistryProvider } from '../providers/registry.provider';
-import { PoolSeederService } from './services/pool-seeder.service';
+import { PoolMockService } from './services/pool-mock.service';
 
 @Module({
   imports: [OrmModule],
-  providers: [RegistryProvider, PoolSeederService],
+  providers: [RegistryProvider, PoolMockService],
   controllers: [],
 })
 export class PoolModule {}
