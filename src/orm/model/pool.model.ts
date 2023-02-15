@@ -17,8 +17,11 @@ export class PoolModel extends BaseModel implements PoolEntity {
   @Prop({ enum: PoolStatus })
   status: PoolStatus;
 
-  @Prop()
-  pair: string[];
+  @Prop({ type: String, required: true })
+  baseTokenAddress: string;
+
+  @Prop({ type: String, required: true })
+  targetTokenAddress: string;
 
   /** Enforce unique of docs with address field presented */
   @Prop({ type: String, unique: true, sparse: true })
