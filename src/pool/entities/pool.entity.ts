@@ -2,13 +2,6 @@ import { Type } from 'class-transformer';
 import { DurationObjectUnits } from 'luxon';
 import { ObjectId } from 'mongoose';
 
-export enum ProgressionType {
-  END_TIME = 'END_TIME',
-  TARGET_BASE_AMOUNT = 'TARGET_BASE_AMOUNT',
-  TARGET_TOKEN_AMOUNT = 'TARGET_TOKEN_AMOUNT',
-  TIMES = 'TIMES',
-}
-
 export enum PoolStatus {
   ACTIVE = 'POOL_STATUS::ACTIVE',
   PAUSED = 'POOL_STATUS::PAUSED',
@@ -17,32 +10,36 @@ export enum PoolStatus {
 }
 
 export enum PriceConditionType {
-  GREATER_THAN = 'GREATER_THAN',
-  GREATER_THAN_OR_EQUAL = 'GREATER_THAN_OR_EQUAL',
-  LESS_THAN = 'LESS_THAN',
-  LESS_THAN_OR_EQUAL = 'LESS_THAN_OR_EQUAL',
-  EQUAL = 'EQUAL',
-  NOT_EQUAL = 'NOT_EQUAL',
-  IS_BETWEEN = 'IS_BETWEEN',
-  IS_NOT_BETWEEN = 'IS_NOT_BETWEEN',
+  GT = 'GT',
+  GTE = 'GTE',
+  LT = 'LT',
+  LTE = 'LTE',
+  /** Equal */
+  EQ = 'EQ',
+  /** Not Equal */
+  NEQ = 'NEQ',
+  /** Between */
+  BW = 'BW',
+  /** Not Between */
+  NBW = 'NBW',
 }
 
 export class BuyCondition {
-  token: string;
+  tokenAddress: string;
 
   type: PriceConditionType;
 
-  value: number | number[];
+  value: number[];
 }
 
 export class StopConditions {
   endTime?: Date;
 
-  baseAmount?: number;
+  baseTokenReach?: number;
 
-  tokenAmount?: number;
+  targetTokenReach?: number;
 
-  times?: number;
+  batchAmountReach?: number;
 }
 
 export class PoolEntity {
@@ -56,11 +53,13 @@ export class PoolEntity {
 
   status: PoolStatus;
 
-  pair: string[];
+  baseTokenAddress: string;
+
+  targetTokenAddress: string;
 
   startTime: Date;
 
-  paxAmount: number;
+  batchAmount: number;
 
   frequency: DurationObjectUnits;
 
@@ -69,6 +68,4 @@ export class PoolEntity {
 
   @Type(() => StopConditions)
   stopConditions: StopConditions | undefined;
-
-  progressionBy?: ProgressionType;
 }

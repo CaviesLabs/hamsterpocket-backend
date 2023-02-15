@@ -7,7 +7,6 @@ import {
   BuyCondition,
   PoolEntity,
   PoolStatus,
-  ProgressionType,
   StopConditions,
 } from '../../pool/entities/pool.entity';
 import { BaseModel } from '../base.model';
@@ -35,7 +34,7 @@ export class PoolModel extends BaseModel implements PoolEntity {
   startTime: Date;
 
   @Prop({ type: Number })
-  paxAmount: number;
+  batchAmount: number;
 
   @Prop({ type: Object })
   frequency: DurationObjectUnits;
@@ -45,9 +44,6 @@ export class PoolModel extends BaseModel implements PoolEntity {
 
   @Prop({ type: Object })
   stopConditions: StopConditions;
-
-  @Prop({ enum: ProgressionType })
-  progressionBy?: ProgressionType;
 }
 
 /**
