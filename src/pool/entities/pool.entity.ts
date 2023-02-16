@@ -59,6 +59,8 @@ export class PoolEntity {
 
   startTime: Date;
 
+  depositedAmount: number;
+
   batchVolume: number;
 
   frequency: DurationObjectUnits;

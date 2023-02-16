@@ -36,6 +36,9 @@ export class PoolModel extends BaseModel implements PoolEntity {
   @Prop({ type: Date })
   startTime: Date;
 
+  @Prop({ type: Number, default: 0 })
+  depositedAmount: number;
+
   @Prop({ type: Number })
   batchVolume: number;
 
@@ -45,7 +48,8 @@ export class PoolModel extends BaseModel implements PoolEntity {
   @Prop({ type: Object })
   buyCondition: BuyCondition;
 
-  @Prop({ type: Object })
+  /** Must default Null to easy query */
+  @Prop({ type: Object, default: null })
   stopConditions: StopConditions;
 
   /**
@@ -74,6 +78,8 @@ export const PoolSchema = SchemaFactory.createForClass(PoolModel);
  */
 /** Search index */
 PoolSchema.index({ address: 'text', name: 'text' }, { background: true });
+PoolSchema.index({ startTime: 'desc' }, { background: true });
+PoolSchema.index({ createdAt: 'desc' }, { background: true });
 
 /**
  * @dev Define generic type for typescript reference.
