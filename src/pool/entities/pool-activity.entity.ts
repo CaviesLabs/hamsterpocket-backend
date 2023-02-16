@@ -6,14 +6,13 @@ export enum PoolActivityStatus {
 }
 
 export enum ActivityType {
-  DEPOSIT = 'DEPOSIT',
-  WITHDRAW = 'WITHDRAW',
-  SWAP = 'SWAP',
+  DEPOSIT = 'ACTIVITY_TYPE::DEPOSIT',
+  WITHDRAW = 'ACTIVITY_TYPE::WITHDRAW',
+  SWAP = 'ACTIVITY_TYPE::SWAP',
+  SKIPPED = 'ACTIVITY_TYPE::SKIPPED',
 }
 
-export class PoolActivity {
-  poolProgressId?: ObjectId;
-
+export class PoolActivityEntity {
   poolId: ObjectId;
 
   status: PoolActivityStatus;
@@ -25,4 +24,6 @@ export class PoolActivity {
   targetTokenAmount: number;
 
   transactionId: string;
+
+  memo: string;
 }

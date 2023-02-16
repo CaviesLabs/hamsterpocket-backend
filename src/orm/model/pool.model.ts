@@ -12,9 +12,9 @@ import {
 import { BaseModel } from '../base.model';
 
 @Injectable()
-@Schema({ collection: 'pools', timestamps: true, autoIndex: true })
+@Schema({ collection: 'pools', timestamps: true })
 export class PoolModel extends BaseModel implements PoolEntity {
-  @Prop({ enum: PoolStatus })
+  @Prop({ type: String, enum: PoolStatus })
   status: PoolStatus;
 
   @Prop({ type: String, required: true })
@@ -37,7 +37,7 @@ export class PoolModel extends BaseModel implements PoolEntity {
   startTime: Date;
 
   @Prop({ type: Number })
-  batchAmount: number;
+  batchVolume: number;
 
   @Prop({ type: Object })
   frequency: DurationObjectUnits;
@@ -47,6 +47,21 @@ export class PoolModel extends BaseModel implements PoolEntity {
 
   @Prop({ type: Object })
   stopConditions: StopConditions;
+
+  /**
+   * Progression fields
+   */
+  @Prop({ type: Number, default: 0 })
+  currentBaseToken: number;
+
+  @Prop({ type: Number, default: 0 })
+  remainingBaseTokenBalance: number;
+
+  @Prop({ type: Number, default: 0 })
+  currentTargetToken: number;
+
+  @Prop({ type: Number, default: 0 })
+  currentBatchAmount: number;
 }
 
 /**

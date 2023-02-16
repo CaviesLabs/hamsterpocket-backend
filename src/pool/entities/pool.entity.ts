@@ -59,7 +59,7 @@ export class PoolEntity {
 
   startTime: Date;
 
-  batchAmount: number;
+  batchVolume: number;
 
   frequency: DurationObjectUnits;
 
@@ -68,4 +68,13 @@ export class PoolEntity {
 
   @Type(() => StopConditions)
   stopConditions: StopConditions | undefined;
+
+  /** Progression fields */
+  currentBaseToken: number;
+
+  remainingBaseTokenBalance: number;
+
+  currentTargetToken: number;
+
+  currentBatchAmount: number;
 }
