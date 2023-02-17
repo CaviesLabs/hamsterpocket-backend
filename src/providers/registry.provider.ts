@@ -2,7 +2,6 @@ import { Global } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import {
-  IsBoolean,
   IsNotEmpty,
   IsPort,
   IsString,
@@ -43,27 +42,6 @@ export class SystemConfig {
   PORT: string;
 
   /**
-   * @description Declare private key
-   */
-  @IsString()
-  @IsNotEmpty()
-  PRIVATE_KEY: string;
-
-  /**
-   * @description Declare public key
-   */
-  @IsString()
-  @IsNotEmpty()
-  PUBLIC_KEY: string;
-
-  /**
-   * @description Declare default audience
-   */
-  @IsString()
-  @IsNotEmpty()
-  DEFAULT_AUDIENCE: string;
-
-  /**
    * @description Database Config
    */
   @IsUrl(
@@ -73,57 +51,6 @@ export class SystemConfig {
     },
   )
   DB_URL: string;
-
-  /**
-   * @description SMTP Configs
-   */
-  @IsUrl({
-    require_protocol: false,
-  })
-  SMTP_EMAIL_HOST: string;
-
-  @IsPort()
-  @IsNotEmpty()
-  SMTP_EMAIL_PORT: string;
-
-  @IsBoolean()
-  @IsNotEmpty()
-  SMTP_EMAIL_TLS_ENABLED: boolean;
-
-  @IsString()
-  @IsNotEmpty()
-  SMTP_EMAIL_USERNAME: string;
-
-  @IsString()
-  @IsNotEmpty()
-  SMTP_EMAIL_PASSWORD: string;
-
-  @IsString()
-  @IsNotEmpty()
-  SMTP_EMAIL_FROM_EMAIL: string;
-
-  @IsString()
-  @IsNotEmpty()
-  SMTP_EMAIL_FROM_EMAIL_NAME: string;
-
-  /**
-   * @description AWS Configs
-   */
-  @IsString()
-  @IsNotEmpty()
-  AWS_SECRET_KEY_ID: string;
-
-  @IsString()
-  @IsNotEmpty()
-  AWS_SECRET_ACCESS_KEY: string;
-
-  @IsString()
-  @IsNotEmpty()
-  AWS_BUCKET_NAME: string;
-
-  @IsString()
-  @IsNotEmpty()
-  AWS_BUCKET_REGION: string;
 
   /**
    * @description Other Configs
