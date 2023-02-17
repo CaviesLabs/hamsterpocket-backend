@@ -116,6 +116,13 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const error = new ExceptionResponseBuilder(host).detectException(exception);
 
     /**
+     * Log for debugging
+     */
+    if (+error.statusCode >= 500) {
+      console.log(exception);
+    }
+
+    /**
      * @dev Return response
      */
     const response = ctx.getResponse<FastifyReply>();

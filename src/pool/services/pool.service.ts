@@ -163,16 +163,12 @@ export class PoolService {
         );
       case (FindPoolSortOption.PROGRESS_ASC, FindPoolSortOption.PROGRESS_DESC):
         /** Sort progress stage */
-        stages.push({
-          $sort: { progress: 1 },
-          /** Remove computed field */
-          $project: { progress: 0 },
-        });
+        stages.push({ $sort: { progress: 1 } });
         break;
     }
 
     /** Paginate stage */
-    stages.push({ $limit: limit, $skip: offset });
+    stages.push({ $skip: offset }, { $limit: limit });
 
     return this.poolRepo.aggregate<PoolDocument>(stages);
   }

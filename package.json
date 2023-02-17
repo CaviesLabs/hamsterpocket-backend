@@ -19,9 +19,9 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "CONFIG_FILE=\"./e2e-test.config.json\" npx nyc --reporter=lcov --reporter=text --reporter=clover --reporter=text-summary mocha --require ts-node/register test/unit/test-entrypoint.spec.ts",
-    "test:e2e": "CONFIG_FILE=\"./e2e-test.config.json\" npx nyc --reporter=lcov --reporter=text --reporter=clover --reporter=text-summary mocha --require ts-node/register test/e2e/test-entrypoint.e2e-spec.ts",
-    "test:e2e-dev": "CONFIG_FILE=\"./e2e-test.config.json\" npx mocha --reporter=spec --full-trace --require ts-node/register test/e2e/test-entrypoint.e2e-spec.ts",
+    "test": "./scripts/test.sh",
+    "test:e2e": "./scripts/test-e2e.sh --ci",
+    "test:e2e-dev": "./scripts/test-e2e.sh --dev",
     "prepare": "husky install"
   },
   "dependencies": {
