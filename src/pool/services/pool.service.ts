@@ -4,6 +4,7 @@ import { CommonQueryDto } from '../../api-docs/dto/common-query.dto';
 
 import { PoolModel, PoolDocument } from '../../orm/model/pool.model';
 import { FindPoolDto, FindPoolSortOption } from '../dtos/find-pool.dto';
+import { PoolEntity } from '../entities/pool.entity';
 
 export class PoolService {
   constructor(
@@ -11,13 +12,13 @@ export class PoolService {
     private readonly poolRepo: Model<PoolDocument>,
   ) {}
 
-  find({
+  async find({
     search,
     limit,
     offset,
     ownerAddress,
     sortBy,
-  }: CommonQueryDto & FindPoolDto) {
+  }: CommonQueryDto & FindPoolDto): Promise<PoolEntity[]> {
     const stages: PipelineStage[] = [];
 
     /** Filter & search stage */
@@ -36,141 +37,20 @@ export class PoolService {
         stages.push({ $sort: { createdAt: -1 } });
         break;
       case FindPoolSortOption.PROGRESS_ASC:
-        stages.push(
-          /** Computing progress stage
-           * if no stop condition set value to 1.1 > 1 (100%)
-           * get max of 3 progresses (maximum: 1), TODO: time base
-           */
-          {
-            $project: {
-              progress: {
-                $cond: {
-                  if: { $eq: ['$stopConditions', null] },
-                  then: 1.1,
-                  else: {
-                    $min: [
-                      {
-                        $cond: {
-                          if: {
-                            $neq: ['$stopConditions.baseTokenReach', null],
-                          },
-                          then: 1.1,
-                          else: {
-                            $divide: [
-                              '$currentBaseToken',
-                              '$stopConditions.baseTokenReach',
-                            ],
-                          },
-                        },
-                      },
-                      {
-                        $cond: {
-                          if: {
-                            $neq: ['$stopConditions.targetTokenReach', null],
-                          },
-                          then: 1.1,
-                          else: {
-                            $divide: [
-                              '$currentTargetToken',
-                              '$stopConditions.targetTokenReach',
-                            ],
-                          },
-                        },
-                      },
-                      {
-                        $cond: {
-                          if: {
-                            $neq: ['$stopConditions.batchAmountReach', null],
-                          },
-                          then: 1.1,
-                          else: {
-                            $divide: [
-                              '$currentBatchAmount',
-                              '$stopConditions.batchAmountReach',
-                            ],
-                          },
-                        },
-                      },
-                    ],
-                  },
-                },
-              },
-            },
-          },
-        );
       case FindPoolSortOption.PROGRESS_DESC:
-        stages.push(
-          /** Computing progress stage
-           * if no stop condition set value to -0.1 < 1 (100%)
-           * get min of 3 progresses (minimum: 0.0), TODO: time base
-           */
-          {
-            $project: {
-              progress: {
-                $cond: {
-                  if: { $eq: ['$stopConditions', null] },
-                  then: -0.1,
-                  else: {
-                    $max: [
-                      {
-                        $cond: {
-                          if: {
-                            $neq: ['$stopConditions.baseTokenReach', null],
-                          },
-                          then: -0.1,
-                          else: {
-                            $divide: [
-                              '$currentBaseToken',
-                              '$stopConditions.baseTokenReach',
-                            ],
-                          },
-                        },
-                      },
-                      {
-                        $cond: {
-                          if: {
-                            $neq: ['$stopConditions.targetTokenReach', null],
-                          },
-                          then: -0.1,
-                          else: {
-                            $divide: [
-                              '$currentTargetToken',
-                              '$stopConditions.targetTokenReach',
-                            ],
-                          },
-                        },
-                      },
-                      {
-                        $cond: {
-                          if: {
-                            $neq: ['$stopConditions.batchAmountReach', null],
-                          },
-                          then: -0.1,
-                          else: {
-                            $divide: [
-                              '$currentBatchAmount',
-                              '$stopConditions.batchAmountReach',
-                            ],
-                          },
-                        },
-                      },
-                    ],
-                  },
-                },
-              },
-            },
-          },
-        );
-      case (FindPoolSortOption.PROGRESS_ASC, FindPoolSortOption.PROGRESS_DESC):
         /** Sort progress stage */
-        stages.push({ $sort: { progress: 1 } });
+        stages.push({
+          $sort: {
+            progress: sortBy === FindPoolSortOption.PROGRESS_ASC ? 1 : -1,
+          },
+        });
         break;
     }
 
     /** Paginate stage */
     stages.push({ $skip: offset }, { $limit: limit });
 
-    return this.poolRepo.aggregate<PoolDocument>(stages);
+    return await this.poolRepo.aggregate<PoolModel>(stages);
   }
 
   createEmpty() {

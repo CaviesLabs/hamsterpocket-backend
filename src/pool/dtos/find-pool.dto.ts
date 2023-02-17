@@ -12,5 +12,5 @@ export class FindPoolDto {
   ownerAddress: string;
 
   @IsEnum(FindPoolSortOption)
-  sortBy: string = FindPoolSortOption.DATE_START_DESC;
+  sortBy: FindPoolSortOption = FindPoolSortOption.DATE_START_DESC;
 }

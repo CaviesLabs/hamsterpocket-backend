@@ -24,6 +24,13 @@ export enum PriceConditionType {
   NBW = 'NBW',
 }
 
+export enum MainProgressBy {
+  END_TIME = 'MAIN_PROGRESS_BY::END_TIME',
+  BASE_TOKEN = 'MAIN_PROGRESS_BY::BASE_TOKEN',
+  TARGET_TOKEN = 'MAIN_PROGRESS_BY::TARGET_TOKEN',
+  BATCH_AMOUNT = 'MAIN_PROGRESS_BY::BATCH_AMOUNT',
+}
+
 export class BuyCondition {
   tokenAddress: string;
 
@@ -79,4 +86,40 @@ export class PoolEntity {
   currentTargetToken: number;
 
   currentBatchAmount: number;
+
+  mainProgressBy: MainProgressBy | undefined;
+
+  progressPercent: number;
+}
+
+/**
+ * External method because ORM model isn't need to implement.
+ * Note: Require bind before call.
+ */
+export function calculateProgressPercent(this: PoolEntity) {
+  if (!this.stopConditions) {
+    this.progressPercent = -1;
+    return;
+  }
+  switch (this.mainProgressBy) {
+    case MainProgressBy.BASE_TOKEN:
+      this.progressPercent =
+        this.currentBaseToken / this.stopConditions.baseTokenReach;
+      break;
+    case MainProgressBy.TARGET_TOKEN:
+      this.progressPercent =
+        this.currentTargetToken / this.stopConditions.targetTokenReach;
+      break;
+    case MainProgressBy.BATCH_AMOUNT:
+      this.progressPercent =
+        this.currentBatchAmount / this.stopConditions.batchAmountReach;
+      break;
+    case MainProgressBy.END_TIME:
+      const startTimeInMillis = this.startTime.getTime();
+      const endTimeInMillis = this.stopConditions.endTime.getTime();
+      const currentInMillis = new Date().getTime();
+      this.progressPercent =
+        (Math.min(currentInMillis, startTimeInMillis) - startTimeInMillis) /
+        (endTimeInMillis - startTimeInMillis);
+  }
 }

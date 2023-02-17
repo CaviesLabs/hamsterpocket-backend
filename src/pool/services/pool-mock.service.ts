@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Keypair } from '@solana/web3.js';
+import { plainToInstance } from 'class-transformer';
 import { DateTime } from 'luxon';
 import { Model } from 'mongoose';
 
 import { PoolDocument, PoolModel } from '../../orm/model/pool.model';
 import {
+  calculateProgressPercent,
   PoolEntity,
   PoolStatus,
   PriceConditionType,
@@ -48,10 +50,13 @@ export class PoolMockService {
   }
 
   generate(ownerAddress: string) {
-    return this.poolRepo.create({
+    const pool = plainToInstance(PoolEntity, {
       ...this.genPoolTemplate(),
       address: Keypair.generate().publicKey.toString(),
       ownerAddress,
     });
+    /** Trigger calculate Pool progress */
+    calculateProgressPercent.bind(pool)();
+    return this.poolRepo.create(pool);
   }
 }

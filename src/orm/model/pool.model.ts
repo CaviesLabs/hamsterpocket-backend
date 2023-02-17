@@ -5,6 +5,7 @@ import { Document } from 'mongoose';
 
 import {
   BuyCondition,
+  MainProgressBy,
   PoolEntity,
   PoolStatus,
   StopConditions,
@@ -46,11 +47,11 @@ export class PoolModel extends BaseModel implements PoolEntity {
   frequency: DurationObjectUnits;
 
   @Prop({ type: Object })
-  buyCondition: BuyCondition;
+  buyCondition: BuyCondition | undefined;
 
   /** Must default Null to easy query */
   @Prop({ type: Object, default: null })
-  stopConditions: StopConditions;
+  stopConditions: StopConditions | undefined;
 
   /**
    * Progression fields
@@ -66,6 +67,12 @@ export class PoolModel extends BaseModel implements PoolEntity {
 
   @Prop({ type: Number, default: 0 })
   currentBatchAmount: number;
+
+  @Prop({ type: String, default: null })
+  mainProgressBy: MainProgressBy | undefined;
+
+  @Prop({ type: Number, default: 0 })
+  progressPercent: number;
 }
 
 /**
@@ -78,8 +85,10 @@ export const PoolSchema = SchemaFactory.createForClass(PoolModel);
  */
 /** Search index */
 PoolSchema.index({ address: 'text', name: 'text' }, { background: true });
+/** Sort indexes */
 PoolSchema.index({ startTime: 'desc' }, { background: true });
 PoolSchema.index({ createdAt: 'desc' }, { background: true });
+PoolSchema.index({ progressPercent: 'desc' }, { background: true });
 
 /**
  * @dev Define generic type for typescript reference.
