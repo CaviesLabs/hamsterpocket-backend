@@ -15,7 +15,7 @@ import { BaseModel } from '../base.model';
 @Injectable()
 @Schema({ collection: 'pools', timestamps: true })
 export class PoolModel extends BaseModel implements PoolEntity {
-  @Prop({ type: String, enum: PoolStatus })
+  @Prop({ type: String, enum: PoolStatus, default: PoolStatus.CREATED })
   status: PoolStatus;
 
   @Prop({ type: String, required: true })

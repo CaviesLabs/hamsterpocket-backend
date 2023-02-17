@@ -8,6 +8,7 @@ import { Model } from 'mongoose';
 import { PoolDocument, PoolModel } from '../../orm/model/pool.model';
 import {
   calculateProgressPercent,
+  MainProgressBy,
   PoolEntity,
   PoolStatus,
   PriceConditionType,
@@ -45,7 +46,8 @@ export class PoolMockService {
       currentBaseToken: 500,
       remainingBaseTokenBalance: 500,
       currentTargetToken: 50,
-      currentBatchAmount: 10,
+      currentBatchAmount: 5,
+      mainProgressBy: MainProgressBy.BATCH_AMOUNT,
     };
   }
 

@@ -3,6 +3,7 @@ import { DurationObjectUnits } from 'luxon';
 import { ObjectId } from 'mongoose';
 
 export enum PoolStatus {
+  CREATED = 'POOL_STATUS::CREATED',
   ACTIVE = 'POOL_STATUS::ACTIVE',
   PAUSED = 'POOL_STATUS::PAUSED',
   CLOSED = 'POOL_STATUS::CLOSED',

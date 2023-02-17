@@ -1,5 +1,4 @@
 import {
-  Body,
   Controller,
   Get,
   NotImplementedException,
@@ -42,7 +41,7 @@ export class PoolController {
   }
 
   @Post('/mock/generate')
-  generateMock(@Body('ownerAddress') ownerAddress: string) {
+  generateMock(@Query('ownerAddress') ownerAddress: string) {
     if (this.registry.getConfig().NODE_ENV == 'production') {
       throw new NotImplementedException('API is not supported in production');
     }

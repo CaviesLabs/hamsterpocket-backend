@@ -1,6 +1,6 @@
-import { ObjectId } from 'mongoose';
+import { Document, ObjectId } from 'mongoose';
 
-export class BaseModel {
+export class BaseModel extends Document {
   _id: ObjectId;
 
   createdAt: Date;
