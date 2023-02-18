@@ -52,6 +52,14 @@ export class SystemConfig {
   )
   DB_URL: string;
 
+  @IsUrl(
+    { protocols: ['redis'], require_tld: false },
+    {
+      message: '$property should be a valid Redis URI',
+    },
+  )
+  REDIS_URI: string;
+
   /**
    * @description Other Configs
    */

@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model, PipelineStage } from 'mongoose';
 import { CommonQueryDto } from '../../api-docs/dto/common-query.dto';
@@ -5,9 +6,12 @@ import { CommonQueryDto } from '../../api-docs/dto/common-query.dto';
 import { PoolModel, PoolDocument } from '../../orm/model/pool.model';
 import { FindPoolDto, FindPoolSortOption } from '../dtos/find-pool.dto';
 import { PoolEntity } from '../entities/pool.entity';
+import { SolanaPoolProvider } from '../providers/solana-pool.provider';
 
+@Injectable()
 export class PoolService {
   constructor(
+    private readonly onChainPoolProvider: SolanaPoolProvider,
     @InjectModel(PoolModel.name)
     private readonly poolRepo: Model<PoolDocument>,
   ) {}
@@ -55,5 +59,11 @@ export class PoolService {
 
   createEmpty() {
     return this.poolRepo.create({});
+  }
+
+  async executeBuyToken(poolId: string) {
+    await this.onChainPoolProvider.executeBuyToken(poolId);
+    const syncedPool = await this.onChainPoolProvider.fetchFromContract(poolId);
+    await this.poolRepo.updateOne({ id: poolId }, syncedPool, { upsert: true });
   }
 }

@@ -1,6 +1,5 @@
 import { Type } from 'class-transformer';
 import { DurationObjectUnits } from 'luxon';
-import { ObjectId } from 'mongoose';
 
 export enum PoolStatus {
   CREATED = 'POOL_STATUS::CREATED',
@@ -51,7 +50,7 @@ export class StopConditions {
 }
 
 export class PoolEntity {
-  _id: ObjectId;
+  id: string;
 
   address: string;
 

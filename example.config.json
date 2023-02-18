@@ -3,6 +3,7 @@
   "HOST": "127.0.0.1",
   "PORT": "3000",
   "DB_URL": "",
+  "REDIS_URI": "",
   "SECRET_TOKEN": "",
   "DOMAIN": "",
   "HOST_URI": "",

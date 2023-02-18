@@ -11,6 +11,7 @@ import { RegistryProvider } from './providers/registry.provider';
 import { AllExceptionsFilter } from './exception.filter';
 import { AppController } from './app.controller';
 import { PoolModule } from './pool/pool.module';
+import { BullModule } from '@nestjs/bull';
 
 @Module({
   imports: [
@@ -57,6 +58,14 @@ import { PoolModule } from './pool/pool.module';
          */
         return {
           uri,
+        };
+      },
+    }),
+    BullModule.forRootAsync({
+      useFactory: async () => {
+        const registry = new RegistryProvider();
+        return {
+          redis: registry.getConfig().REDIS_URI,
         };
       },
     }),

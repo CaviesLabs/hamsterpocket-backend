@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { DateTime } from 'luxon';
 
 @Injectable()
 export class UtilsProvider {
@@ -144,4 +145,27 @@ export class UtilsProvider {
   public removeWhitespaceAndNewline = (targetString: string) => {
     return targetString.split(' ').join('').split('\n').join('');
   };
+}
+
+export class Timer {
+  startedAt: DateTime;
+  endedAt: DateTime;
+  constructor(public name: string) {}
+
+  start() {
+    this.startedAt = DateTime.now();
+    console.info(
+      `==========${this.name} Started@${this.startedAt.toISO()}==========`,
+    );
+  }
+
+  stop() {
+    this.endedAt = DateTime.now();
+    const { seconds } = this.endedAt.diff(this.startedAt, 'seconds').toObject();
+    console.info(
+      `==========${
+        this.name
+      } Ended@${this.endedAt.toISO()} Take:${seconds}s==========`,
+    );
+  }
 }
