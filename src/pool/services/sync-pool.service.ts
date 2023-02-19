@@ -7,11 +7,15 @@ import { plainToInstance } from 'class-transformer';
 import { Duration } from 'luxon';
 import { Model } from 'mongoose';
 
+import {
+  POOL_QUEUE,
+  BuyTokenJobData,
+  BUY_TOKEN_PROCESS,
+} from '../../mq/queues/pool.queue';
 import { PoolDocument, PoolModel } from '../../orm/model/pool.model';
 import { Timer } from '../../providers/utils.provider';
 import { PoolEntity, PoolStatus } from '../entities/pool.entity';
 import { SolanaPoolProvider } from '../providers/solana-pool.provider';
-import { BuyTokenJobData, POOL_QUEUE } from '../queues/pool.processor';
 
 @Injectable()
 export class SyncPoolService {
@@ -32,17 +36,39 @@ export class SyncPoolService {
     }
 
     /** Publish repeatable job */
-    await this.buyTokenQueue.add(pool.id, {
-      /** Use pool ID as jobId to upsert queue event */
-      jobId: pool.id,
-      /** data type: string, no need to parse */
-      preventParsingData: true,
-      repeat: {
-        startDate: pool.startTime,
-        every: frequency,
-        endDate: pool.stopConditions?.endTime,
-        limit,
+    await this.buyTokenQueue.add(
+      BUY_TOKEN_PROCESS,
+      {
+        poolId: pool.id,
       },
+      {
+        /** Use pool ID as jobId to upsert queue event */
+        jobId: pool.id,
+        repeat: {
+          startDate: pool.startTime,
+          every: frequency,
+          endDate: pool.stopConditions?.endTime,
+          limit,
+        },
+      },
+    );
+  }
+
+  async syncPoolById(poolId: string) {
+    const existedPool = await this.poolRepo.findById(poolId);
+    /** No need to sync ended pool */
+    if (existedPool.status === PoolStatus.ENDED) return;
+
+    /** Fetch pool latest update */
+    const syncedPool = await this.onChainPoolProvider.fetchFromContract(poolId);
+
+    /** Publish a job for new pool */
+    if (syncedPool.status === PoolStatus.CREATED) {
+      await this.scheduleJob(syncedPool);
+    }
+
+    await this.poolRepo.updateOne({ id: syncedPool.id }, syncedPool, {
+      upsert: true,
     });
   }
 
@@ -55,7 +81,12 @@ export class SyncPoolService {
     const poolIds = await this.poolRepo.find(
       {
         status: {
-          $in: [PoolStatus.CREATED, PoolStatus.ACTIVE, PoolStatus.PAUSED],
+          $in: [
+            PoolStatus.CREATED,
+            PoolStatus.ACTIVE,
+            PoolStatus.PAUSED,
+            PoolStatus.CLOSED,
+          ],
         },
         updatedAt: {
           $gte: timer.startedAt.minus({ weeks: 1 }).toJSDate(),

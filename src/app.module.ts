@@ -12,6 +12,7 @@ import { AllExceptionsFilter } from './exception.filter';
 import { AppController } from './app.controller';
 import { PoolModule } from './pool/pool.module';
 import { BullModule } from '@nestjs/bull';
+import { PortfolioModule } from './portfolio/portfolio.module';
 
 @Module({
   imports: [
@@ -74,6 +75,7 @@ import { BullModule } from '@nestjs/bull';
      */
     TokenMetadataModule,
     PoolModule,
+    PortfolioModule,
   ],
   /**
    * @dev Import controller.
