@@ -6,6 +6,7 @@ import {
   TokenMetadataModel,
   TokenMetadataSchema,
 } from './model/token-metadata.model';
+import { UserTokenModel, UserTokenSchema } from './model/user-token.model';
 
 @Module({
   /**
@@ -18,6 +19,7 @@ import {
     MongooseModule.forFeature([
       { name: TokenMetadataModel.name, schema: TokenMetadataSchema },
       { name: PoolModel.name, schema: PoolSchema },
+      { name: UserTokenModel.name, schema: UserTokenSchema },
     ]),
   ],
   exports: [

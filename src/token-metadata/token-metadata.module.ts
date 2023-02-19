@@ -9,5 +9,6 @@ import { TokenMetadataService } from './services/token-metadata.service';
   imports: [OrmModule],
   controllers: [MetadataController],
   providers: [NetworkProvider, TokenMetadataProvider, TokenMetadataService],
+  exports: [TokenMetadataService],
 })
 export class TokenMetadataModule {}
