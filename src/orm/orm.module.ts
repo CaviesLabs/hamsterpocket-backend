@@ -1,12 +1,17 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { PoolModel, PoolSchema } from './model/pool.model';
 
+import {
+  PoolActivityModel,
+  PoolActivitySchema,
+} from './model/pool-activity.model';
+import { PoolModel, PoolSchema } from './model/pool.model';
 import {
   TokenMetadataModel,
   TokenMetadataSchema,
 } from './model/token-metadata.model';
 import { UserTokenModel, UserTokenSchema } from './model/user-token.model';
+import { WhitelistModel, WhitelistSchema } from './model/whitelist.model';
 
 @Module({
   /**
@@ -18,7 +23,9 @@ import { UserTokenModel, UserTokenSchema } from './model/user-token.model';
      */
     MongooseModule.forFeature([
       { name: TokenMetadataModel.name, schema: TokenMetadataSchema },
+      { name: WhitelistModel.name, schema: WhitelistSchema },
       { name: PoolModel.name, schema: PoolSchema },
+      { name: PoolActivityModel.name, schema: PoolActivitySchema },
       { name: UserTokenModel.name, schema: UserTokenSchema },
     ]),
   ],

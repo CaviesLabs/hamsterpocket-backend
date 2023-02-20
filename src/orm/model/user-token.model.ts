@@ -1,8 +1,9 @@
-import { Prop, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 import { UserTokenEntity } from '../../portfolio/entities/user-token.entity';
 import { BaseModel } from '../base.model';
 
+@Schema({ collection: 'user_tokens' })
 export class UserTokenModel extends BaseModel implements UserTokenEntity {
   @Prop({ type: String, required: true })
   ownerAddress: string;

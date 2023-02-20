@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Schema, Prop } from '@nestjs/mongoose';
+import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import { ObjectId, Types } from 'mongoose';
 
 import {
@@ -33,3 +33,14 @@ export class PoolActivityModel extends BaseModel implements PoolActivityEntity {
   @Prop({ type: String })
   memo: string;
 }
+
+/**
+ * @dev Trigger create schema.
+ */
+export const PoolActivitySchema =
+  SchemaFactory.createForClass(PoolActivityModel);
+
+/**
+ * @dev Define generic type for typescript reference.
+ */
+export type PoolActivityDocument = Document & PoolActivityEntity;

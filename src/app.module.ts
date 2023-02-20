@@ -14,6 +14,7 @@ import { PoolModule } from './pool/pool.module';
 import { BullModule } from '@nestjs/bull';
 import { PortfolioModule } from './portfolio/portfolio.module';
 import { getRedisMemoryServerURI } from './mq/helper';
+import { WhitelistModule } from './whitelist/whitelist.module';
 
 @Module({
   imports: [
@@ -84,6 +85,7 @@ import { getRedisMemoryServerURI } from './mq/helper';
      * @dev Import other modules.
      */
     TokenMetadataModule,
+    WhitelistModule,
     PoolModule,
     PortfolioModule,
   ],
