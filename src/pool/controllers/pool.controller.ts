@@ -24,14 +24,15 @@ export class PoolController {
   @Get()
   find(
     @Query() { search, limit, offset }: CommonQueryDto,
-    @Query() { ownerAddress, sortBy }: FindPoolDto,
+    @Query() { ownerAddress, statuses, sortBy }: FindPoolDto,
   ) {
     return this.poolService.find({
-      sortBy,
       search,
       limit,
       offset,
       ownerAddress,
+      statuses,
+      sortBy,
     });
   }
 

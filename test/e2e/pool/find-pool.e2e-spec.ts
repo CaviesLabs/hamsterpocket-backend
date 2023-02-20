@@ -6,7 +6,7 @@ import {
   FindPoolDto,
   FindPoolSortOption,
 } from '../../../src/pool/dtos/find-pool.dto';
-import { PoolEntity } from '../../../src/pool/entities/pool.entity';
+import { PoolEntity, PoolStatus } from '../../../src/pool/entities/pool.entity';
 import { TestCase } from '../../types/test-case';
 import { TestState } from '../state.suite';
 import { testHelper } from '../test-entrypoint.e2e-spec';
@@ -49,6 +49,10 @@ describe('Find pool', function () {
     {
       name: 'Get by limit & offset',
       req: { limit: 1, offset: 0 },
+    },
+    {
+      name: 'Get by status',
+      req: { statuses: [PoolStatus.ACTIVE] },
     },
     {
       name: 'Search pools',

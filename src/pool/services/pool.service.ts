@@ -22,14 +22,21 @@ export class PoolService {
     offset,
     ownerAddress,
     sortBy,
+    statuses,
   }: CommonQueryDto & FindPoolDto): Promise<PoolEntity[]> {
     const stages: PipelineStage[] = [];
 
     /** Filter & search stage */
     const filter: FilterQuery<PoolDocument> = { ownerAddress };
+
+    if (statuses && statuses.length >= 0) {
+      filter.status = { $in: statuses };
+    }
+
     if (search) {
       filter.$text = { $search: search };
     }
+
     stages.push({ $match: filter });
 
     /** Sort stage */
