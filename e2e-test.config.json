@@ -3,7 +3,7 @@
   "HOST": "127.0.0.1",
   "PORT": "3000",
   "DB_URL": "mongodb://localhost:27017/dummy-to-pass-validation",
-  "REDIS_URI": "redis://localhost:6379",
+  "REDIS_URI": "redis://dummy:6379",
   "SECRET_TOKEN": "random",
   "DOMAIN": "hamsterbox.xyz",
   "HOST_URI": "https://hamsterbox.xyz/profile",

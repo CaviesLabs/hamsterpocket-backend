@@ -13,6 +13,7 @@ import { AppController } from './app.controller';
 import { PoolModule } from './pool/pool.module';
 import { BullModule } from '@nestjs/bull';
 import { PortfolioModule } from './portfolio/portfolio.module';
+import { getRedisMemoryServerURI } from './mq/helper';
 
 @Module({
   imports: [
@@ -65,8 +66,17 @@ import { PortfolioModule } from './portfolio/portfolio.module';
     BullModule.forRootAsync({
       useFactory: async () => {
         const registry = new RegistryProvider();
+        const env = registry.getConfig().NODE_ENV;
+        let uri;
+
+        if (env === 'test') {
+          uri = await getRedisMemoryServerURI();
+        } else {
+          uri = registry.getConfig().REDIS_URI;
+        }
+
         return {
-          redis: registry.getConfig().REDIS_URI,
+          redis: uri,
         };
       },
     }),
