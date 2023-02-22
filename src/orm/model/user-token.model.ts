@@ -11,12 +11,6 @@ export class UserTokenModel extends BaseModel implements UserTokenEntity {
   @Prop({ type: String, required: true })
   tokenAddress: string;
 
-  @Prop({ type: String, required: true })
-  tokenName: string;
-
-  @Prop({ type: String, required: true })
-  tokenSymbol: string;
-
   @Prop({ type: Number, default: 0 })
   total: number;
 }

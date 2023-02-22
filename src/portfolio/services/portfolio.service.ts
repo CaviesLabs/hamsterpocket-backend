@@ -1,18 +1,21 @@
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { FilterQuery, Model, PipelineStage } from 'mongoose';
 
-import { TokenMetadataService } from '../../token-metadata/services/token-metadata.service';
 import { PoolModel, PoolDocument } from '../../orm/model/pool.model';
 import {
   UserTokenDocument,
   UserTokenModel,
 } from '../../orm/model/user-token.model';
-import { CurrencyData } from '../../providers/token-metadata.provider';
 import { NotFoundException, NotImplementedException } from '@nestjs/common';
+import {
+  ListUserTokenDto,
+  UserTokenWithAdditionView,
+} from '../dtos/list-user-token.dto';
+import { CommonQueryDto } from '../../api-docs/dto/common-query.dto';
+import { UserTokenEntity } from '../entities/user-token.entity';
 
 export class PortfolioService {
   constructor(
-    private readonly tokenMetadataService: TokenMetadataService,
     @InjectModel(PoolModel.name)
     private readonly poolRepo: Model<PoolDocument>,
     @InjectModel(UserTokenModel.name)
@@ -48,23 +51,39 @@ export class PortfolioService {
       throw new NotFoundException('USER_TOKEN_NOT_FOUND');
     }
 
-    const userToken = userTokens[0];
-
-    /** Get token metadata */
-    const tokenMetadata = await this.tokenMetadataService.getCurrency(
-      userToken.tokenAddress,
-    );
-
-    /** Map token detail field */
-    const { name, symbol } = tokenMetadata.metadata as CurrencyData;
-    userToken.tokenName = name;
-    userToken.tokenSymbol = symbol;
-
     /** Perform update */
     return await this.userTokenRepo.updateOne(
       { ownerAddress, tokenAddress },
-      userToken,
+      userTokens[0],
       { upsert: true },
+    );
+  }
+
+  async listUserToken(
+    ownerAddress: string,
+    { limit, offset, search }: ListUserTokenDto & CommonQueryDto,
+  ): Promise<UserTokenWithAdditionView[]> {
+    const stages: PipelineStage[] = [];
+    /** Filter & search stage */
+    const filter: FilterQuery<UserTokenEntity> = {
+      ownerAddress,
+    };
+    if (search) {
+      filter.$text = { $search: search };
+    }
+    stages.push({ $match: filter });
+    /** Add value and additional fields */
+    stages.push({
+      $lookup: {
+        from: 'whitelists',
+        as: 'whitelist',
+        // TODO: $lookup
+      },
+    });
+    /** Offset + limit */
+    stages.push({ $skip: offset }, { $limit: limit });
+    return await this.userTokenRepo.aggregate<UserTokenWithAdditionView>(
+      stages,
     );
   }
 

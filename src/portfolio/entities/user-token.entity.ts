@@ -3,9 +3,5 @@ export class UserTokenEntity {
 
   tokenAddress: string;
 
-  tokenName: string;
-
-  tokenSymbol: string;
-
   total: number;
 }
