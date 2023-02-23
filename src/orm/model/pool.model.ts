@@ -30,7 +30,7 @@ export class PoolModel extends BaseModel implements PoolEntity {
   @Prop({ type: String, unique: true, sparse: true })
   address: string;
 
-  @Prop({ type: String })
+  @Prop({ type: String, required: true })
   ownerAddress: string;
 
   @Prop({ type: String })
@@ -88,6 +88,10 @@ export const PoolSchema = SchemaFactory.createForClass(PoolModel);
 /** Search index */
 PoolSchema.index({ address: 'text', name: 'text' }, { background: true });
 /** Sort indexes */
+PoolSchema.index(
+  { ownerAddress: 'asc', baseTokenAddress: 'asc' },
+  { background: true },
+);
 PoolSchema.index({ startTime: 'desc' }, { background: true });
 PoolSchema.index({ createdAt: 'desc' }, { background: true });
 PoolSchema.index({ progressPercent: 'desc' }, { background: true });

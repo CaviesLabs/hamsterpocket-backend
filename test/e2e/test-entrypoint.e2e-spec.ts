@@ -40,3 +40,4 @@ afterEach(function () {
  */
 require('./dummy/dummy.e2e-spec');
 require('./pool/find-pool.e2e-spec');
+require('./portfolio/portfolio.e2e-spec');

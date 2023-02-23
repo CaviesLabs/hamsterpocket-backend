@@ -42,11 +42,11 @@ export class PoolController {
   }
 
   @Post('/mock/generate')
-  generateMock(@Query('ownerAddress') ownerAddress: string) {
+  async generateMock(@Query('ownerAddress') ownerAddress: string) {
     if (this.registry.getConfig().NODE_ENV == 'production') {
       throw new NotImplementedException('API is not supported in production');
     }
 
-    return this.poolMockService.generate(ownerAddress);
+    return await this.poolMockService.generate(ownerAddress);
   }
 }

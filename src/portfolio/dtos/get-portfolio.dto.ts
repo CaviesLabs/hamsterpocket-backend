@@ -1,4 +1,4 @@
-class TopToken {
+export class TopToken {
   symbol: string;
 
   percent: number;

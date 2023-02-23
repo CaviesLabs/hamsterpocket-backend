@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import * as request from 'supertest';
-import { CommonQueryDto } from '../../../src/api-docs/dto/common-query.dto';
 
+import { CommonQueryDto } from '../../../src/api-docs/dto/common-query.dto';
 import {
   FindPoolDto,
   FindPoolSortOption,
@@ -22,7 +22,7 @@ async function getAllPoolsFunc(this: any, { req }: TestCase) {
   // Precondition 2: Existing pools in DB, use mock API for dev
   const createMockPoolResp = await request(app.getHttpServer())
     .post(`/api/pool/mock/generate`)
-    .send({ ownerAddress } as FindPoolDto);
+    .query({ ownerAddress });
   expect(createMockPoolResp.status).to.equal(201);
 
   // Step 1: Call get pools api
@@ -30,7 +30,8 @@ async function getAllPoolsFunc(this: any, { req }: TestCase) {
     .get(`/api/pool`)
     .query({ ...req, ownerAddress });
   expect(findPoolResp.statusCode).to.equal(200);
-  expect(Array.isArray(findPoolResp.body)).is.true;
+  expect(findPoolResp.body).to.be.an('array');
+  expect(findPoolResp.body.length).to.greaterThan(0);
 }
 
 describe('Find pool', function () {
