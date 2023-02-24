@@ -217,18 +217,13 @@ async function bootstrap() {
   /**
    * @dev Extract server configurations.
    */
-  const nodeEnv = registry.getConfig().NODE_ENV;
   const port = registry.getConfig().PORT;
   const host = registry.getConfig().HOST;
 
   /**
    * @dev Start application.
    */
-  if (nodeEnv === 'production') {
-    await app.listen(port, host);
-  } else {
-    await app.listen(port);
-  }
+  await app.listen(port, host);
 
   console.log(`App is running at: ${host}:${port}`);
   return app;
