@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import * as request from 'supertest';
+import { UtilsProvider } from '../../../src/providers/utils.provider';
 
 import { testHelper } from '../test-entrypoint.e2e-spec';
 
@@ -16,6 +17,9 @@ export async function getBalanceSuccessFunc(this: any) {
     .query({ ownerAddress });
   expect(createMockPoolResp.status).to.equal(201);
 
+  // Await a bit for sync price/cal portfolio complete
+  await new UtilsProvider().pause(0.3);
+
   const baseTokenAddress = createMockPoolResp.body.baseTokenAddress;
 
   // Step 1: Call API with ownerAddress & baseTokenAddress
@@ -27,6 +31,7 @@ export async function getBalanceSuccessFunc(this: any) {
   expect(getBalanceResp.body.totalPoolsBalanceValue).to.be.a('number');
   expect(getBalanceResp.body.topTokens).to.be.an('array');
   expect(getBalanceResp.body.topTokens.length).to.greaterThan(0);
+  console.log(getBalanceResp.body);
 }
 
 describe('Get portfolio balance', function () {

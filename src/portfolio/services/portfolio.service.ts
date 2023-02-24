@@ -6,7 +6,7 @@ import {
   UserTokenDocument,
   UserTokenModel,
 } from '../../orm/model/user-token.model';
-import { NotFoundException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import {
   ListUserTokenDto,
   UserTokenWithAdditionView,
@@ -14,6 +14,10 @@ import {
 import { CommonQueryDto } from '../../api-docs/dto/common-query.dto';
 import { UserTokenEntity } from '../entities/user-token.entity';
 import { PortfolioView, TopToken } from '../dtos/get-portfolio.dto';
+import {
+  WhitelistDocument,
+  WhitelistModel,
+} from '../../orm/model/whitelist.model';
 
 export class PortfolioService {
   constructor(
@@ -21,14 +25,38 @@ export class PortfolioService {
     private readonly poolRepo: Model<PoolDocument>,
     @InjectModel(UserTokenModel.name)
     private readonly userTokenRepo: Model<UserTokenDocument>,
+    @InjectModel(WhitelistModel.name)
+    private readonly whitelistRepo: Model<WhitelistDocument>,
   ) {}
 
-  async updateUserToken(ownerAddress: string, targetTokenAddress: string) {
-    /** Calculate token total amount of all pools, expect only 1 result */
-    const userTokens = await this.poolRepo.aggregate<UserTokenModel>([
+  async updateUserToken(ownerAddress: string, tokenAddress: string) {
+    /** Calculate base token total amount of all pools, expect only 1 ownerAddress/tokenAddress result */
+    const [userBaseToken] = await this.poolRepo.aggregate<UserTokenEntity>([
+      { $match: { ownerAddress, baseTokenAddress: tokenAddress } },
       {
-        $match: { ownerAddress, targetTokenAddress },
+        $group: {
+          _id: {
+            ownerAddress: '$ownerAddress',
+            baseTokenAddress: '$baseTokenAddress',
+          },
+          total: {
+            $sum: '$currentBaseToken',
+          },
+        },
       },
+      {
+        $project: {
+          ownerAddress: '$_id.ownerAddress',
+          tokenAddress: '$_id.baseTokenAddress',
+          total: 1,
+        },
+      },
+      { $project: { _id: 0 } },
+    ]);
+
+    /** Calculate target token total amount of all pools, expect only 1 ownerAddress/tokenAddress result */
+    const [userTargetToken] = await this.poolRepo.aggregate<UserTokenEntity>([
+      { $match: { ownerAddress, targetTokenAddress: tokenAddress } },
       {
         $group: {
           _id: {
@@ -44,19 +72,25 @@ export class PortfolioService {
         $project: {
           ownerAddress: '$_id.ownerAddress',
           tokenAddress: '$_id.targetTokenAddress',
+          total: 1,
         },
       },
       { $project: { _id: 0 } },
     ]);
-
-    if (userTokens.length == 0) {
+    if (!userBaseToken && !userTargetToken) {
       throw new NotFoundException('USER_TOKEN_NOT_FOUND');
     }
 
+    const userTokenSummary: UserTokenEntity = {
+      ownerAddress,
+      tokenAddress,
+      total: (userBaseToken?.total || 0) + (userTargetToken?.total || 0),
+    };
+
     /** Perform update */
     return await this.userTokenRepo.updateOne(
-      { ownerAddress, tokenAddress: targetTokenAddress },
-      userTokens[0],
+      { ownerAddress, tokenAddress },
+      userTokenSummary,
       { upsert: true },
     );
   }
@@ -89,13 +123,10 @@ export class PortfolioService {
       {
         $project: {
           whitelist_docs: 0,
-          tokenName: '$whitelist_docs[0].name',
-          tokenSymbol: '$whitelist_docs[0].symbol',
+          tokenName: { $first: '$whitelist_docs.name' },
+          tokenSymbol: { $first: '$whitelist_docs.symbol' },
           value: {
-            $multiply: [
-              '$total',
-              { $arrayElemAt: ['$whitelist_docs.estimatedValue', 0] },
-            ],
+            $multiply: ['$total', { $first: '$whitelist_docs.estimatedValue' }],
           },
         },
       },
@@ -107,81 +138,106 @@ export class PortfolioService {
     );
   }
 
-  async getBalance(ownerAddress: string, baseTokenAddress: string) {
-    const portfolios = await this.poolRepo.aggregate<PortfolioView>([
-      { $match: { ownerAddress, baseTokenAddress } },
-      {
-        $group: {
-          _id: {
-            ownerAddress: '$ownerAddress',
-            baseTokenAddress: '$baseTokenAddress',
-          },
-          totalPoolsBalance: { $sum: '$remainingBaseTokenBalance' },
-        },
-      },
-      {
-        $lookup: {
-          from: 'whitelists',
-          as: 'whitelist_docs',
-          localField: '_id.baseTokenAddress',
-          foreignField: 'address',
-        },
-      },
-      {
-        $project: {
-          whitelist_docs: 1,
-          totalPoolsBalance: 1,
-          totalPoolsBalanceValue: {
-            $multiply: [
-              '$totalPoolsBalance',
-              { $arrayElemAt: ['$whitelist_docs.estimatedValue', 0] },
-            ],
-          },
-        },
-      },
-      {
-        $project: { _id: 0, whitelist_docs: 0 },
-      },
-    ]);
-
-    const portfolio = portfolios[0];
-
-    portfolio.topTokens = await this.userTokenRepo.aggregate<TopToken>([
+  private async getPortfolioTotalEstimatedValue(
+    ownerAddress: string,
+  ): Promise<number> {
+    const portfolioValue = await this.userTokenRepo.aggregate<{
+      totalValue: number;
+    }>([
       { $match: { ownerAddress } },
       {
+        $group: {
+          _id: { tokenAddress: '$tokenAddress' },
+          totalToken: { $sum: '$total' },
+        },
+      },
+      {
         $lookup: {
           from: 'whitelists',
           as: 'whitelist_docs',
-          localField: 'tokenAddress',
+          localField: '_id.tokenAddress',
           foreignField: 'address',
         },
       },
-      // TODO: fix $lookup no data
       {
         $project: {
-          symbol: '$whitelist_docs[0].symbol',
-          percent: {
-            $divide: [
-              {
-                $multiply: [
-                  '$total',
-                  { $arrayElemAt: ['$whitelist_docs.estimatedValue', 0] },
-                ],
-              },
-              portfolio.totalPoolsBalanceValue,
+          totalTokenValue: {
+            $multiply: [
+              '$totalToken',
+              { $first: '$whitelist_docs.estimatedValue' },
             ],
           },
         },
       },
       {
-        $project: { whitelist_docs: 0 },
+        $group: {
+          _id: { ownerAddress: '$ownerAddress' },
+          totalValue: { $sum: '$totalTokenValue' },
+        },
       },
-      { $sort: { percent: -1 } },
-      { $limit: 10 },
     ]);
 
-    console.log('getBalance:portfolio', portfolio);
+    return portfolioValue[0].totalValue;
+  }
 
-    return portfolio;
+  async getBalance(
+    ownerAddress: string,
+    baseTokenAddress: string,
+  ): Promise<PortfolioView> {
+    /** Fetch the price */
+    const tokenData = await this.whitelistRepo.findOne({
+      address: baseTokenAddress,
+    });
+    if (!tokenData) {
+      throw new BadRequestException('UNSUPPORTED_TOKEN');
+    }
+
+    /** Get the portfolio total value */
+    const totalValue = await this.getPortfolioTotalEstimatedValue(ownerAddress);
+
+    /** Query top tokens if exists */
+    let topTokens: TopToken[] = [];
+    if (totalValue != 0) {
+      topTokens = await this.userTokenRepo.aggregate<TopToken>([
+        { $match: { ownerAddress } },
+        {
+          $lookup: {
+            from: 'whitelists',
+            as: 'whitelist_docs',
+            localField: 'tokenAddress',
+            foreignField: 'address',
+          },
+        },
+        {
+          $project: {
+            symbol: { $first: '$whitelist_docs.symbol' },
+            total: '$total',
+            price: { $first: '$whitelist_docs.estimatedValue' },
+            percent: {
+              $divide: [
+                {
+                  $multiply: [
+                    '$total',
+                    { $first: '$whitelist_docs.estimatedValue' },
+                  ],
+                },
+                totalValue,
+              ],
+            },
+          },
+        },
+        {
+          $project: { whitelist_docs: 0 },
+        },
+        { $sort: { percent: -1 } },
+        { $limit: 10 },
+      ]);
+    }
+
+    return {
+      totalPoolsBalance: totalValue / tokenData.estimatedValue,
+      totalPoolsBalanceValue: totalValue,
+      topTokens,
+    };
   }
 }

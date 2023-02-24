@@ -24,6 +24,15 @@ export const defaultWhitelists: Omit<WhitelistEntity, 'id'>[] = [
     symbol: 'BONK',
   },
   {
+    coinGeckoId: 'blockasset',
+    entityType: EntityType.TOKEN,
+    address: 'NFTUkR4u7wKxy9QLaX2TGvd9oZSWoMo4jqSJqdMb7Nk',
+    name: 'Blockasset',
+    image:
+      'https://assets.coingecko.com/coins/images/21332/large/Blockasset-Logo-Symbol.png?1648442722',
+    symbol: 'BLOCK',
+  },
+  {
     coinGeckoId: 'usd-coin',
     entityType: EntityType.TOKEN,
     address: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
