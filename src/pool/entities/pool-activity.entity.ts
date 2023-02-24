@@ -1,4 +1,4 @@
-import { ObjectId } from 'mongoose';
+import { Types } from 'mongoose';
 
 export enum PoolActivityStatus {
   SUCCESSFUL = 'SUCCESSFUL',
@@ -13,7 +13,7 @@ export enum ActivityType {
 }
 
 export class PoolActivityEntity {
-  poolId: ObjectId;
+  poolId: Types.ObjectId;
 
   status: PoolActivityStatus;
 
@@ -26,4 +26,6 @@ export class PoolActivityEntity {
   transactionId: string;
 
   memo: string;
+
+  createdAt: Date;
 }

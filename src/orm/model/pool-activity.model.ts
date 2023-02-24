@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
-import { ObjectId, Types } from 'mongoose';
+import { Types } from 'mongoose';
 
 import {
   ActivityType,
@@ -13,7 +13,7 @@ import { BaseModel } from '../base.model';
 @Schema({ collection: 'pool_activities', timestamps: true })
 export class PoolActivityModel extends BaseModel implements PoolActivityEntity {
   @Prop({ type: Types.ObjectId })
-  poolId: ObjectId;
+  poolId: Types.ObjectId;
 
   @Prop({ type: String, enum: PoolActivityStatus })
   status: PoolActivityStatus;
