@@ -141,7 +141,7 @@ export class PortfolioService {
   private async getPortfolioTotalEstimatedValue(
     ownerAddress: string,
   ): Promise<number> {
-    const portfolioValue = await this.userTokenRepo.aggregate<{
+    const [portfolioValue] = await this.userTokenRepo.aggregate<{
       totalValue: number;
     }>([
       { $match: { ownerAddress } },
@@ -176,8 +176,8 @@ export class PortfolioService {
         },
       },
     ]);
-
-    return portfolioValue[0].totalValue;
+    /** In new created account, portfolioValue is undefined */
+    return portfolioValue?.totalValue || 0;
   }
 
   async getBalance(
