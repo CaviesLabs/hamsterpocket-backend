@@ -64,8 +64,12 @@ export class PoolService {
     return await this.poolRepo.aggregate<PoolModel>(stages);
   }
 
-  createEmpty() {
-    return this.poolRepo.create({});
+  async createEmpty() {
+    const [doc] = await this.poolRepo.create([{}], {
+      validateBeforeSave: false,
+    });
+
+    return doc;
   }
 
   async executeBuyToken(poolId: string) {
