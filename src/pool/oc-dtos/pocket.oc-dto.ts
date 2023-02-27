@@ -85,8 +85,9 @@ export function mapBuyCondition({
 
 export function mapStopConditions(
   ocConditions: OcStopConditions,
-): StopConditions {
-  const conditions: StopConditions = {};
+): Pick<PoolEntity, 'stopConditions' | 'mainProgressBy'> {
+  const stopConditions: StopConditions = {};
+  let mainProgressBy: MainProgressBy;
   for (const {
     baseTokenAmountReach,
     targetTokenAmountReach,
@@ -94,19 +95,34 @@ export function mapStopConditions(
     endTimeReach,
   } of ocConditions) {
     if (baseTokenAmountReach) {
-      conditions.baseTokenReach = baseTokenAmountReach.value.toNumber();
+      stopConditions.baseTokenReach = baseTokenAmountReach.value.toNumber();
+      if (baseTokenAmountReach.is_primary) {
+        mainProgressBy = MainProgressBy.BASE_TOKEN;
+      }
     }
     if (targetTokenAmountReach) {
-      conditions.targetTokenReach = targetTokenAmountReach.value.toNumber();
+      stopConditions.targetTokenReach = targetTokenAmountReach.value.toNumber();
+      if (targetTokenAmountReach.is_primary) {
+        mainProgressBy = MainProgressBy.TARGET_TOKEN;
+      }
     }
     if (batchAmountReach) {
-      conditions.batchAmountReach = batchAmountReach.value.toNumber();
+      stopConditions.batchAmountReach = batchAmountReach.value.toNumber();
+      if (batchAmountReach.is_primary) {
+        mainProgressBy = MainProgressBy.BATCH_AMOUNT;
+      }
     }
     if (endTimeReach) {
-      conditions.endTime = new Date(endTimeReach.value.toNumber());
+      stopConditions.endTime = new Date(endTimeReach.value.toNumber());
+      if (endTimeReach.is_primary) {
+        mainProgressBy = MainProgressBy.END_TIME;
+      }
     }
   }
-  return conditions;
+  return {
+    stopConditions,
+    mainProgressBy,
+  };
 }
 
 export function convertToPoolEntity(
@@ -128,13 +144,12 @@ export function convertToPoolEntity(
       hours: pocketData.frequency.hours.toNumber(),
     },
     buyCondition: mapBuyCondition(pocketData.buyCondition),
-    stopConditions: mapStopConditions(pocketData.stopConditions),
+    ...mapStopConditions(pocketData.stopConditions),
     currentBaseToken:
       pocketData.totalDepositAmount.toNumber() -
       pocketData.baseTokenBalance.toNumber(),
     currentBatchAmount: pocketData.executedBatchAmount.toNumber(),
     currentTargetToken: pocketData.targetTokenBalance.toNumber(),
     remainingBaseTokenBalance: pocketData.baseTokenBalance.toNumber(),
-    mainProgressBy: MainProgressBy.BASE_TOKEN,
   } as Partial<PoolEntity>);
 }

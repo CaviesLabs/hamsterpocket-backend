@@ -825,6 +825,10 @@ export type Pocket = {
             name: 'EndTimeReach';
             fields: [
               {
+                name: 'is_primary';
+                type: 'bool';
+              },
+              {
                 name: 'value';
                 type: 'u64';
               },
@@ -833,6 +837,10 @@ export type Pocket = {
           {
             name: 'BaseTokenAmountReach';
             fields: [
+              {
+                name: 'is_primary';
+                type: 'bool';
+              },
               {
                 name: 'value';
                 type: 'u64';
@@ -843,6 +851,10 @@ export type Pocket = {
             name: 'TargetTokenAmountReach';
             fields: [
               {
+                name: 'is_primary';
+                type: 'bool';
+              },
+              {
                 name: 'value';
                 type: 'u64';
               },
@@ -851,6 +863,10 @@ export type Pocket = {
           {
             name: 'BatchAmountReach';
             fields: [
+              {
+                name: 'is_primary';
+                type: 'bool';
+              },
               {
                 name: 'value';
                 type: 'u64';
@@ -870,6 +886,26 @@ export type Pocket = {
           },
           {
             name: 'Sell';
+          },
+        ];
+      };
+    },
+    {
+      name: 'MainProgressBy';
+      type: {
+        kind: 'enum';
+        variants: [
+          {
+            name: 'EndTimeReach';
+          },
+          {
+            name: 'BaseTokenAmountReach';
+          },
+          {
+            name: 'TargetTokenAmountReach';
+          },
+          {
+            name: 'BatchAmountReach';
           },
         ];
       };
@@ -1907,6 +1943,10 @@ export const IDL: Pocket = {
             name: 'EndTimeReach',
             fields: [
               {
+                name: 'is_primary',
+                type: 'bool',
+              },
+              {
                 name: 'value',
                 type: 'u64',
               },
@@ -1915,6 +1955,10 @@ export const IDL: Pocket = {
           {
             name: 'BaseTokenAmountReach',
             fields: [
+              {
+                name: 'is_primary',
+                type: 'bool',
+              },
               {
                 name: 'value',
                 type: 'u64',
@@ -1925,6 +1969,10 @@ export const IDL: Pocket = {
             name: 'TargetTokenAmountReach',
             fields: [
               {
+                name: 'is_primary',
+                type: 'bool',
+              },
+              {
                 name: 'value',
                 type: 'u64',
               },
@@ -1933,6 +1981,10 @@ export const IDL: Pocket = {
           {
             name: 'BatchAmountReach',
             fields: [
+              {
+                name: 'is_primary',
+                type: 'bool',
+              },
               {
                 name: 'value',
                 type: 'u64',
@@ -1952,6 +2004,26 @@ export const IDL: Pocket = {
           },
           {
             name: 'Sell',
+          },
+        ],
+      },
+    },
+    {
+      name: 'MainProgressBy',
+      type: {
+        kind: 'enum',
+        variants: [
+          {
+            name: 'EndTimeReach',
+          },
+          {
+            name: 'BaseTokenAmountReach',
+          },
+          {
+            name: 'TargetTokenAmountReach',
+          },
+          {
+            name: 'BatchAmountReach',
           },
         ],
       },
