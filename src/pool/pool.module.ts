@@ -3,7 +3,7 @@ import { MqModule } from '../mq/mq.module';
 import { OrmModule } from '../orm/orm.module';
 import { RegistryProvider } from '../providers/registry.provider';
 import { PoolController } from './controllers/pool.controller';
-import { SolanaPoolProvider } from './providers/solana-pool.provider';
+import { SolanaPoolProvider } from '../providers/pool-program/solana-pool.provider';
 import { PoolProcessor } from './queues/pool.processor';
 import { PoolMockService } from './services/pool-mock.service';
 import { PoolService } from './services/pool.service';

@@ -9,5 +9,5 @@
   "HOST_URI": "https://hamsterbox.xyz/profile",
   "SOLSCAN_API_KEY": "test",
   "SOLANA_CLUSTER": "devnet",
-  "SWAP_PROGRAM_ADDRESS": "EdeRcNsVGU1s1NXZZo8FhLD8iePxvoUCdbvwVGnj778f"
+  "POCKET_PROGRAM_ADDRESS": "DL1BQwRmN4Ye4fsmDnPipNrm1XU24x8yDU7c5Ltsqvvc"
 }

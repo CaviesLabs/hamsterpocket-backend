@@ -15,7 +15,7 @@ import {
 import { PoolDocument, PoolModel } from '../../orm/model/pool.model';
 import { Timer } from '../../providers/utils.provider';
 import { PoolEntity, PoolStatus } from '../entities/pool.entity';
-import { SolanaPoolProvider } from '../providers/solana-pool.provider';
+import { SolanaPoolProvider } from '../../providers/pool-program/solana-pool.provider';
 
 @Injectable()
 export class SyncPoolService {
@@ -97,19 +97,26 @@ export class SyncPoolService {
     );
     const syncedPools = await Promise.all(
       poolIds.map(async ({ id, status }) => {
-        /** Fetch pool latest update */
-        const syncedPool = await this.onChainPoolProvider.fetchFromContract(id);
+        try {
+          /** Fetch pool latest update */
+          const syncedPool = await this.onChainPoolProvider.fetchFromContract(
+            id,
+          );
 
-        /** Publish a job for new pool */
-        if (status === PoolStatus.CREATED) {
-          await this.scheduleJob(syncedPool);
+          /** Publish a job for new pool */
+          if (status === PoolStatus.CREATED) {
+            await this.scheduleJob(syncedPool);
+          }
+
+          return plainToInstance(PoolModel, syncedPool);
+        } catch (e) {
+          console.error(e);
+          return null;
         }
-
-        return plainToInstance(PoolModel, syncedPool);
       }),
     );
 
-    await this.poolRepo.bulkSave(syncedPools);
+    await this.poolRepo.bulkSave(syncedPools.filter((pool) => !!pool));
 
     timer.stop();
   }

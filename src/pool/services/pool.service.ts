@@ -4,9 +4,9 @@ import { FilterQuery, Model, PipelineStage } from 'mongoose';
 import { CommonQueryDto } from '../../api-docs/dto/common-query.dto';
 
 import { PoolModel, PoolDocument } from '../../orm/model/pool.model';
+import { SolanaPoolProvider } from '../../providers/pool-program/solana-pool.provider';
 import { FindPoolDto, FindPoolSortOption } from '../dtos/find-pool.dto';
 import { PoolEntity } from '../entities/pool.entity';
-import { SolanaPoolProvider } from '../providers/solana-pool.provider';
 
 @Injectable()
 export class PoolService {

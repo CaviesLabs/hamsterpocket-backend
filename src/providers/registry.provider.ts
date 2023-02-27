@@ -83,7 +83,7 @@ export class SystemConfig {
 
   @IsString()
   @IsNotEmpty()
-  SWAP_PROGRAM_ADDRESS: string;
+  POCKET_PROGRAM_ADDRESS: string;
 
   @IsString()
   @IsNotEmpty()

@@ -9,5 +9,5 @@
   "HOST_URI": "",
   "SOLSCAN_API_KEY": "",
   "SOLANA_CLUSTER": "devnet",
-  "SWAP_PROGRAM_ADDRESS": ""
+  "POCKET_PROGRAM_ADDRESS": ""
 }

@@ -6,8 +6,6 @@ export enum EntityType {
 export class WhitelistEntity {
   id: string;
 
-  coinGeckoId: string;
-
   address: string;
 
   entityType: EntityType;

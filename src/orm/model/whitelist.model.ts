@@ -9,10 +9,7 @@ import { BaseModel } from '../base.model';
 export class WhitelistModel extends BaseModel implements WhitelistEntity {
   id: string;
 
-  @Prop({ type: String })
-  coinGeckoId: string;
-
-  @Prop({ type: String })
+  @Prop({ type: String, unique: true })
   address: string;
 
   @Prop({ type: String, enum: EntityType })

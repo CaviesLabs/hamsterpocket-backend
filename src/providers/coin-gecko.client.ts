@@ -5,7 +5,7 @@ import { NetworkProvider } from './network.provider';
 type Fiat = 'eur' | 'usd' | 'vnd';
 
 type SimplePrice = {
-  [key: string]: Record<Fiat, number>;
+  [mintAddress: string]: Record<Fiat, number>;
 };
 
 @Injectable()
@@ -14,13 +14,17 @@ export class CoinGeckoClient {
 
   constructor(private readonly networkProvider: NetworkProvider) {}
 
-  async getPriceInCurrencies(ids: string[], inCurrencies: Fiat[]) {
+  async getPriceInCurrencies(
+    mintAddresses: string[],
+    fiats: Fiat[],
+    platform = 'solana',
+  ) {
     const query = Qs.stringify({
-      ids: ids.join(','),
-      vs_currencies: inCurrencies.join(','),
+      contract_addresses: mintAddresses.join(','),
+      vs_currencies: fiats.join(','),
     });
     return await this.networkProvider.request<SimplePrice>(
-      `${this.host}/v3/simple/price?${query}`,
+      `${this.host}/v3/simple/token_price/${platform}?${query}`,
       { method: 'GET' },
     );
   }
