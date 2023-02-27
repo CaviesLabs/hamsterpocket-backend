@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   NotImplementedException,
+  Param,
   Post,
   Query,
 } from '@nestjs/common';
@@ -19,6 +20,7 @@ import {
 } from '../entities/pool-activity.entity';
 import { PoolMockService } from '../services/pool-mock.service';
 import { PoolService } from '../services/pool.service';
+import { SyncPoolService } from '../services/sync-pool.service';
 
 @Controller('pool')
 @ApiTags('pool')
@@ -26,6 +28,7 @@ export class PoolController {
   constructor(
     private readonly registry: RegistryProvider,
     private readonly poolService: PoolService,
+    private readonly syncPoolService: SyncPoolService,
     private readonly poolMockService: PoolMockService,
   ) {}
 
@@ -47,6 +50,11 @@ export class PoolController {
   @Post()
   createEmpty() {
     return this.poolService.createEmpty();
+  }
+
+  @Post('/:id/sync')
+  syncOne(@Param('id') id: string) {
+    return this.syncPoolService.syncPoolById(id);
   }
 
   @Get('/activity')
