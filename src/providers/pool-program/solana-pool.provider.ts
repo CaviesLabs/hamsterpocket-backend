@@ -65,6 +65,7 @@ export class SolanaPoolProvider implements OnModuleInit {
     );
 
     const pocketData = await this.program.account.pocket.fetch(pocketAccount);
+
     const pool = convertToPoolEntity(pocketAccount, pocketData);
     calculateProgressPercent.bind(pool)();
 

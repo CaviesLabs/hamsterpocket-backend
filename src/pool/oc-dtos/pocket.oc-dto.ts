@@ -33,46 +33,23 @@ export function mapBuyCondition({
   condition,
   tokenAddress,
 }: OcBuyCondition): BuyCondition {
-  let type: PriceConditionType;
   const value: number[] = [];
   const statusKey = Object.keys(condition)[0];
-  switch (statusKey) {
-    case 'gT':
-      type = PriceConditionType.GT;
-      value.push(condition.gT.value.toNumber());
+  const type = statusKey.toUpperCase() as PriceConditionType;
+  switch (type) {
+    case PriceConditionType.GT:
+    case PriceConditionType.GTE:
+    case PriceConditionType.LT:
+    case PriceConditionType.LTE:
+    case PriceConditionType.EQ:
+    case PriceConditionType.NEQ:
+      value.push(condition[statusKey].value.toNumber());
       break;
-    case 'gTE':
-      type = PriceConditionType.GTE;
-      value.push(condition.gTE.value.toNumber());
-      break;
-    case 'lT':
-      type = PriceConditionType.LT;
-      value.push(condition.lT.value.toNumber());
-      break;
-    case 'lTE':
-      type = PriceConditionType.LTE;
-      value.push(condition.lTE.value.toNumber());
-      break;
-    case 'eQ':
-      type = PriceConditionType.EQ;
-      value.push(condition.eQ.value.toNumber());
-      break;
-    case 'nEQ':
-      type = PriceConditionType.NEQ;
-      value.push(condition.nEQ.value.toNumber());
-      break;
-    case 'bW':
-      type = PriceConditionType.BW;
+    case PriceConditionType.BW:
+    case PriceConditionType.NBW:
       value.push(
-        condition.bW.from_value.toNumber(),
-        condition.bW.to_value.toNumber(),
-      );
-      break;
-    case 'nBW':
-      type = PriceConditionType.NBW;
-      value.push(
-        condition.nBW.from_value.toNumber(),
-        condition.nBW.to_value.toNumber(),
+        condition[statusKey].from_value.toNumber(),
+        condition[statusKey].to_value.toNumber(),
       );
       break;
   }
