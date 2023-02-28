@@ -5,7 +5,7 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { Queue } from 'bull';
 import { plainToInstance } from 'class-transformer';
 import { Duration } from 'luxon';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
 import {
   POOL_QUEUE,
@@ -67,9 +67,13 @@ export class SyncPoolService {
       await this.scheduleJob(syncedPool);
     }
 
-    await this.poolRepo.updateOne({ id: syncedPool.id }, syncedPool, {
-      upsert: true,
-    });
+    await this.poolRepo.updateOne(
+      { _id: new Types.ObjectId(syncedPool.id) },
+      syncedPool,
+      {
+        upsert: true,
+      },
+    );
   }
 
   @Cron(CronExpression.EVERY_5_MINUTES)
