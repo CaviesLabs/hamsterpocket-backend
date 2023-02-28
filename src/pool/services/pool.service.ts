@@ -73,7 +73,8 @@ export class PoolService {
   }
 
   async executeBuyToken(poolId: string) {
-    await this.onChainPoolProvider.executeBuyToken(poolId);
+    const pool = await this.poolRepo.findById(poolId);
+    await this.onChainPoolProvider.executeBuyToken(poolId, pool.ownerAddress);
     const syncedPool = await this.onChainPoolProvider.fetchFromContract(poolId);
     await this.poolRepo.updateOne(
       { _id: new Types.ObjectId(poolId) },

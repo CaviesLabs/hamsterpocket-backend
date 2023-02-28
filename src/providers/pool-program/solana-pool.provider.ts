@@ -72,11 +72,17 @@ export class SolanaPoolProvider implements OnModuleInit {
     return pool;
   }
 
-  async executeBuyToken(poolId: string) {
-    console.log(poolId);
-
-    /**
-     * TODO: call Contract IDL to execute buy Token
-     */
+  async executeBuyToken(poolId: string, ownerAddress: string) {
+    const [pocketAccount] = PublicKey.findProgramAddressSync(
+      [
+        anchor.utils.bytes.utf8.encode('SEED::POCKET::POCKET_SEED'),
+        anchor.utils.bytes.utf8.encode(poolId),
+      ],
+      this.program.programId,
+    );
+    await this.program.methods
+      .executeSwap()
+      .accounts({ signer: ownerAddress, pocket: pocketAccount })
+      .rpc();
   }
 }
