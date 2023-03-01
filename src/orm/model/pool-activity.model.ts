@@ -10,7 +10,7 @@ import {
 import { BaseModel } from '../base.model';
 
 @Injectable()
-@Schema({ collection: 'pool_activities', timestamps: true })
+@Schema({ collection: 'pool_activities', timestamps: false })
 export class PoolActivityModel extends BaseModel implements PoolActivityEntity {
   @Prop({ type: Types.ObjectId })
   poolId: Types.ObjectId;

@@ -579,6 +579,30 @@ export type Pocket = {
       };
     },
     {
+      name: 'ExchangeRate';
+      type: {
+        kind: 'struct';
+        fields: [
+          {
+            name: 'rate';
+            type: 'u64';
+          },
+          {
+            name: 'fromDecimals';
+            type: 'u8';
+          },
+          {
+            name: 'quoteDecimals';
+            type: 'u8';
+          },
+          {
+            name: 'strict';
+            type: 'bool';
+          },
+        ];
+      };
+    },
+    {
       name: 'MintInfo';
       type: {
         kind: 'struct';
@@ -628,6 +652,37 @@ export type Pocket = {
           {
             name: 'hours';
             type: 'u64';
+          },
+        ];
+      };
+    },
+    {
+      name: 'Side';
+      type: {
+        kind: 'enum';
+        variants: [
+          {
+            name: 'Bid';
+          },
+          {
+            name: 'Ask';
+          },
+        ];
+      };
+    },
+    {
+      name: 'ErrorCode';
+      type: {
+        kind: 'enum';
+        variants: [
+          {
+            name: 'SwapTokensCannotMatch';
+          },
+          {
+            name: 'SlippageExceeded';
+          },
+          {
+            name: 'ZeroSwap';
           },
         ];
       };
@@ -976,6 +1031,63 @@ export type Pocket = {
         {
           name: 'targetTokenAmount';
           type: 'u64';
+          index: false;
+        },
+      ];
+    },
+    {
+      name: 'DidSwap';
+      fields: [
+        {
+          name: 'givenAmount';
+          type: 'u64';
+          index: false;
+        },
+        {
+          name: 'minExchangeRate';
+          type: {
+            defined: 'ExchangeRate';
+          };
+          index: false;
+        },
+        {
+          name: 'fromAmount';
+          type: 'u64';
+          index: false;
+        },
+        {
+          name: 'toAmount';
+          type: 'u64';
+          index: false;
+        },
+        {
+          name: 'quoteAmount';
+          type: 'u64';
+          index: false;
+        },
+        {
+          name: 'spillAmount';
+          type: 'u64';
+          index: false;
+        },
+        {
+          name: 'fromMint';
+          type: 'publicKey';
+          index: false;
+        },
+        {
+          name: 'toMint';
+          type: 'publicKey';
+          index: false;
+        },
+        {
+          name: 'quoteMint';
+          type: 'publicKey';
+          index: false;
+        },
+        {
+          name: 'authority';
+          type: 'publicKey';
           index: false;
         },
       ];
@@ -1601,6 +1713,30 @@ export const IDL: Pocket = {
       },
     },
     {
+      name: 'ExchangeRate',
+      type: {
+        kind: 'struct',
+        fields: [
+          {
+            name: 'rate',
+            type: 'u64',
+          },
+          {
+            name: 'fromDecimals',
+            type: 'u8',
+          },
+          {
+            name: 'quoteDecimals',
+            type: 'u8',
+          },
+          {
+            name: 'strict',
+            type: 'bool',
+          },
+        ],
+      },
+    },
+    {
       name: 'MintInfo',
       type: {
         kind: 'struct',
@@ -1650,6 +1786,37 @@ export const IDL: Pocket = {
           {
             name: 'hours',
             type: 'u64',
+          },
+        ],
+      },
+    },
+    {
+      name: 'Side',
+      type: {
+        kind: 'enum',
+        variants: [
+          {
+            name: 'Bid',
+          },
+          {
+            name: 'Ask',
+          },
+        ],
+      },
+    },
+    {
+      name: 'ErrorCode',
+      type: {
+        kind: 'enum',
+        variants: [
+          {
+            name: 'SwapTokensCannotMatch',
+          },
+          {
+            name: 'SlippageExceeded',
+          },
+          {
+            name: 'ZeroSwap',
           },
         ],
       },
@@ -1998,6 +2165,63 @@ export const IDL: Pocket = {
         {
           name: 'targetTokenAmount',
           type: 'u64',
+          index: false,
+        },
+      ],
+    },
+    {
+      name: 'DidSwap',
+      fields: [
+        {
+          name: 'givenAmount',
+          type: 'u64',
+          index: false,
+        },
+        {
+          name: 'minExchangeRate',
+          type: {
+            defined: 'ExchangeRate',
+          },
+          index: false,
+        },
+        {
+          name: 'fromAmount',
+          type: 'u64',
+          index: false,
+        },
+        {
+          name: 'toAmount',
+          type: 'u64',
+          index: false,
+        },
+        {
+          name: 'quoteAmount',
+          type: 'u64',
+          index: false,
+        },
+        {
+          name: 'spillAmount',
+          type: 'u64',
+          index: false,
+        },
+        {
+          name: 'fromMint',
+          type: 'publicKey',
+          index: false,
+        },
+        {
+          name: 'toMint',
+          type: 'publicKey',
+          index: false,
+        },
+        {
+          name: 'quoteMint',
+          type: 'publicKey',
+          index: false,
+        },
+        {
+          name: 'authority',
+          type: 'publicKey',
           index: false,
         },
       ],

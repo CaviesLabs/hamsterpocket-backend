@@ -70,7 +70,7 @@ export class PoolController {
         status: PoolActivityStatus.SUCCESSFUL,
         transactionId:
           '469qjjQfqYKdYiogKrCGdgBSWT2Ufi1pXdUxVFZj22roEvLswbmCctySyMhvPnjqoaUkFw6hfr3Tx6zohwrtLDh3',
-        type: ActivityType.DEPOSIT,
+        type: ActivityType.DEPOSITED,
         memo: '',
         createdAt: new Date(),
       },
@@ -81,7 +81,7 @@ export class PoolController {
         status: PoolActivityStatus.SUCCESSFUL,
         transactionId:
           '469qjjQfqYKdYiogKrCGdgBSWT2Ufi1pXdUxVFZj22roEvLswbmCctySyMhvPnjqoaUkFw6hfr3Tx6zohwrtLDh3',
-        type: ActivityType.SWAP,
+        type: ActivityType.SWAPPED,
         memo: '',
         createdAt: new Date(),
       },
@@ -103,7 +103,7 @@ export class PoolController {
         status: PoolActivityStatus.FAILED,
         transactionId:
           '469qjjQfqYKdYiogKrCGdgBSWT2Ufi1pXdUxVFZj22roEvLswbmCctySyMhvPnjqoaUkFw6hfr3Tx6zohwrtLDh3',
-        type: ActivityType.SWAP,
+        type: ActivityType.SWAPPED,
         memo: '',
         createdAt: new Date(),
       },
@@ -114,7 +114,7 @@ export class PoolController {
         status: PoolActivityStatus.SUCCESSFUL,
         transactionId:
           '469qjjQfqYKdYiogKrCGdgBSWT2Ufi1pXdUxVFZj22roEvLswbmCctySyMhvPnjqoaUkFw6hfr3Tx6zohwrtLDh3',
-        type: ActivityType.WITHDRAW,
+        type: ActivityType.WITHDRAWN,
         memo: '',
         createdAt: new Date(),
       },

@@ -10,10 +10,22 @@ import { IDL, Pocket } from './pocket.idl';
 import { RegistryProvider } from '../registry.provider';
 import { convertToPoolEntity } from '../../pool/oc-dtos/pocket.oc-dto';
 import NodeWallet from '@project-serum/anchor/dist/cjs/nodewallet';
+import { BorshCoder, EventParser } from '@project-serum/anchor';
+import { OcEventName, OcPocketEvent } from './pocket.type';
 
 export const SOLANA_DEVNET_RPC_ENDPOINT = 'https://api.devnet.solana.com';
 export const SOLANA_MAINNET_RPC_RPC_ENDPOINT =
   'https://boldest-few-field.solana-mainnet.quiknode.pro/0ffa9f9f5e9141aa33a030081b78fdfe40bfbae6/';
+
+type EventWithTransaction = {
+  eventName: OcEventName;
+
+  eventData: OcPocketEvent;
+
+  transaction: anchor.web3.ParsedTransaction;
+
+  createdAt: Date;
+};
 
 @Injectable()
 export class SolanaPoolProvider implements OnModuleInit {
@@ -75,6 +87,52 @@ export class SolanaPoolProvider implements OnModuleInit {
     return pool;
   }
 
+  async fetchActivities(
+    poolId: string,
+    limit: number,
+    lastTransaction?: string,
+  ) {
+    const [pocketAccount] = PublicKey.findProgramAddressSync(
+      [
+        anchor.utils.bytes.utf8.encode('SEED::POCKET::POCKET_SEED'),
+        anchor.utils.bytes.utf8.encode(poolId),
+      ],
+      this.program.programId,
+    );
+
+    const transactions =
+      await this.connection.getConfirmedSignaturesForAddress2(pocketAccount, {
+        until: lastTransaction,
+        limit,
+      });
+    const parsedTransactions = await this.connection.getParsedTransactions(
+      transactions.map(({ signature }) => signature),
+      {
+        commitment: 'confirmed',
+      },
+    );
+    const eventParser = new EventParser(
+      this.program.programId,
+      new BorshCoder(this.program.idl),
+    );
+
+    const poolActivities: EventWithTransaction[] = [];
+
+    for (const { meta, blockTime, transaction } of parsedTransactions) {
+      const events = eventParser.parseLogs(meta.logMessages);
+      for (const { name, data } of events) {
+        poolActivities.push({
+          eventName: name as OcEventName,
+          eventData: data as OcPocketEvent,
+          transaction,
+          createdAt: new Date(blockTime),
+        });
+      }
+    }
+
+    return poolActivities;
+  }
+
   async executeBuyToken(poolId: string, ownerAddress: string) {
     /** No swap for devnet, logging and skip */
     if (this.cluster == 'devnet') {
@@ -91,6 +149,7 @@ export class SolanaPoolProvider implements OnModuleInit {
       ],
       this.program.programId,
     );
+
     await this.program.methods
       .executeSwap()
       .accounts({ signer: ownerAddress, pocket: pocketAccount })
