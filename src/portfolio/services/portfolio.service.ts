@@ -9,6 +9,7 @@ import {
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import {
   ListUserTokenDto,
+  ListUserTokenSortOption,
   UserTokenWithAdditionView,
 } from '../dtos/list-user-token.dto';
 import { CommonQueryDto } from '../../api-docs/dto/common-query.dto';
@@ -97,7 +98,7 @@ export class PortfolioService {
 
   async listUserToken(
     ownerAddress: string,
-    { limit, offset, search }: ListUserTokenDto & CommonQueryDto,
+    { limit, offset, search, sortBy }: ListUserTokenDto & CommonQueryDto,
   ): Promise<UserTokenWithAdditionView[]> {
     const stages: PipelineStage[] = [];
     /** Filter & search stage */
@@ -108,6 +109,7 @@ export class PortfolioService {
       filter.$text = { $search: search };
     }
     stages.push({ $match: filter });
+
     /** Add value and additional fields */
     stages.push(
       /** Merge tables */
@@ -130,6 +132,7 @@ export class PortfolioService {
           },
           value: {
             $multiply: [
+              '$total',
               { $arrayElemAt: ['$whitelist_docs.estimatedValue', 0] },
             ],
           },
@@ -142,6 +145,22 @@ export class PortfolioService {
         },
       },
     );
+    /** Sort stage if requested */
+    if (sortBy && sortBy.length > 0) {
+      const sort: Record<string, 1 | -1> = {};
+      for (const option of sortBy) {
+        switch (option) {
+          /** Sort by estimated value */
+          case ListUserTokenSortOption.VALUE_ASC:
+            sort['value'] = 1;
+            break;
+          case ListUserTokenSortOption.VALUE_DESC:
+            sort['value'] = -1;
+            break;
+        }
+      }
+      stages.push({ $sort: sort });
+    }
     /** Offset + limit */
     stages.push({ $skip: offset }, { $limit: limit });
     return await this.userTokenRepo.aggregate<UserTokenWithAdditionView>(

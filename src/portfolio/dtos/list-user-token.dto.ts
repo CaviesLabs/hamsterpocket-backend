@@ -1,3 +1,5 @@
+import { IsEnum, IsOptional } from 'class-validator';
+import { ArrayType } from '../../api-docs/array-type.decorator';
 import { UserTokenEntity } from '../entities/user-token.entity';
 
 export enum ListUserTokenSortOption {
@@ -6,6 +8,9 @@ export enum ListUserTokenSortOption {
 }
 
 export class ListUserTokenDto {
+  @ArrayType()
+  @IsEnum(ListUserTokenSortOption, { each: true })
+  @IsOptional()
   sortBy: ListUserTokenSortOption[];
 }
 
