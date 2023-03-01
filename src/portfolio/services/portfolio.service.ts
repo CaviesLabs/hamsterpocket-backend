@@ -129,7 +129,10 @@ export class PortfolioService {
             $arrayElemAt: ['$whitelist_docs.symbol', 0],
           },
           value: {
-            $arrayElemAt: ['$whitelist_docs.estimatedValue', 0],
+            $multiply: [
+              { $arrayElemAt: ['$whitelist_docs.estimatedValue', 0] },
+              '$total',
+            ],
           },
         },
       },
