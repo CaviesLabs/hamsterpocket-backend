@@ -17,6 +17,7 @@ export const SOLANA_MAINNET_RPC_RPC_ENDPOINT =
 
 @Injectable()
 export class SolanaPoolProvider implements OnModuleInit {
+  private cluster: 'devnet' | 'mainnet';
   private rpcEndpoint: string;
   private provider: anchor.Provider;
   private program: anchor.Program<Pocket>;
@@ -38,6 +39,8 @@ export class SolanaPoolProvider implements OnModuleInit {
       default:
         throw new Error('RPC not supported');
     }
+
+    this.cluster = SOLANA_CLUSTER;
 
     this.connection = new Connection(this.rpcEndpoint);
 
@@ -72,11 +75,25 @@ export class SolanaPoolProvider implements OnModuleInit {
     return pool;
   }
 
-  async executeBuyToken(poolId: string) {
-    console.log(poolId);
+  async executeBuyToken(poolId: string, ownerAddress: string) {
+    /** No swap for devnet, logging and skip */
+    if (this.cluster == 'devnet') {
+      console.log(
+        `SolanaPoolProvider: devnet: Executed swap: poolId: ${poolId}, ownerAddress: ${ownerAddress}`,
+      );
+      return;
+    }
 
-    /**
-     * TODO: call Contract IDL to execute buy Token
-     */
+    const [pocketAccount] = PublicKey.findProgramAddressSync(
+      [
+        anchor.utils.bytes.utf8.encode('SEED::POCKET::POCKET_SEED'),
+        anchor.utils.bytes.utf8.encode(poolId),
+      ],
+      this.program.programId,
+    );
+    await this.program.methods
+      .executeSwap()
+      .accounts({ signer: ownerAddress, pocket: pocketAccount })
+      .rpc();
   }
 }
