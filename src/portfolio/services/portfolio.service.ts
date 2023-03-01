@@ -121,13 +121,22 @@ export class PortfolioService {
       },
       /** Add tokenName, tokenSymbol, calculate value */
       {
+        $addFields: {
+          tokenName: {
+            $arrayElemAt: ['$whitelist_docs.name', 0],
+          },
+          tokenSymbol: {
+            $arrayElemAt: ['$whitelist_docs.symbol', 0],
+          },
+          value: {
+            $arrayElemAt: ['$whitelist_docs.estimatedValue', 0],
+          },
+        },
+      },
+      /** Remove the `whitelist_docs` field */
+      {
         $project: {
           whitelist_docs: 0,
-          tokenName: { $first: '$whitelist_docs.name' },
-          tokenSymbol: { $first: '$whitelist_docs.symbol' },
-          value: {
-            $multiply: ['$total', { $first: '$whitelist_docs.estimatedValue' }],
-          },
         },
       },
     );
