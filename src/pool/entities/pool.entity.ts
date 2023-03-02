@@ -32,8 +32,6 @@ export enum MainProgressBy {
 }
 
 export class BuyCondition {
-  tokenAddress: string;
-
   type: PriceConditionType;
 
   value: number[];

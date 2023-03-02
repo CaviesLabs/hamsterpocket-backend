@@ -29,10 +29,7 @@ export function mapPocketStatus(ocStatus: OcPocketStatus): PoolStatus {
   }
 }
 
-export function mapBuyCondition({
-  condition,
-  tokenAddress,
-}: OcBuyCondition): BuyCondition {
+export function mapBuyCondition(condition: OcBuyCondition): BuyCondition {
   const value: number[] = [];
   const statusKey = Object.keys(condition)[0];
   const type = statusKey.toUpperCase() as PriceConditionType;
@@ -54,7 +51,6 @@ export function mapBuyCondition({
       break;
   }
   return plainToInstance(BuyCondition, {
-    tokenAddress: tokenAddress.toBase58(),
     type,
     value,
   });

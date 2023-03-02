@@ -42,7 +42,6 @@ export class PoolMockService {
       frequency: { hours: 1 },
       buyCondition: {
         /** BLOCK */
-        tokenAddress: 'NFTUkR4u7wKxy9QLaX2TGvd9oZSWoMo4jqSJqdMb7Nk',
         type: PriceConditionType.LT,
         value: [0.0000371],
       },
