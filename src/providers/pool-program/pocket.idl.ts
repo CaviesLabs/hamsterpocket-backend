@@ -265,6 +265,78 @@ export type Pocket = {
       args: [];
     },
     {
+      name: 'initSwapRegistry';
+      accounts: [
+        {
+          name: 'pocket';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'openOrders';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'authority';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'marketKey';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'dexProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'rent';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [];
+    },
+    {
+      name: 'closeSwapRegistry';
+      accounts: [
+        {
+          name: 'pocket';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'openOrders';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'authority';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'destination';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'marketKey';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'dexProgram';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [];
+    },
+    {
       name: 'executeSwap';
       accounts: [
         {
@@ -274,6 +346,11 @@ export type Pocket = {
         },
         {
           name: 'pocket';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'marketKey';
           isMut: true;
           isSigner: false;
         },
@@ -404,6 +481,10 @@ export type Pocket = {
             type: 'publicKey';
           },
           {
+            name: 'marketKey';
+            type: 'publicKey';
+          },
+          {
             name: 'batchVolume';
             type: 'u64';
           },
@@ -421,7 +502,7 @@ export type Pocket = {
             name: 'buyCondition';
             type: {
               option: {
-                defined: 'BuyCondition';
+                defined: 'PriceCondition';
               };
             };
           },
@@ -486,6 +567,10 @@ export type Pocket = {
             type: 'publicKey';
           },
           {
+            name: 'marketKey';
+            type: 'publicKey';
+          },
+          {
             name: 'batchVolume';
             type: 'u64';
           },
@@ -497,7 +582,7 @@ export type Pocket = {
             name: 'buyCondition';
             type: {
               option: {
-                defined: 'BuyCondition';
+                defined: 'PriceCondition';
               };
             };
           },
@@ -627,24 +712,6 @@ export type Pocket = {
       };
     },
     {
-      name: 'BuyCondition';
-      type: {
-        kind: 'struct';
-        fields: [
-          {
-            name: 'tokenAddress';
-            type: 'publicKey';
-          },
-          {
-            name: 'condition';
-            type: {
-              defined: 'PriceCondition';
-            };
-          },
-        ];
-      };
-    },
-    {
       name: 'DateDuration';
       type: {
         kind: 'struct';
@@ -693,7 +760,7 @@ export type Pocket = {
         kind: 'enum';
         variants: [
           {
-            name: 'gt';
+            name: 'Gt';
             fields: [
               {
                 name: 'value';
@@ -702,7 +769,7 @@ export type Pocket = {
             ];
           },
           {
-            name: 'gte';
+            name: 'Gte';
             fields: [
               {
                 name: 'value';
@@ -711,7 +778,7 @@ export type Pocket = {
             ];
           },
           {
-            name: 'lt';
+            name: 'Lt';
             fields: [
               {
                 name: 'value';
@@ -720,7 +787,7 @@ export type Pocket = {
             ];
           },
           {
-            name: 'lte';
+            name: 'Lte';
             fields: [
               {
                 name: 'value';
@@ -729,7 +796,7 @@ export type Pocket = {
             ];
           },
           {
-            name: 'eq';
+            name: 'Eq';
             fields: [
               {
                 name: 'value';
@@ -738,7 +805,7 @@ export type Pocket = {
             ];
           },
           {
-            name: 'neq';
+            name: 'Neq';
             fields: [
               {
                 name: 'value';
@@ -747,7 +814,7 @@ export type Pocket = {
             ];
           },
           {
-            name: 'bw';
+            name: 'Bw';
             fields: [
               {
                 name: 'from_value';
@@ -760,7 +827,7 @@ export type Pocket = {
             ];
           },
           {
-            name: 'nbw';
+            name: 'Nbw';
             fields: [
               {
                 name: 'from_value';
@@ -1399,6 +1466,78 @@ export const IDL: Pocket = {
       args: [],
     },
     {
+      name: 'initSwapRegistry',
+      accounts: [
+        {
+          name: 'pocket',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'openOrders',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'authority',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'marketKey',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'dexProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'rent',
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [],
+    },
+    {
+      name: 'closeSwapRegistry',
+      accounts: [
+        {
+          name: 'pocket',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'openOrders',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'authority',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'destination',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'marketKey',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'dexProgram',
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [],
+    },
+    {
       name: 'executeSwap',
       accounts: [
         {
@@ -1408,6 +1547,11 @@ export const IDL: Pocket = {
         },
         {
           name: 'pocket',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'marketKey',
           isMut: true,
           isSigner: false,
         },
@@ -1538,6 +1682,10 @@ export const IDL: Pocket = {
             type: 'publicKey',
           },
           {
+            name: 'marketKey',
+            type: 'publicKey',
+          },
+          {
             name: 'batchVolume',
             type: 'u64',
           },
@@ -1555,7 +1703,7 @@ export const IDL: Pocket = {
             name: 'buyCondition',
             type: {
               option: {
-                defined: 'BuyCondition',
+                defined: 'PriceCondition',
               },
             },
           },
@@ -1620,6 +1768,10 @@ export const IDL: Pocket = {
             type: 'publicKey',
           },
           {
+            name: 'marketKey',
+            type: 'publicKey',
+          },
+          {
             name: 'batchVolume',
             type: 'u64',
           },
@@ -1631,7 +1783,7 @@ export const IDL: Pocket = {
             name: 'buyCondition',
             type: {
               option: {
-                defined: 'BuyCondition',
+                defined: 'PriceCondition',
               },
             },
           },
@@ -1761,24 +1913,6 @@ export const IDL: Pocket = {
       },
     },
     {
-      name: 'BuyCondition',
-      type: {
-        kind: 'struct',
-        fields: [
-          {
-            name: 'tokenAddress',
-            type: 'publicKey',
-          },
-          {
-            name: 'condition',
-            type: {
-              defined: 'PriceCondition',
-            },
-          },
-        ],
-      },
-    },
-    {
       name: 'DateDuration',
       type: {
         kind: 'struct',
@@ -1827,7 +1961,7 @@ export const IDL: Pocket = {
         kind: 'enum',
         variants: [
           {
-            name: 'gt',
+            name: 'Gt',
             fields: [
               {
                 name: 'value',
@@ -1836,7 +1970,7 @@ export const IDL: Pocket = {
             ],
           },
           {
-            name: 'gte',
+            name: 'Gte',
             fields: [
               {
                 name: 'value',
@@ -1845,7 +1979,7 @@ export const IDL: Pocket = {
             ],
           },
           {
-            name: 'lt',
+            name: 'Lt',
             fields: [
               {
                 name: 'value',
@@ -1854,7 +1988,7 @@ export const IDL: Pocket = {
             ],
           },
           {
-            name: 'lte',
+            name: 'Lte',
             fields: [
               {
                 name: 'value',
@@ -1863,7 +1997,7 @@ export const IDL: Pocket = {
             ],
           },
           {
-            name: 'eq',
+            name: 'Eq',
             fields: [
               {
                 name: 'value',
@@ -1872,7 +2006,7 @@ export const IDL: Pocket = {
             ],
           },
           {
-            name: 'neq',
+            name: 'Neq',
             fields: [
               {
                 name: 'value',
@@ -1881,7 +2015,7 @@ export const IDL: Pocket = {
             ],
           },
           {
-            name: 'bw',
+            name: 'Bw',
             fields: [
               {
                 name: 'from_value',
@@ -1894,7 +2028,7 @@ export const IDL: Pocket = {
             ],
           },
           {
-            name: 'nbw',
+            name: 'Nbw',
             fields: [
               {
                 name: 'from_value',
