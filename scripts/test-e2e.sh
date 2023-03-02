@@ -1,6 +1,6 @@
-yarn build
+export CONFIG_FILE="./e2e-test.config.json"
 
-CONFIG_FILE="./e2e-test.config.json"
+yarn build
 
 case "$1" in
   -d | --dev)
