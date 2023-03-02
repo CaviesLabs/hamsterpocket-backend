@@ -59,8 +59,8 @@ export class SolanaPoolProvider implements OnModuleInit {
     const defaultKeyPair = Keypair.generate();
     const senderWallet = new NodeWallet(defaultKeyPair);
     this.provider = new anchor.AnchorProvider(this.connection, senderWallet, {
-      preflightCommitment: 'processed',
-      commitment: 'processed',
+      preflightCommitment: 'confirmed',
+      commitment: 'confirmed',
     });
 
     this.program = new anchor.Program(
