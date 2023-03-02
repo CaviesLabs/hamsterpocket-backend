@@ -63,7 +63,7 @@ export class SyncPoolService {
     const syncedPool = await this.onChainPoolProvider.fetchFromContract(poolId);
 
     /** Publish a job for new pool */
-    if (syncedPool.status === PoolStatus.CREATED) {
+    if (syncedPool.status === PoolStatus.ACTIVE) {
       await this.scheduleJob(syncedPool);
     }
 
@@ -108,7 +108,7 @@ export class SyncPoolService {
           );
 
           /** Publish a job for new pool */
-          if (status === PoolStatus.CREATED) {
+          if (status === PoolStatus.ACTIVE) {
             await this.scheduleJob(syncedPool);
           }
 
