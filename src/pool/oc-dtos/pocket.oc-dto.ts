@@ -109,7 +109,7 @@ export function convertToPoolEntity(
     name: pocketData.name,
     status: mapPocketStatus(pocketData.status),
     baseTokenAddress: pocketData.baseTokenMintAddress.toBase58(),
-    targetTokenAddress: pocketData.targetTokenMintAddress.toBase58(),
+    quoteTokenAddress: pocketData.targetTokenMintAddress.toBase58(),
     startTime: new Date(pocketData.startAt.toNumber()),
     batchVolume: pocketData.batchVolume.toNumber(),
     depositedAmount: pocketData.totalDepositAmount.toNumber(),

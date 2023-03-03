@@ -24,7 +24,7 @@ export class PoolModel extends BaseModel implements PoolEntity {
   baseTokenAddress: string;
 
   @Prop({ type: String, required: true })
-  targetTokenAddress: string;
+  quoteTokenAddress: string;
 
   /** Enforce unique of docs with address field presented */
   @Prop({ type: String, unique: true, sparse: true })

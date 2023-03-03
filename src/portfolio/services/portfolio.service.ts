@@ -57,12 +57,12 @@ export class PortfolioService {
 
     /** Calculate target token total amount of all pools, expect only 1 ownerAddress/tokenAddress result */
     const [userTargetToken] = await this.poolRepo.aggregate<UserTokenEntity>([
-      { $match: { ownerAddress, targetTokenAddress: tokenAddress } },
+      { $match: { ownerAddress, quoteTokenAddress: tokenAddress } },
       {
         $group: {
           _id: {
             ownerAddress: '$ownerAddress',
-            targetTokenAddress: '$targetTokenAddress',
+            quoteTokenAddress: '$quoteTokenAddress',
           },
           total: {
             $sum: '$currentTargetToken',
@@ -72,7 +72,7 @@ export class PortfolioService {
       {
         $project: {
           ownerAddress: '$_id.ownerAddress',
-          tokenAddress: '$_id.targetTokenAddress',
+          tokenAddress: '$_id.quoteTokenAddress',
           total: 1,
         },
       },

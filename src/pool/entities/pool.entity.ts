@@ -60,7 +60,7 @@ export class PoolEntity {
 
   baseTokenAddress: string;
 
-  targetTokenAddress: string;
+  quoteTokenAddress: string;
 
   startTime: Date;
 

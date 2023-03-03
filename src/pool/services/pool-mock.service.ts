@@ -37,7 +37,7 @@ export class PoolMockService {
       /** SOL */
       baseTokenAddress: 'So11111111111111111111111111111111111111112',
       /** BLOCK */
-      targetTokenAddress: 'NFTUkR4u7wKxy9QLaX2TGvd9oZSWoMo4jqSJqdMb7Nk',
+      quoteTokenAddress: 'NFTUkR4u7wKxy9QLaX2TGvd9oZSWoMo4jqSJqdMb7Nk',
       batchVolume: 1,
       frequency: { hours: 1 },
       buyCondition: {
@@ -78,7 +78,7 @@ export class PoolMockService {
     /** One for target token */
     await this.portfolioQueue.add(UPDATE_USER_TOKEN_PROCESS, {
       ownerAddress,
-      tokenAddress: pool.targetTokenAddress,
+      tokenAddress: pool.quoteTokenAddress,
     } as UpdatePortfolioJobData);
 
     return pool;

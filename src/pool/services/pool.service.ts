@@ -61,7 +61,7 @@ export class PoolService {
     /** Paginate stage */
     stages.push({ $skip: offset }, { $limit: limit });
 
-    return await this.poolRepo.aggregate<PoolModel>(stages);
+    return this.poolRepo.aggregate<PoolModel>(stages);
   }
 
   async createEmpty() {
