@@ -8,6 +8,7 @@ import { PoolProcessor } from './queues/pool.processor';
 import { PoolMockService } from './services/pool-mock.service';
 import { PoolService } from './services/pool.service';
 import { SyncPoolService } from './services/sync-pool.service';
+import { PortfolioService } from "../portfolio/services/portfolio.service";
 
 @Module({
   imports: [OrmModule, MqModule],
@@ -19,6 +20,7 @@ import { SyncPoolService } from './services/sync-pool.service';
     PoolService,
     SyncPoolService,
     PoolMockService,
+    PortfolioService,
     /** Consumer */
     PoolProcessor,
   ],

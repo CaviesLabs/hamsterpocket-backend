@@ -20,6 +20,7 @@ import {
   PoolStatus,
   PriceConditionType,
 } from '../entities/pool.entity';
+import { PortfolioService } from "../../portfolio/services/portfolio.service";
 
 @Injectable()
 export class PoolMockService {
@@ -28,6 +29,8 @@ export class PoolMockService {
     private readonly poolRepo: Model<PoolDocument>,
     @InjectQueue(PORTFOLIO_QUEUE)
     private readonly portfolioQueue: Queue,
+
+    private readonly portfolioService: PortfolioService
   ) {}
 
   private genPoolTemplate(): Partial<PoolEntity> {
@@ -73,16 +76,18 @@ export class PoolMockService {
 
     /** publish events update user-tokens */
     /** One for base token */
-    this.portfolioQueue.add(UPDATE_USER_TOKEN_PROCESS, {
+    await this.portfolioQueue.add(UPDATE_USER_TOKEN_PROCESS, {
       ownerAddress,
       tokenAddress: pool.baseTokenAddress,
     } as UpdatePortfolioJobData);
+    // await this.portfolioService.updateUserToken(ownerAddress, pool.baseTokenAddress);
 
     /** One for target token */
-    this.portfolioQueue.add(UPDATE_USER_TOKEN_PROCESS, {
+    await this.portfolioQueue.add(UPDATE_USER_TOKEN_PROCESS, {
       ownerAddress,
       tokenAddress: pool.targetTokenAddress,
     } as UpdatePortfolioJobData);
+    // await this.portfolioService.updateUserToken(ownerAddress, pool.targetTokenAddress);
 
     return pool;
   }

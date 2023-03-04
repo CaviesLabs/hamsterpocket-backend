@@ -18,7 +18,7 @@ export async function getBalanceSuccessFunc(this: any) {
   expect(createMockPoolResp.status).to.equal(201);
 
   // Await a bit for sync price/cal portfolio complete
-  await new UtilsProvider().pause(0.3);
+  await new UtilsProvider().pause(2);
 
   const baseTokenAddress = createMockPoolResp.body.baseTokenAddress;
 
@@ -26,7 +26,6 @@ export async function getBalanceSuccessFunc(this: any) {
   const getBalanceResp = await request(app.getHttpServer()).get(
     `/api/portfolio/${ownerAddress}/base-token/${baseTokenAddress}`,
   );
-  console.log(getBalanceResp.body);
 
   expect(getBalanceResp.status).to.equal(200);
   expect(getBalanceResp.body.totalPoolsBalance).to.be.a('number');
