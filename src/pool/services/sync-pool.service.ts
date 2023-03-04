@@ -58,17 +58,11 @@ export class SyncPoolService {
     const existedPool = await this.poolRepo.findById(poolId);
     /** No need to sync ended pool */
     if (existedPool.status === PoolStatus.ENDED) return;
-    console.log("line 61");
+    console.log('line 61');
     /** Fetch pool latest update */
     const syncedPool = await this.onChainPoolProvider.fetchFromContract(poolId);
 
-    console.log("line 65");
-    /** Publish a job for new pool */
-    if (syncedPool.status === PoolStatus.ACTIVE) {
-      await this.scheduleJob(syncedPool);
-    }
-
-    console.log("line 71")
+    console.log('line 71');
     await this.poolRepo.updateOne(
       { _id: new Types.ObjectId(syncedPool.id) },
       syncedPool,
@@ -76,6 +70,12 @@ export class SyncPoolService {
         upsert: true,
       },
     );
+
+    console.log('line 65');
+    /** Publish a job for new pool */
+    if (syncedPool.status === PoolStatus.ACTIVE) {
+      await this.scheduleJob(syncedPool);
+    }
   }
 
   @Cron(CronExpression.EVERY_5_MINUTES)
