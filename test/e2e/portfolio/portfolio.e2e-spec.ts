@@ -1,6 +1,5 @@
 import { expect } from 'chai';
 import * as request from 'supertest';
-import { UtilsProvider } from '../../../src/providers/utils.provider';
 
 import { testHelper } from '../test-entrypoint.e2e-spec';
 
@@ -18,8 +17,6 @@ export async function getBalanceSuccessFunc(this: any) {
   expect(createMockPoolResp.status).to.equal(201);
 
   // Await a bit for sync price/cal portfolio complete
-  await new UtilsProvider().pause(2);
-
   const baseTokenAddress = createMockPoolResp.body.baseTokenAddress;
 
   // Step 1: Call API with ownerAddress & baseTokenAddress

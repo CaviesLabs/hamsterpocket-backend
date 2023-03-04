@@ -20,7 +20,7 @@ import {
   PoolStatus,
   PriceConditionType,
 } from '../entities/pool.entity';
-import { PortfolioService } from "../../portfolio/services/portfolio.service";
+import { PortfolioService } from '../../portfolio/services/portfolio.service';
 
 @Injectable()
 export class PoolMockService {
@@ -30,7 +30,7 @@ export class PoolMockService {
     @InjectQueue(PORTFOLIO_QUEUE)
     private readonly portfolioQueue: Queue,
 
-    private readonly portfolioService: PortfolioService
+    private readonly portfolioService: PortfolioService,
   ) {}
 
   private genPoolTemplate(): Partial<PoolEntity> {
@@ -74,6 +74,14 @@ export class PoolMockService {
 
     const pool = await this.poolRepo.create(poolData);
 
+    /**
+     * @dev Workaround for the first added job wont be able to access repo registry
+     */
+    await this.portfolioQueue.add(UPDATE_USER_TOKEN_PROCESS, {});
+
+    /**
+     * @dev From the second chance we add to the queue, the data will be processed properly
+     */
     /** publish events update user-tokens */
     /** One for base token */
     await this.portfolioQueue.add(UPDATE_USER_TOKEN_PROCESS, {

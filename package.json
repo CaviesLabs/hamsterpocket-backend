@@ -24,9 +24,6 @@
     "test:e2e-dev": "./scripts/test-e2e.sh --dev",
     "prepare": "husky install"
   },
-  "redisMemoryServer": {
-    "debug": "true"
-  },
   "dependencies": {
     "@faker-js/faker": "^7.6.0",
     "@fastify/cookie": "8.3.0",
