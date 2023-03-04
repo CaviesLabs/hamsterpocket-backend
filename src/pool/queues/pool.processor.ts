@@ -15,7 +15,7 @@ export class PoolProcessor {
   @Process(BUY_TOKEN_PROCESS)
   async buyTokenJob(job: Job<BuyTokenJobData>) {
     try {
-      await this.poolService.executeBuyToken(job.data.poolId);
+      await this.poolService.executeSwapToken(job.data.poolId);
     } catch (e) {
       console.error('ERROR::JOB_FAILED_TO_EXECUTE_BUY_TOKEN', e);
     }

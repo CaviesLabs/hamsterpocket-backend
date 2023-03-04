@@ -67,6 +67,13 @@ export class SystemConfig {
   @IsNotEmpty()
   SECRET_TOKEN: string;
 
+  /**
+   * @description Operator seed
+   */
+  @IsString()
+  @IsNotEmpty()
+  OPERATOR_SECRET_KEY: string;
+
   @IsUrl({
     require_protocol: false,
   })

@@ -1,6 +1,10 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { Connection, Keypair, PublicKey } from '@solana/web3.js';
+import { Connection, Keypair, PublicKey, SystemProgram } from '@solana/web3.js';
 import * as anchor from '@project-serum/anchor';
+import NodeWallet from '@project-serum/anchor/dist/cjs/nodewallet';
+import { BorshCoder, EventParser } from '@project-serum/anchor';
+import { OpenOrders } from '@openbook-dex/openbook';
+import * as bs from 'bs58';
 
 import {
   calculateProgressPercent,
@@ -9,9 +13,9 @@ import {
 import { IDL, Pocket } from './pocket.idl';
 import { RegistryProvider } from '../registry.provider';
 import { convertToPoolEntity } from '../../pool/oc-dtos/pocket.oc-dto';
-import NodeWallet from '@project-serum/anchor/dist/cjs/nodewallet';
-import { BorshCoder, EventParser } from '@project-serum/anchor';
+
 import { OcEventName, OcPocketEvent } from './pocket.type';
+import { ProgramAccountsProvider } from './program-accounts.provider';
 
 export const SOLANA_DEVNET_RPC_ENDPOINT = 'https://api.devnet.solana.com';
 export const SOLANA_MAINNET_RPC_RPC_ENDPOINT =
@@ -31,7 +35,7 @@ type EventWithTransaction = {
 export class SolanaPoolProvider implements OnModuleInit {
   private cluster: 'devnet' | 'mainnet';
   private rpcEndpoint: string;
-  private provider: anchor.Provider;
+  private provider: anchor.AnchorProvider;
   private program: anchor.Program<Pocket>;
   private connection: Connection;
 
@@ -52,12 +56,14 @@ export class SolanaPoolProvider implements OnModuleInit {
         throw new Error('RPC not supported');
     }
 
-    this.cluster = SOLANA_CLUSTER;
+    const defaultKeyPair = Keypair.fromSecretKey(
+      Uint8Array.from(bs.decode(this.registry.getConfig().OPERATOR_SECRET_KEY)),
+    );
+    const senderWallet = new NodeWallet(defaultKeyPair);
 
+    this.cluster = SOLANA_CLUSTER;
     this.connection = new Connection(this.rpcEndpoint);
 
-    const defaultKeyPair = Keypair.generate();
-    const senderWallet = new NodeWallet(defaultKeyPair);
     this.provider = new anchor.AnchorProvider(this.connection, senderWallet, {
       preflightCommitment: 'confirmed',
       commitment: 'confirmed',
@@ -105,12 +111,14 @@ export class SolanaPoolProvider implements OnModuleInit {
         until: lastTransaction,
         limit,
       });
+
     const parsedTransactions = await this.connection.getParsedTransactions(
       transactions.map(({ signature }) => signature),
       {
         commitment: 'confirmed',
       },
     );
+
     const eventParser = new EventParser(
       this.program.programId,
       new BorshCoder(this.program.idl),
@@ -133,26 +141,120 @@ export class SolanaPoolProvider implements OnModuleInit {
     return poolActivities;
   }
 
-  async executeBuyToken(poolId: string, ownerAddress: string) {
+  public async executeSwapToken(opt: {
+    pocketId: string;
+    baseMint: string;
+    quoteMint: string;
+    marketKey: string;
+    marketProgramId: string;
+    marketAuthority;
+  }) {
     /** No swap for devnet, logging and skip */
     if (this.cluster == 'devnet') {
       console.log(
-        `SolanaPoolProvider: devnet: Executed swap: poolId: ${poolId}, ownerAddress: ${ownerAddress}`,
+        `SolanaPoolProvider: devnet: Executed swap: poolId: ${opt.pocketId}`,
       );
       return;
     }
 
-    const [pocketAccount] = PublicKey.findProgramAddressSync(
-      [
-        anchor.utils.bytes.utf8.encode('SEED::POCKET::POCKET_SEED'),
-        anchor.utils.bytes.utf8.encode(poolId),
-      ],
+    const fixtures = await new ProgramAccountsProvider(
+      this.provider,
       this.program.programId,
+    ).prepareExecuteSwapAccounts(opt);
+
+    const {
+      provider,
+      program,
+      marketAddress,
+      marketProgramAddress,
+      marketOpenOrders,
+      pocketAccount,
+      operator,
+      pocketRegistry,
+      baseMintVaultAccount,
+      quoteMintVaultAccount,
+      marketEventQueue,
+      marketRequestQueue,
+      marketAsks,
+      marketBids,
+      marketBaseVault,
+      marketQuoteVault,
+      marketAuthority,
+    } = fixtures;
+
+    const initInx = [];
+
+    if (!(await provider.connection.getAccountInfo(marketOpenOrders))) {
+      initInx.push(
+        SystemProgram.createAccountWithSeed({
+          basePubkey: operator.publicKey,
+          fromPubkey: operator.publicKey,
+          lamports: await provider.connection.getMinimumBalanceForRentExemption(
+            OpenOrders.getLayout(marketProgramAddress).span,
+          ),
+          newAccountPubkey: marketOpenOrders,
+          programId: marketProgramAddress,
+          seed: pocketAccount.toString().slice(0, 32),
+          space: OpenOrders.getLayout(marketProgramAddress).span,
+        }),
+      );
+
+      initInx.push(
+        await program.methods
+          .initSwapRegistry()
+          .accounts({
+            marketKey: marketAddress,
+            authority: pocketAccount,
+            openOrders: marketOpenOrders,
+            dexProgram: marketProgramAddress,
+            pocket: pocketAccount,
+          })
+          .instruction(),
+      );
+    }
+
+    const cleanUpInx = [];
+
+    cleanUpInx.push(
+      await program.methods
+        .closeSwapRegistry()
+        .accounts({
+          marketKey: marketAddress,
+          authority: pocketAccount,
+          destination: operator.publicKey,
+          openOrders: marketOpenOrders,
+          dexProgram: marketOpenOrders,
+          pocket: pocketAccount,
+        })
+        .instruction(),
     );
 
-    await this.program.methods
+    return program.methods
       .executeSwap()
-      .accounts({ signer: ownerAddress, pocket: pocketAccount })
-      .rpc();
+      .accounts({
+        // pocket accounts
+        marketKey: marketAddress,
+        signer: operator.publicKey,
+        pocket: pocketAccount,
+        pocketRegistry,
+        pocketBaseTokenVault: baseMintVaultAccount,
+        pocketQuoteTokenVault: quoteMintVaultAccount,
+      })
+      .preInstructions(initInx)
+      .remainingAccounts([
+        // serum dex accounts
+        { pubkey: marketEventQueue, isSigner: false, isWritable: true },
+        { pubkey: marketRequestQueue, isSigner: false, isWritable: true },
+        { pubkey: marketBids, isSigner: false, isWritable: true },
+        { pubkey: marketAsks, isSigner: false, isWritable: true },
+        { pubkey: marketBaseVault, isSigner: false, isWritable: true },
+        { pubkey: marketQuoteVault, isSigner: false, isWritable: true },
+        { pubkey: marketAuthority, isSigner: false, isWritable: false },
+        { pubkey: marketOpenOrders, isSigner: false, isWritable: true },
+        { pubkey: marketProgramAddress, isSigner: false, isWritable: false },
+      ])
+      .signers([operator.payer])
+      .rpc({ commitment: 'confirmed' })
+      .catch((e) => console.log(e));
   }
 }

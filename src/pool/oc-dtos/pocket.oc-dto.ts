@@ -75,22 +75,31 @@ export function mapStopConditions(
     batchAmountReach,
     endTimeReach,
   } of ocConditions) {
+    /**
+     * @dev Map batch amount reach
+     */
     if (batchAmountReach) {
       stopConditions.batchAmountReach = batchAmountReach.value.toNumber();
+
       if (batchAmountReach.is_primary) {
         mainProgressBy = MainProgressBy.BATCH_AMOUNT;
       }
     }
 
+    /**
+     * @dev Map end time reach
+     */
     if (endTimeReach) {
       stopConditions.endTime = new Date(endTimeReach.value.toNumber());
+
       if (endTimeReach.is_primary) {
         mainProgressBy = MainProgressBy.END_TIME;
       }
     }
 
-    const receivedTargetAmountReach =
-      side === 'buy' ? baseTokenAmountReach : quoteTokenAmountReach;
+    /**
+     * @dev Map spent amount reach
+     */
     const spentAmountReach =
       side === 'buy' ? spentQuoteTokenAmountReach : spentBaseTokenAmountReach;
 
@@ -101,6 +110,12 @@ export function mapStopConditions(
         mainProgressBy = MainProgressBy.SPENT_BASE_TOKEN;
       }
     }
+
+    /**
+     * @dev Map received target amount reach
+     */
+    const receivedTargetAmountReach =
+      side === 'buy' ? baseTokenAmountReach : quoteTokenAmountReach;
 
     if (receivedTargetAmountReach) {
       stopConditions.receivedTargetTokenReach =
@@ -119,6 +134,7 @@ export function mapStopConditions(
 
 const determineTradeSideData = (pocketData: OcPocket): Partial<PoolEntity> => {
   const [sideValue] = Object.keys(pocketData.side);
+  console.log(pocketData.side, pocketData.stopConditions);
 
   switch (sideValue) {
     case 'buy':

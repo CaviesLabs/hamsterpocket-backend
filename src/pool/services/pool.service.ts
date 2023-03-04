@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model, PipelineStage, Types } from 'mongoose';
+import { FilterQuery, Model, PipelineStage } from 'mongoose';
 import { CommonQueryDto } from '../../api-docs/dto/common-query.dto';
 
 import { PoolModel, PoolDocument } from '../../orm/model/pool.model';
@@ -72,16 +72,18 @@ export class PoolService {
     return doc;
   }
 
-  async executeBuyToken(poolId: string) {
+  async executeSwapToken(poolId: string) {
     const pool = await this.poolRepo.findById(poolId);
-    await this.onChainPoolProvider.executeBuyToken(poolId, pool.ownerAddress);
-    const syncedPool = await this.onChainPoolProvider.fetchFromContract(poolId);
-    await this.poolRepo.updateOne(
-      { _id: new Types.ObjectId(poolId) },
-      syncedPool,
-      {
-        upsert: true,
-      },
-    );
+    console.log(pool);
+    // TODO: load market info from db before executing swap token
+    // await this.onChainPoolProvider.executeSwapToken(poolId, pool.ownerAddress);
+    // const syncedPool = await this.onChainPoolProvider.fetchFromContract(poolId);
+    // await this.poolRepo.updateOne(
+    //   { _id: new Types.ObjectId(poolId) },
+    //   syncedPool,
+    //   {
+    //     upsert: true,
+    //   },
+    // );
   }
 }
