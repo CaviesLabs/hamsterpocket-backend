@@ -17,6 +17,9 @@ import { BaseModel } from '../base.model';
 export class PoolModel extends BaseModel implements PoolEntity {
   id: string;
 
+  @Prop({ type: String })
+  marketKey: string;
+
   @Prop({ type: String, enum: PoolStatus, default: PoolStatus.CREATED })
   status: PoolStatus;
 
@@ -24,7 +27,7 @@ export class PoolModel extends BaseModel implements PoolEntity {
   baseTokenAddress: string;
 
   @Prop({ type: String, required: true })
-  quoteTokenAddress: string;
+  targetTokenAddress: string;
 
   /** Enforce unique of docs with address field presented */
   @Prop({ type: String, unique: true, sparse: true })
@@ -58,14 +61,14 @@ export class PoolModel extends BaseModel implements PoolEntity {
   /**
    * Progression fields
    */
-  @Prop({ type: Number, default: 0 })
-  currentBaseToken: number;
+  @Prop({ type: Number })
+  currentSpentBaseToken: number;
+
+  @Prop({ type: Number })
+  currentReceivedTargetToken: number;
 
   @Prop({ type: Number, default: 0 })
   remainingBaseTokenBalance: number;
-
-  @Prop({ type: Number, default: 0 })
-  currentTargetToken: number;
 
   @Prop({ type: Number, default: 0 })
   currentBatchAmount: number;

@@ -8,7 +8,7 @@ export const testHelper = new TestHelper();
 /**
  * @dev Setup before hook.
  */
-before(async () => {
+before(async function () {
   try {
     await testHelper.bootTestingApp();
   } catch (e) {
@@ -27,12 +27,6 @@ after(async () => {
    * @dev also send signal to stop the test.
    */
   process.exit(0);
-});
-
-afterEach(function () {
-  if (this.currentTest.err) {
-    console.error(this.currentTest.err);
-  }
 });
 
 /**

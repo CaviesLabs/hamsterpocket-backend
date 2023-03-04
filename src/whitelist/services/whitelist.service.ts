@@ -12,6 +12,6 @@ export class WhitelistService {
   ) {}
 
   async getAll() {
-    return await this.whiteListRepo.find({});
+    return this.whiteListRepo.find({});
   }
 }

@@ -32,7 +32,7 @@ export class SyncPoolService {
     const frequency = Duration.fromObject(pool.frequency).toMillis();
     let limit: number = undefined;
     if (pool.stopConditions?.batchAmountReach) {
-      limit = pool.stopConditions.baseTokenReach - pool.currentBatchAmount;
+      limit = pool.stopConditions.spentBaseTokenReach - pool.currentBatchAmount;
     }
 
     /** Publish repeatable job */

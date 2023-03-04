@@ -26,12 +26,13 @@ export async function getBalanceSuccessFunc(this: any) {
   const getBalanceResp = await request(app.getHttpServer()).get(
     `/api/portfolio/${ownerAddress}/base-token/${baseTokenAddress}`,
   );
+  console.log(getBalanceResp.body);
+
   expect(getBalanceResp.status).to.equal(200);
   expect(getBalanceResp.body.totalPoolsBalance).to.be.a('number');
   expect(getBalanceResp.body.totalPoolsBalanceValue).to.be.a('number');
   expect(getBalanceResp.body.topTokens).to.be.an('array');
   expect(getBalanceResp.body.topTokens.length).to.greaterThan(0);
-  console.log(getBalanceResp.body);
 }
 
 describe('Get portfolio balance', function () {

@@ -20,10 +20,13 @@ export function mapPocketStatus(ocStatus: OcPocketStatus): PoolStatus {
   switch (Object.keys(ocStatus)[0]) {
     case 'active':
       return PoolStatus.ACTIVE;
+
     case 'closed':
       return PoolStatus.CLOSED;
+
     case 'paused':
       return PoolStatus.PAUSED;
+
     case 'withdrawn':
       return PoolStatus.ENDED;
   }
@@ -42,6 +45,7 @@ export function mapBuyCondition(condition: OcBuyCondition): BuyCondition {
     case PriceConditionType.NEQ:
       value.push(condition[statusKey].value.toNumber());
       break;
+
     case PriceConditionType.BW:
     case PriceConditionType.NBW:
       value.push(
@@ -58,37 +62,52 @@ export function mapBuyCondition(condition: OcBuyCondition): BuyCondition {
 
 export function mapStopConditions(
   ocConditions: OcStopConditions,
+  side: 'buy' | 'sell',
 ): Pick<PoolEntity, 'stopConditions' | 'mainProgressBy'> {
   const stopConditions: StopConditions = {};
   let mainProgressBy: MainProgressBy;
+
   for (const {
     baseTokenAmountReach,
-    targetTokenAmountReach,
+    quoteTokenAmountReach,
+    spentBaseTokenAmountReach,
+    spentQuoteTokenAmountReach,
     batchAmountReach,
     endTimeReach,
   } of ocConditions) {
-    if (baseTokenAmountReach) {
-      stopConditions.baseTokenReach = baseTokenAmountReach.value.toNumber();
-      if (baseTokenAmountReach.is_primary) {
-        mainProgressBy = MainProgressBy.BASE_TOKEN;
-      }
-    }
-    if (targetTokenAmountReach) {
-      stopConditions.targetTokenReach = targetTokenAmountReach.value.toNumber();
-      if (targetTokenAmountReach.is_primary) {
-        mainProgressBy = MainProgressBy.TARGET_TOKEN;
-      }
-    }
     if (batchAmountReach) {
       stopConditions.batchAmountReach = batchAmountReach.value.toNumber();
       if (batchAmountReach.is_primary) {
         mainProgressBy = MainProgressBy.BATCH_AMOUNT;
       }
     }
+
     if (endTimeReach) {
       stopConditions.endTime = new Date(endTimeReach.value.toNumber());
       if (endTimeReach.is_primary) {
         mainProgressBy = MainProgressBy.END_TIME;
+      }
+    }
+
+    const receivedTargetAmountReach =
+      side === 'buy' ? baseTokenAmountReach : quoteTokenAmountReach;
+    const spentAmountReach =
+      side === 'buy' ? spentQuoteTokenAmountReach : spentBaseTokenAmountReach;
+
+    if (spentAmountReach) {
+      stopConditions.spentBaseTokenReach = spentAmountReach.value.toNumber();
+
+      if (spentAmountReach.is_primary) {
+        mainProgressBy = MainProgressBy.SPENT_BASE_TOKEN;
+      }
+    }
+
+    if (receivedTargetAmountReach) {
+      stopConditions.receivedTargetTokenReach =
+        receivedTargetAmountReach.value.toNumber();
+
+      if (receivedTargetAmountReach.is_primary) {
+        mainProgressBy = MainProgressBy.RECEIVED_TARGET_TOKEN;
       }
     }
   }
@@ -98,31 +117,55 @@ export function mapStopConditions(
   };
 }
 
+const determineTradeSideData = (pocketData: OcPocket): Partial<PoolEntity> => {
+  const [sideValue] = Object.keys(pocketData.side);
+
+  switch (sideValue) {
+    case 'buy':
+      return {
+        baseTokenAddress: pocketData.quoteTokenMintAddress.toBase58(),
+        targetTokenAddress: pocketData.baseTokenMintAddress.toBase58(),
+        depositedAmount: pocketData.totalQuoteDepositAmount.toNumber(),
+        currentSpentBaseToken: pocketData.totalQuoteDepositAmount
+          .sub(pocketData.quoteTokenBalance)
+          .toNumber(),
+        remainingBaseTokenBalance: pocketData.quoteTokenBalance.toNumber(),
+        currentReceivedTargetToken: pocketData.baseTokenBalance.toNumber(),
+        ...mapStopConditions(pocketData.stopConditions, sideValue),
+      };
+
+    case 'sell':
+      return {
+        baseTokenAddress: pocketData.baseTokenMintAddress.toBase58(),
+        targetTokenAddress: pocketData.quoteTokenMintAddress.toBase58(),
+        depositedAmount: pocketData.totalBaseDepositAmount.toNumber(),
+        currentSpentBaseToken: pocketData.totalBaseDepositAmount
+          .sub(pocketData.baseTokenBalance)
+          .toNumber(),
+        remainingBaseTokenBalance: pocketData.baseTokenBalance.toNumber(),
+        currentReceivedTargetToken: pocketData.quoteTokenBalance.toNumber(),
+        ...mapStopConditions(pocketData.stopConditions, sideValue),
+      };
+  }
+};
+
 export function convertToPoolEntity(
   address: PublicKey,
   pocketData: OcPocket,
 ): PoolEntity {
   return plainToInstance(PoolEntity, {
+    ...determineTradeSideData(pocketData),
     id: pocketData.id,
     address: address.toBase58(),
     ownerAddress: pocketData.owner.toBase58(),
     name: pocketData.name,
     status: mapPocketStatus(pocketData.status),
-    baseTokenAddress: pocketData.baseTokenMintAddress.toBase58(),
-    quoteTokenAddress: pocketData.targetTokenMintAddress.toBase58(),
     startTime: new Date(pocketData.startAt.toNumber()),
     batchVolume: pocketData.batchVolume.toNumber(),
-    depositedAmount: pocketData.totalDepositAmount.toNumber(),
     frequency: {
       hours: pocketData.frequency.hours.toNumber(),
     },
     buyCondition: mapBuyCondition(pocketData.buyCondition),
-    ...mapStopConditions(pocketData.stopConditions),
-    currentBaseToken:
-      pocketData.totalDepositAmount.toNumber() -
-      pocketData.baseTokenBalance.toNumber(),
     currentBatchAmount: pocketData.executedBatchAmount.toNumber(),
-    currentTargetToken: pocketData.targetTokenBalance.toNumber(),
-    remainingBaseTokenBalance: pocketData.baseTokenBalance.toNumber(),
   } as Partial<PoolEntity>);
 }

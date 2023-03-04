@@ -41,7 +41,7 @@ export class PortfolioService {
             baseTokenAddress: '$baseTokenAddress',
           },
           total: {
-            $sum: '$currentBaseToken',
+            $sum: '$currentSpentBaseToken',
           },
         },
       },
@@ -57,27 +57,28 @@ export class PortfolioService {
 
     /** Calculate target token total amount of all pools, expect only 1 ownerAddress/tokenAddress result */
     const [userTargetToken] = await this.poolRepo.aggregate<UserTokenEntity>([
-      { $match: { ownerAddress, quoteTokenAddress: tokenAddress } },
+      { $match: { ownerAddress, targetTokenAddress: tokenAddress } },
       {
         $group: {
           _id: {
             ownerAddress: '$ownerAddress',
-            quoteTokenAddress: '$quoteTokenAddress',
+            targetTokenAddress: '$targetTokenAddress',
           },
           total: {
-            $sum: '$currentTargetToken',
+            $sum: '$currentReceivedTargetToken',
           },
         },
       },
       {
         $project: {
           ownerAddress: '$_id.ownerAddress',
-          tokenAddress: '$_id.quoteTokenAddress',
+          tokenAddress: '$_id.targetTokenAddress',
           total: 1,
         },
       },
       { $project: { _id: 0 } },
     ]);
+
     if (!userBaseToken && !userTargetToken) {
       throw new NotFoundException('USER_TOKEN_NOT_FOUND');
     }
@@ -89,7 +90,7 @@ export class PortfolioService {
     };
 
     /** Perform update */
-    return await this.userTokenRepo.updateOne(
+    return this.userTokenRepo.updateOne(
       { ownerAddress, tokenAddress },
       userTokenSummary,
       { upsert: true },
@@ -163,9 +164,7 @@ export class PortfolioService {
     }
     /** Offset + limit */
     stages.push({ $skip: offset }, { $limit: limit });
-    return await this.userTokenRepo.aggregate<UserTokenWithAdditionView>(
-      stages,
-    );
+    return this.userTokenRepo.aggregate<UserTokenWithAdditionView>(stages);
   }
 
   private async getPortfolioTotalEstimatedValue(

@@ -18,7 +18,7 @@ export class PortfolioController {
     @Param('ownerAddress') ownerAddress: string,
     @Param('tokenAddress') tokenAddress: string,
   ): Promise<PortfolioView> {
-    return await this.portfolioService.getBalance(ownerAddress, tokenAddress);
+    return this.portfolioService.getBalance(ownerAddress, tokenAddress);
   }
 
   @Get('/:ownerAddress/user-tokens')
@@ -27,7 +27,7 @@ export class PortfolioController {
     @Query() { sortBy }: ListUserTokenDto,
     @Query() { limit, offset, search }: CommonQueryDto,
   ): Promise<UserTokenWithAdditionView[]> {
-    return await this.portfolioService.listUserToken(ownerAddress, {
+    return this.portfolioService.listUserToken(ownerAddress, {
       sortBy,
       limit,
       offset,

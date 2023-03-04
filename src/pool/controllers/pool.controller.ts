@@ -127,6 +127,6 @@ export class PoolController {
       throw new NotImplementedException('API is not supported in production');
     }
 
-    return await this.poolMockService.generate(ownerAddress);
+    return this.poolMockService.generate(ownerAddress);
   }
 }

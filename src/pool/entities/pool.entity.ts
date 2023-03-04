@@ -26,8 +26,9 @@ export enum PriceConditionType {
 
 export enum MainProgressBy {
   END_TIME = 'MAIN_PROGRESS_BY::END_TIME',
-  BASE_TOKEN = 'MAIN_PROGRESS_BY::BASE_TOKEN',
-  TARGET_TOKEN = 'MAIN_PROGRESS_BY::TARGET_TOKEN',
+
+  SPENT_BASE_TOKEN = 'MAIN_PROGRESS_BY::SPENT_BASE_TOKEN',
+  RECEIVED_TARGET_TOKEN = 'MAIN_PROGRESS_BY::RECEIVED_TARGET_TOKEN',
   BATCH_AMOUNT = 'MAIN_PROGRESS_BY::BATCH_AMOUNT',
 }
 
@@ -40,9 +41,9 @@ export class BuyCondition {
 export class StopConditions {
   endTime?: Date;
 
-  baseTokenReach?: number;
+  spentBaseTokenReach?: number;
 
-  targetTokenReach?: number;
+  receivedTargetTokenReach?: number;
 
   batchAmountReach?: number;
 }
@@ -60,7 +61,9 @@ export class PoolEntity {
 
   baseTokenAddress: string;
 
-  quoteTokenAddress: string;
+  targetTokenAddress: string;
+
+  marketKey: string;
 
   startTime: Date;
 
@@ -77,11 +80,11 @@ export class PoolEntity {
   stopConditions: StopConditions | undefined;
 
   /** Progression fields */
-  currentBaseToken: number;
+  currentSpentBaseToken: number;
 
   remainingBaseTokenBalance: number;
 
-  currentTargetToken: number;
+  currentReceivedTargetToken: number;
 
   currentBatchAmount: number;
 
@@ -99,19 +102,24 @@ export function calculateProgressPercent(this: PoolEntity) {
     this.progressPercent = -1;
     return;
   }
+
   switch (this.mainProgressBy) {
-    case MainProgressBy.BASE_TOKEN:
+    case MainProgressBy.SPENT_BASE_TOKEN:
       this.progressPercent =
-        this.currentBaseToken / this.stopConditions.baseTokenReach;
+        this.currentSpentBaseToken / this.stopConditions.spentBaseTokenReach;
       break;
-    case MainProgressBy.TARGET_TOKEN:
+
+    case MainProgressBy.RECEIVED_TARGET_TOKEN:
       this.progressPercent =
-        this.currentTargetToken / this.stopConditions.targetTokenReach;
+        this.currentReceivedTargetToken /
+        this.stopConditions.receivedTargetTokenReach;
       break;
+
     case MainProgressBy.BATCH_AMOUNT:
       this.progressPercent =
         this.currentBatchAmount / this.stopConditions.batchAmountReach;
       break;
+
     case MainProgressBy.END_TIME:
       const startTimeInMillis = this.startTime.getTime();
       const endTimeInMillis = this.stopConditions.endTime.getTime();

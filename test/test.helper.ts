@@ -43,13 +43,17 @@ export class TestHelper {
    */
   public async bootTestingApp() {
     await this.cleanTestDb();
+
     this.moduleFixture = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
+
     this.app = this.moduleFixture.createNestApplication(new FastifyAdapter());
     await globalApply(this.app);
+
     await this.app.init();
     await this.app.getHttpAdapter().getInstance().ready();
+
     // import fixtures
     await this.applyFixtures();
   }

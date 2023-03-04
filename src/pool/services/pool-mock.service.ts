@@ -37,7 +37,7 @@ export class PoolMockService {
       /** SOL */
       baseTokenAddress: 'So11111111111111111111111111111111111111112',
       /** BLOCK */
-      quoteTokenAddress: 'NFTUkR4u7wKxy9QLaX2TGvd9oZSWoMo4jqSJqdMb7Nk',
+      targetTokenAddress: 'NFTUkR4u7wKxy9QLaX2TGvd9oZSWoMo4jqSJqdMb7Nk',
       batchVolume: 1,
       frequency: { hours: 1 },
       buyCondition: {
@@ -46,14 +46,14 @@ export class PoolMockService {
         value: [0.0000371],
       },
       stopConditions: {
-        baseTokenReach: 1,
-        targetTokenReach: 259.965594,
+        spentBaseTokenReach: 1,
+        receivedTargetTokenReach: 259.965594,
         endTime: DateTime.now().plus({ minutes: 10 }).toJSDate(),
         batchAmountReach: 259,
       },
-      currentBaseToken: 0.61395378152,
+      currentSpentBaseToken: 0.61395378152,
       remainingBaseTokenBalance: 0,
-      currentTargetToken: 100,
+      currentReceivedTargetToken: 100,
       currentBatchAmount: 100,
       mainProgressBy: MainProgressBy.BATCH_AMOUNT,
     };
@@ -65,20 +65,23 @@ export class PoolMockService {
       address: Keypair.generate().publicKey.toString(),
       ownerAddress,
     });
+
     /** Trigger calculate Pool progress */
     calculateProgressPercent.bind(poolData)();
+
     const pool = await this.poolRepo.create(poolData);
 
     /** publish events update user-tokens */
     /** One for base token */
-    await this.portfolioQueue.add(UPDATE_USER_TOKEN_PROCESS, {
+    this.portfolioQueue.add(UPDATE_USER_TOKEN_PROCESS, {
       ownerAddress,
       tokenAddress: pool.baseTokenAddress,
     } as UpdatePortfolioJobData);
+
     /** One for target token */
-    await this.portfolioQueue.add(UPDATE_USER_TOKEN_PROCESS, {
+    this.portfolioQueue.add(UPDATE_USER_TOKEN_PROCESS, {
       ownerAddress,
-      tokenAddress: pool.quoteTokenAddress,
+      tokenAddress: pool.targetTokenAddress,
     } as UpdatePortfolioJobData);
 
     return pool;

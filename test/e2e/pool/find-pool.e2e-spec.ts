@@ -18,7 +18,7 @@ async function getAllPoolsFunc(this: any, { req }: TestCase) {
   // Precondition 1: A valid wallet
   state.keypair = testHelper.createSolanaKeyPair();
   const ownerAddress = state.keypair.walletAddress;
-
+  //
   // Precondition 2: Existing pools in DB, use mock API for dev
   const createMockPoolResp = await request(app.getHttpServer())
     .post(`/api/pool/mock/generate`)

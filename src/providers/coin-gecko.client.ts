@@ -23,7 +23,7 @@ export class CoinGeckoClient {
       contract_addresses: mintAddresses.join(','),
       vs_currencies: fiats.join(','),
     });
-    return await this.networkProvider.request<SimplePrice>(
+    return this.networkProvider.request<SimplePrice>(
       `${this.host}/v3/simple/token_price/${platform}?${query}`,
       { method: 'GET' },
     );
