@@ -213,22 +213,6 @@ export class SolanaPoolProvider implements OnModuleInit {
       );
     }
 
-    const cleanUpInx = [];
-
-    cleanUpInx.push(
-      await program.methods
-        .closeSwapRegistry()
-        .accounts({
-          marketKey: marketAddress,
-          authority: pocketAccount,
-          destination: operator.publicKey,
-          openOrders: marketOpenOrders,
-          dexProgram: marketOpenOrders,
-          pocket: pocketAccount,
-        })
-        .instruction(),
-    );
-
     return program.methods
       .executeSwap()
       .accounts({
