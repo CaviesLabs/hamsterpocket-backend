@@ -74,7 +74,7 @@ export class SyncPoolService {
     console.log('line 65');
     /** Publish a job for new pool */
     if (syncedPool.status === PoolStatus.ACTIVE) {
-      this.scheduleJob(syncedPool).catch(e => console.log(e));
+      this.scheduleJob(syncedPool).catch((e) => console.log(e));
     }
   }
 

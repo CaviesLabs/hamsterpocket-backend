@@ -4,6 +4,8 @@ import { ScheduleModule } from '@nestjs/schedule';
 // import { ThrottlerModule } from '@nestjs/throttler';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
+import { BullModule } from '@nestjs/bull';
+import { parseRedisUrl } from 'parse-redis-url-simple';
 
 import { TokenMetadataModule } from './token-metadata/token-metadata.module';
 import { getMemoryServerMongoUri } from './orm/helper';
@@ -11,7 +13,6 @@ import { RegistryProvider } from './providers/registry.provider';
 import { AllExceptionsFilter } from './exception.filter';
 import { AppController } from './app.controller';
 import { PoolModule } from './pool/pool.module';
-import { BullModule } from '@nestjs/bull';
 import { PortfolioModule } from './portfolio/portfolio.module';
 import { getRedisMemoryServerURI } from './mq/helper';
 import { WhitelistModule } from './whitelist/whitelist.module';
@@ -76,8 +77,16 @@ import { WhitelistModule } from './whitelist/whitelist.module';
           uri = registry.getConfig().REDIS_URI;
         }
 
+        const [redis] = parseRedisUrl(uri);
+
         return {
-          redis: uri,
+          redis: {
+            host: redis.host,
+            port: Number(redis.port),
+            password: redis.password,
+            keepAlive: 1,
+            db: Number(redis.database || 0)
+          }
         };
       },
     }),

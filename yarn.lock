@@ -7719,6 +7719,11 @@ parse-json@^5.0.0:
     json-parse-even-better-errors "^2.3.0"
     lines-and-columns "^1.1.6"
 
+parse-redis-url-simple@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/parse-redis-url-simple/-/parse-redis-url-simple-1.0.2.tgz#1ad9b5940d58580718bd3beae09a5d9ed7de31ca"
+  integrity sha512-BT2TIyMUL2LUkCuTiQlFjgJgz+nWJU6y1J2ezQU4IQC3mh/Ve0NdTo3oWx2EzMi4crdyFlA8nllDsTdEFWDjNw==
+
 parse5-htmlparser2-tree-adapter@^6.0.1:
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/parse5-htmlparser2-tree-adapter/-/parse5-htmlparser2-tree-adapter-6.0.1.tgz#2cdf9ad823321140370d4dbf5d3e92c7c8ddc6e6"
