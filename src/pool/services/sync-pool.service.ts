@@ -16,6 +16,10 @@ import { PoolDocument, PoolModel } from '../../orm/model/pool.model';
 import { Timer } from '../../providers/utils.provider';
 import { PoolEntity, PoolStatus } from '../entities/pool.entity';
 import { SolanaPoolProvider } from '../../providers/pool-program/solana-pool.provider';
+import {
+  POOL_ACTIVITY_QUEUE,
+  SYNC_POOL_ACTIVITY,
+} from '../../mq/queues/pool-activity.queue';
 
 @Injectable()
 export class SyncPoolService {
@@ -25,9 +29,11 @@ export class SyncPoolService {
     private readonly poolRepo: Model<PoolDocument>,
     @InjectQueue(POOL_QUEUE)
     private readonly buyTokenQueue: Queue<BuyTokenJobData>,
+    @InjectQueue(POOL_ACTIVITY_QUEUE)
+    private readonly poolActivityQueue: Queue<BuyTokenJobData>,
   ) {}
 
-  async scheduleJob(pool: PoolEntity) {
+  async scheduleExecutePoolJob(pool: PoolEntity) {
     /** Calculate job repeat options */
     const frequency = Duration.fromObject(pool.frequency).toMillis();
     let limit: number = undefined;
@@ -54,6 +60,14 @@ export class SyncPoolService {
     );
   }
 
+  async publishSyncPoolActivityEvent(poolId: string) {
+    await this.poolActivityQueue.add(
+      SYNC_POOL_ACTIVITY,
+      { poolId },
+      { jobId: poolId },
+    );
+  }
+
   async syncPoolById(poolId: string) {
     const existedPool = await this.poolRepo.findById(poolId);
     /** No need to sync ended pool */
@@ -65,8 +79,10 @@ export class SyncPoolService {
     console.log('line 65');
     /** Publish a job for new pool */
     if (syncedPool.status === PoolStatus.ACTIVE) {
-      await this.scheduleJob(syncedPool);
+      await this.scheduleExecutePoolJob(syncedPool);
     }
+    /** Publish sync pool activity event */
+    await this.publishSyncPoolActivityEvent(poolId);
 
     console.log('line 71');
     await this.poolRepo.updateOne(
@@ -111,8 +127,10 @@ export class SyncPoolService {
 
           /** Publish a job for new pool */
           if (status === PoolStatus.ACTIVE) {
-            await this.scheduleJob(syncedPool);
+            await this.scheduleExecutePoolJob(syncedPool);
           }
+          /** Publish sync pool activity event */
+          await this.publishSyncPoolActivityEvent(id);
 
           return plainToInstance(PoolModel, syncedPool);
         } catch (e) {

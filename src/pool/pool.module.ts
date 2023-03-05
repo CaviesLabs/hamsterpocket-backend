@@ -9,6 +9,8 @@ import { PoolMockService } from './services/pool-mock.service';
 import { PoolService } from './services/pool.service';
 import { SyncPoolService } from './services/sync-pool.service';
 import { PortfolioService } from '../portfolio/services/portfolio.service';
+import { PoolActivityProcessor } from './queues/pool-activity.processor';
+import { SyncPoolActivityService } from './services/sync-pool-activity.service';
 
 @Module({
   imports: [OrmModule, MqModule],
@@ -19,10 +21,12 @@ import { PortfolioService } from '../portfolio/services/portfolio.service';
     RegistryProvider,
     PoolService,
     SyncPoolService,
+    SyncPoolActivityService,
     PoolMockService,
     PortfolioService,
     /** Consumer */
     PoolProcessor,
+    PoolActivityProcessor,
   ],
   controllers: [PoolController],
 })

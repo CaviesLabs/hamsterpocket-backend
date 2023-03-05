@@ -35,6 +35,8 @@ export class SyncPoolActivityService {
       latest?.transactionId,
     );
 
+    if (newActivities.length == 0) return;
+
     const mappedActivities = newActivities.map(
       ({ eventName, eventData, transaction, createdAt }) =>
         convertToPoolActivityEntity(
