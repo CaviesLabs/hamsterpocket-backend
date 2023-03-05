@@ -9,4 +9,9 @@ export class WhitelistController {
   getAll() {
     return this.whitelistService.getAll();
   }
+
+  @Get('/market')
+  getMarkets() {
+    return this.whitelistService.getMarkets();
+  }
 }

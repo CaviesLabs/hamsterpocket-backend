@@ -16,6 +16,8 @@ import { PoolModule } from './pool/pool.module';
 import { PortfolioModule } from './portfolio/portfolio.module';
 import { getRedisMemoryServerURI } from './mq/helper';
 import { WhitelistModule } from './whitelist/whitelist.module';
+import { MarketSeedingCommand } from './whitelist/commands/market-seeding.command';
+import { OrmModule } from './orm/orm.module';
 
 @Module({
   imports: [
@@ -85,8 +87,8 @@ import { WhitelistModule } from './whitelist/whitelist.module';
             port: Number(redis.port),
             password: redis.password,
             keepAlive: 1,
-            db: Number(redis.database || 0)
-          }
+            db: Number(redis.database || 0),
+          },
         };
       },
     }),
@@ -97,6 +99,7 @@ import { WhitelistModule } from './whitelist/whitelist.module';
     WhitelistModule,
     PoolModule,
     PortfolioModule,
+    OrmModule,
   ],
   /**
    * @dev Import controller.
@@ -111,6 +114,7 @@ import { WhitelistModule } from './whitelist/whitelist.module';
       provide: APP_FILTER,
       useClass: AllExceptionsFilter,
     },
+    MarketSeedingCommand,
   ],
 })
 export class AppModule {}
