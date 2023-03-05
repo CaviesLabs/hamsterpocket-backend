@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model, PipelineStage } from 'mongoose';
-import { CommonQueryDto } from '../../api-docs/dto/common-query.dto';
+import { FilterQuery, Model, PipelineStage, Types } from 'mongoose';
 
+import { CommonQueryDto } from '../../api-docs/dto/common-query.dto';
 import { PoolModel, PoolDocument } from '../../orm/model/pool.model';
 import { SolanaPoolProvider } from '../../providers/pool-program/solana-pool.provider';
 import { FindPoolDto, FindPoolSortOption } from '../dtos/find-pool.dto';
 import { PoolEntity } from '../entities/pool.entity';
+import { MarketModel } from '../../orm/model/market.model';
 
 @Injectable()
 export class PoolService {
@@ -14,6 +15,9 @@ export class PoolService {
     private readonly onChainPoolProvider: SolanaPoolProvider,
     @InjectModel(PoolModel.name)
     private readonly poolRepo: Model<PoolDocument>,
+
+    @InjectModel(MarketModel.name)
+    private readonly marketDataRepo: Model<MarketModel>,
   ) {}
 
   async find({
@@ -73,17 +77,43 @@ export class PoolService {
   }
 
   async executeSwapToken(poolId: string) {
+    /**
+     * @dev Find neccessary data
+     */
     const pool = await this.poolRepo.findById(poolId);
-    console.log(pool);
-    // TODO: load market info from db before executing swap token
-    // await this.onChainPoolProvider.executeSwapToken(poolId, pool.ownerAddress);
-    // const syncedPool = await this.onChainPoolProvider.fetchFromContract(poolId);
-    // await this.poolRepo.updateOne(
-    //   { _id: new Types.ObjectId(poolId) },
-    //   syncedPool,
-    //   {
-    //     upsert: true,
-    //   },
-    // );
+    const market = await this.marketDataRepo.findOne({
+      marketId: pool.marketKey,
+    });
+
+    /**
+     * @dev Raise error if we cannot find any associated market
+     */
+    if (!market) {
+      throw new Error('INVALID_MARKET');
+    }
+
+    /**
+     * @dev Trigger swap. TODO: try/catch and log events emitted from swap transaction.
+     */
+    await this.onChainPoolProvider.executeSwapToken({
+      pocketId: poolId,
+      baseMint: market.baseMint,
+      quoteMint: market.quoteMint,
+      marketKey: market.marketId,
+      marketAuthority: market.marketAuthority,
+      marketProgramId: market.marketProgramId,
+    });
+
+    /**
+     * @dev Sync pool after execute swap
+     */
+    const syncedPool = await this.onChainPoolProvider.fetchFromContract(poolId);
+    await this.poolRepo.updateOne(
+      { _id: new Types.ObjectId(poolId) },
+      syncedPool,
+      {
+        upsert: true,
+      },
+    );
   }
 }

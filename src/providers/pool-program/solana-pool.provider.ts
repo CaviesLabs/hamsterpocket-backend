@@ -238,7 +238,6 @@ export class SolanaPoolProvider implements OnModuleInit {
         { pubkey: marketProgramAddress, isSigner: false, isWritable: false },
       ])
       .signers([operator.payer])
-      .rpc({ commitment: 'confirmed' })
-      .catch((e) => console.log(e));
+      .rpc({ commitment: 'confirmed' });
   }
 }
