@@ -17,15 +17,24 @@ export type OcEventName =
   | 'PocketCreated'
   | 'PocketDeposited'
   | 'PocketUpdated'
-  | 'PocketWithdrawn';
+  | 'DidSwap'
+  | 'PocketWithdrawn'
+  | 'VaultCreated'
+  | 'PocketConfigUpdated';
 
-export type PocketEventPocketCreated = PocketEvents['PocketCreated'];
-export type PocketEventPocketDeposited = PocketEvents['PocketDeposited'];
-export type PocketEventPocketUpdated = PocketEvents['PocketUpdated'];
-export type PocketEventPocketWithdrawn = PocketEvents['PocketWithdrawn'];
+export type PocketEventCreated = PocketEvents['PocketCreated'];
+export type PocketEventDeposited = PocketEvents['PocketDeposited'];
+export type PocketEventUpdated = PocketEvents['PocketUpdated'];
+export type PocketEventDidSwap = PocketEvents['DidSwap'];
+export type PocketEventWithdrawn = PocketEvents['PocketWithdrawn'];
+export type PocketEventVaultCreated = PocketEvents['VaultCreated'];
+export type PocketEventConfigUpdated = PocketEvents['PocketConfigUpdated'];
 
 export type OcPocketEvent =
-  | PocketEventPocketCreated
-  | PocketEventPocketDeposited
-  | PocketEventPocketUpdated
-  | PocketEventPocketWithdrawn;
+  | PocketEventCreated
+  | PocketEventDeposited
+  | PocketEventUpdated
+  | PocketEventDidSwap
+  | PocketEventWithdrawn
+  | PocketEventVaultCreated
+  | PocketEventConfigUpdated;
