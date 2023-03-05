@@ -85,7 +85,7 @@ export class MarketSeedingCommand extends CommandRunner {
       await this.marketDataRepo.create(data, {});
     });
     pipeline.on('end', () => {
-      console.log("Inserted successfully");
+      console.log('Inserted successfully');
     });
   }
 }
