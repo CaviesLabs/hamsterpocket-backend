@@ -113,11 +113,6 @@ export type Pocket = {
           isSigner: true;
         },
         {
-          name: 'pocketRegistry';
-          isMut: true;
-          isSigner: false;
-        },
-        {
           name: 'systemProgram';
           isMut: false;
           isSigner: false;
@@ -268,6 +263,47 @@ export type Pocket = {
         },
         {
           name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+      ];
+      args: [];
+    },
+    {
+      name: 'closePocketAccounts';
+      accounts: [
+        {
+          name: 'signer';
+          isMut: true;
+          isSigner: true;
+        },
+        {
+          name: 'pocketBaseTokenVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'pocketQuoteTokenVault';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'pocket';
+          isMut: true;
+          isSigner: false;
+        },
+        {
+          name: 'systemProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'tokenProgram';
+          isMut: false;
+          isSigner: false;
+        },
+        {
+          name: 'rent';
           isMut: false;
           isSigner: false;
         },
@@ -977,26 +1013,6 @@ export type Pocket = {
       };
     },
     {
-      name: 'MainProgressBy';
-      type: {
-        kind: 'enum';
-        variants: [
-          {
-            name: 'EndTimeReach';
-          },
-          {
-            name: 'BaseTokenAmountReach';
-          },
-          {
-            name: 'QuoteTokenAmountReach';
-          },
-          {
-            name: 'BatchAmountReach';
-          },
-        ];
-      };
-    },
-    {
       name: 'PocketStatus';
       type: {
         kind: 'enum';
@@ -1379,11 +1395,6 @@ export const IDL: Pocket = {
           isSigner: true,
         },
         {
-          name: 'pocketRegistry',
-          isMut: true,
-          isSigner: false,
-        },
-        {
           name: 'systemProgram',
           isMut: false,
           isSigner: false,
@@ -1534,6 +1545,47 @@ export const IDL: Pocket = {
         },
         {
           name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
+      ],
+      args: [],
+    },
+    {
+      name: 'closePocketAccounts',
+      accounts: [
+        {
+          name: 'signer',
+          isMut: true,
+          isSigner: true,
+        },
+        {
+          name: 'pocketBaseTokenVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'pocketQuoteTokenVault',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'pocket',
+          isMut: true,
+          isSigner: false,
+        },
+        {
+          name: 'systemProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'tokenProgram',
+          isMut: false,
+          isSigner: false,
+        },
+        {
+          name: 'rent',
           isMut: false,
           isSigner: false,
         },
@@ -2238,26 +2290,6 @@ export const IDL: Pocket = {
           },
           {
             name: 'Sell',
-          },
-        ],
-      },
-    },
-    {
-      name: 'MainProgressBy',
-      type: {
-        kind: 'enum',
-        variants: [
-          {
-            name: 'EndTimeReach',
-          },
-          {
-            name: 'BaseTokenAmountReach',
-          },
-          {
-            name: 'QuoteTokenAmountReach',
-          },
-          {
-            name: 'BatchAmountReach',
           },
         ],
       },
