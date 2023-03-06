@@ -132,7 +132,7 @@ export class SyncPoolService {
           /** Publish sync pool activity event */
           await this.publishSyncPoolActivityEvent(id);
 
-          return plainToInstance(PoolModel, syncedPool);
+          return plainToInstance(PoolEntity, syncedPool);
         } catch (e) {
           console.error(e);
           return null;
@@ -140,7 +140,19 @@ export class SyncPoolService {
       }),
     );
 
-    await this.poolRepo.bulkSave(syncedPools.filter((pool) => !!pool));
+    await this.poolRepo.bulkWrite(
+      syncedPools
+        .filter((pool) => !!pool)
+        .map((pool) => {
+          return {
+            updateOne: {
+              filter: { _id: new Types.ObjectId(pool.id) },
+              update: pool,
+              upsert: true,
+            },
+          };
+        }),
+    );
 
     timer.stop();
   }
