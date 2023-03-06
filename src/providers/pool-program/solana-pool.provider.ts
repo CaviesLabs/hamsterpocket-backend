@@ -18,8 +18,10 @@ import { OcEventName, OcPocketEvent } from './pocket.type';
 import { ProgramAccountsProvider } from './program-accounts.provider';
 
 export const SOLANA_DEVNET_RPC_ENDPOINT = 'https://api.devnet.solana.com';
+// export const SOLANA_MAINNET_RPC_RPC_ENDPOINT =
+//   'https://boldest-few-field.solana-mainnet.quiknode.pro/0ffa9f9f5e9141aa33a030081b78fdfe40bfbae6/';
 export const SOLANA_MAINNET_RPC_RPC_ENDPOINT =
-  'https://boldest-few-field.solana-mainnet.quiknode.pro/0ffa9f9f5e9141aa33a030081b78fdfe40bfbae6/';
+  'https://api.mainnet-beta.solana.com';
 
 type EventWithTransaction = {
   eventName: OcEventName;
@@ -65,8 +67,8 @@ export class SolanaPoolProvider implements OnModuleInit {
     this.connection = new Connection(this.rpcEndpoint);
 
     this.provider = new anchor.AnchorProvider(this.connection, senderWallet, {
-      preflightCommitment: 'confirmed',
-      commitment: 'confirmed',
+      preflightCommitment: 'processed',
+      commitment: 'processed',
     });
 
     this.program = new anchor.Program(
