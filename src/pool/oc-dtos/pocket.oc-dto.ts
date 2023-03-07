@@ -49,8 +49,8 @@ export function mapBuyCondition(condition: OcBuyCondition): BuyCondition {
     case PriceConditionType.BW:
     case PriceConditionType.NBW:
       value.push(
-        condition[statusKey].from_value.toNumber(),
-        condition[statusKey].to_value.toNumber(),
+        condition[statusKey].fromValue.toNumber(),
+        condition[statusKey].toValue.toNumber(),
       );
       break;
   }
@@ -103,6 +103,8 @@ export function mapStopConditions(
     const spentAmountReach =
       side === 'buy' ? spentQuoteTokenAmountReach : spentBaseTokenAmountReach;
 
+    console.log({ spentAmountReach });
+
     if (spentAmountReach) {
       stopConditions.spentBaseTokenReach = spentAmountReach.value.toNumber();
 
@@ -116,6 +118,8 @@ export function mapStopConditions(
      */
     const receivedTargetAmountReach =
       side === 'buy' ? baseTokenAmountReach : quoteTokenAmountReach;
+
+    console.log({ receivedTargetAmountReach });
 
     if (receivedTargetAmountReach) {
       stopConditions.receivedTargetTokenReach =

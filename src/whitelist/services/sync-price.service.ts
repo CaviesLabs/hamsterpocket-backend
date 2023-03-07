@@ -2,8 +2,8 @@ import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import * as fs from 'fs';
-
 import { Model } from 'mongoose';
+
 import { WhitelistModel } from '../../orm/model/whitelist.model';
 import { CoinGeckoClient } from '../../providers/coin-gecko.client';
 import { Timer } from '../../providers/utils.provider';
@@ -20,17 +20,25 @@ export class SyncPriceService implements OnApplicationBootstrap {
   @Cron(CronExpression.EVERY_5_MINUTES)
   async syncAllWhitelistCurrencyPrice() {
     const timer = new Timer('Sync all whitelist currency price');
+
     timer.start();
     const whitelists = await this.whiteListRepo.find({});
+
     if (whitelists.length == 0) return;
+
     /** Fetch prices */
     const pricing = await this.coinGeckoClient.getPriceInCurrencies(
       whitelists.map(({ address }) => address),
       ['usd'],
     );
+
     /** Map prices */
     let syncedTokenPrice = 0;
+
     for (const whitelist of whitelists) {
+      /**
+       * @dev Check for condition to sync the price
+       */
       if (pricing[whitelist.address]) {
         whitelist.estimatedValue = pricing[whitelist.address].usd;
         syncedTokenPrice++;
@@ -40,6 +48,7 @@ export class SyncPriceService implements OnApplicationBootstrap {
         );
       }
     }
+
     /** Update DB */
     await this.whiteListRepo.bulkSave(whitelists);
     console.log(
@@ -55,6 +64,7 @@ export class SyncPriceService implements OnApplicationBootstrap {
   private async seedingDB() {
     const raw = fs.readFileSync('./src/assets/raydium.whitelist.json');
     const defaultWhitelists: WhitelistEntity[] = JSON.parse(raw.toString());
+
     /** Upsert every deployed */
     await this.whiteListRepo.bulkWrite(
       defaultWhitelists.map((data) => ({
@@ -65,6 +75,7 @@ export class SyncPriceService implements OnApplicationBootstrap {
         },
       })),
     );
+
     /** trigger sync prices */
     await this.syncAllWhitelistCurrencyPrice();
   }

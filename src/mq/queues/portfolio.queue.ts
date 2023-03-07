@@ -7,6 +7,4 @@ export const UPDATE_USER_TOKEN_PROCESS = 'update-user-token';
 
 export type UpdatePortfolioJobData = {
   ownerAddress: string;
-
-  tokenAddress: string;
 };

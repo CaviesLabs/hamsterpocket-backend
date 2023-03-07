@@ -6,7 +6,7 @@ import {
   UserTokenDocument,
   UserTokenModel,
 } from '../../orm/model/user-token.model';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
 import {
   ListUserTokenDto,
   ListUserTokenSortOption,
@@ -80,7 +80,7 @@ export class PortfolioService {
     ]);
 
     if (!userBaseToken && !userTargetToken) {
-      throw new NotFoundException('USER_TOKEN_NOT_FOUND');
+      console.trace('USER_TOKEN_NOT_FOUND, skipped this calculation');
     }
 
     const userTokenSummary: UserTokenEntity = {

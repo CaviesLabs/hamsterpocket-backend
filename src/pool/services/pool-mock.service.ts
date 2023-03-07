@@ -83,19 +83,9 @@ export class PoolMockService {
      * @dev From the second chance we add to the queue, the data will be processed properly
      */
     /** publish events update user-tokens */
-    /** One for base token */
     await this.portfolioQueue.add(UPDATE_USER_TOKEN_PROCESS, {
       ownerAddress,
-      tokenAddress: pool.baseTokenAddress,
     } as UpdatePortfolioJobData);
-    // await this.portfolioService.updateUserToken(ownerAddress, pool.baseTokenAddress);
-
-    /** One for target token */
-    await this.portfolioQueue.add(UPDATE_USER_TOKEN_PROCESS, {
-      ownerAddress,
-      tokenAddress: pool.targetTokenAddress,
-    } as UpdatePortfolioJobData);
-    // await this.portfolioService.updateUserToken(ownerAddress, pool.targetTokenAddress);
 
     return pool;
   }

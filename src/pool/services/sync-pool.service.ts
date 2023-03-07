@@ -129,6 +129,7 @@ export class SyncPoolService {
           if (status === PoolStatus.ACTIVE) {
             await this.scheduleExecutePoolJob(syncedPool);
           }
+
           /** Publish sync pool activity event */
           await this.publishSyncPoolActivityEvent(id);
 
