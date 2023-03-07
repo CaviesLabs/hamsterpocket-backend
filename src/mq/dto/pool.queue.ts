@@ -8,3 +8,5 @@ export const BUY_TOKEN_PROCESS = 'buy-token';
 export type BuyTokenJobData = {
   poolId: string;
 };
+
+export const SYNC_POCKETS = 'sync-pocket';

@@ -11,6 +11,12 @@ import { PortfolioService } from '../portfolio/services/portfolio.service';
 import { PoolService } from '../pool/services/pool.service';
 import { SolanaPoolProvider } from '../providers/pool-program/solana-pool.provider';
 import { RegistryProvider } from '../providers/registry.provider';
+import { SyncPoolService } from '../pool/services/sync-pool.service';
+import { PocketProcessor } from './pocket/pocket.processor';
+import { PocketPublisher } from './pocket/pocket.publisher';
+import { PoolActivityPublisher } from './pocket-activity/pool-activity.publisher';
+import { PoolActivityProcessor } from './pocket-activity/pool-activity.processor';
+import { SyncPoolActivityService } from '../pool/services/sync-pool-activity.service';
 
 @Module({
   imports: [
@@ -29,14 +35,20 @@ import { RegistryProvider } from '../providers/registry.provider';
      */
     PortfolioService,
     PoolService,
+    SyncPoolService,
     RegistryProvider,
     SolanaPoolProvider,
+    SyncPoolActivityService,
 
     /**
      * @dev
      */
     PortfolioProcessor,
     PortfolioPublisher,
+    PocketProcessor,
+    PocketPublisher,
+    PoolActivityPublisher,
+    PoolActivityProcessor,
   ],
 })
 export class MqModule {}

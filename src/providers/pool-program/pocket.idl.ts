@@ -1074,6 +1074,11 @@ export type Pocket = {
           type: 'publicKey';
           index: true;
         },
+        {
+          name: 'pocketAddress';
+          type: 'publicKey';
+          index: true;
+        },
       ];
     },
     {
@@ -1186,6 +1191,11 @@ export type Pocket = {
     {
       name: 'DidSwap';
       fields: [
+        {
+          name: 'pocketAddress';
+          type: 'publicKey';
+          index: true;
+        },
         {
           name: 'givenAmount';
           type: 'u64';
@@ -2356,6 +2366,11 @@ export const IDL: Pocket = {
           type: 'publicKey',
           index: true,
         },
+        {
+          name: 'pocketAddress',
+          type: 'publicKey',
+          index: true,
+        },
       ],
     },
     {
@@ -2468,6 +2483,11 @@ export const IDL: Pocket = {
     {
       name: 'DidSwap',
       fields: [
+        {
+          name: 'pocketAddress',
+          type: 'publicKey',
+          index: true,
+        },
         {
           name: 'givenAmount',
           type: 'u64',

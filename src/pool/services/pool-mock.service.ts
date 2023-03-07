@@ -1,16 +1,9 @@
-import { InjectQueue } from '@nestjs/bull';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Keypair } from '@solana/web3.js';
-import { Queue } from 'bull';
 import { plainToInstance } from 'class-transformer';
 import { DateTime } from 'luxon';
 import { Model } from 'mongoose';
-import {
-  PORTFOLIO_QUEUE,
-  UpdatePortfolioJobData,
-  UPDATE_USER_TOKEN_PROCESS,
-} from '../../mq/dto/portfolio.queue';
 
 import { PoolDocument, PoolModel } from '../../orm/model/pool.model';
 import {
@@ -20,14 +13,22 @@ import {
   PoolStatus,
   PriceConditionType,
 } from '../entities/pool.entity';
+import {
+  WhitelistDocument,
+  WhitelistModel,
+} from '../../orm/model/whitelist.model';
+import { PortfolioService } from '../../portfolio/services/portfolio.service';
 
 @Injectable()
 export class PoolMockService {
   constructor(
     @InjectModel(PoolModel.name)
     private readonly poolRepo: Model<PoolDocument>,
-    @InjectQueue(PORTFOLIO_QUEUE)
-    private readonly portfolioQueue: Queue,
+
+    @InjectModel(WhitelistModel.name)
+    private readonly whitelistRepo: Model<WhitelistDocument>,
+
+    private readonly portfolioService: PortfolioService,
   ) {}
 
   private genPoolTemplate(): Partial<PoolEntity> {
@@ -68,21 +69,17 @@ export class PoolMockService {
 
     /** Trigger calculate Pool progress */
     calculateProgressPercent.bind(poolData)();
-
     const pool = await this.poolRepo.create(poolData);
-
-    /**
-     * @dev Workaround for the first added job wont be able to access repo registry
-     */
-    await this.portfolioQueue.add(UPDATE_USER_TOKEN_PROCESS, {});
 
     /**
      * @dev From the second chance we add to the queue, the data will be processed properly
      */
-    /** publish events update user-tokens */
-    await this.portfolioQueue.add(UPDATE_USER_TOKEN_PROCESS, {
-      ownerAddress,
-    } as UpdatePortfolioJobData);
+    const whitelistTokens = await this.whitelistRepo.find().exec();
+    await Promise.all(
+      whitelistTokens.map((token) =>
+        this.portfolioService.updateUserToken(ownerAddress, token.address),
+      ),
+    );
 
     return pool;
   }
