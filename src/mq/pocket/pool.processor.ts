@@ -5,9 +5,9 @@ import {
   POOL_QUEUE,
   BUY_TOKEN_PROCESS,
   BuyTokenJobData,
-} from '../../mq/queues/pool.queue';
+} from '../dto/pool.queue';
 
-import { PoolService } from '../services/pool.service';
+import { PoolService } from '../../pool/services/pool.service';
 
 @Processor(POOL_QUEUE)
 export class PoolProcessor {

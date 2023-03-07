@@ -11,7 +11,7 @@ import {
   POOL_QUEUE,
   BuyTokenJobData,
   BUY_TOKEN_PROCESS,
-} from '../../mq/queues/pool.queue';
+} from '../../mq/dto/pool.queue';
 import { PoolDocument, PoolModel } from '../../orm/model/pool.model';
 import { Timer } from '../../providers/utils.provider';
 import { PoolEntity, PoolStatus } from '../entities/pool.entity';
@@ -19,7 +19,7 @@ import { SolanaPoolProvider } from '../../providers/pool-program/solana-pool.pro
 import {
   POOL_ACTIVITY_QUEUE,
   SYNC_POOL_ACTIVITY,
-} from '../../mq/queues/pool-activity.queue';
+} from '../../mq/dto/pool-activity.queue';
 
 @Injectable()
 export class SyncPoolService {
@@ -72,19 +72,18 @@ export class SyncPoolService {
     const existedPool = await this.poolRepo.findById(poolId);
     /** No need to sync ended pool */
     if (existedPool.status === PoolStatus.ENDED) return;
-    console.log('line 61');
+
     /** Fetch pool latest update */
     const syncedPool = await this.onChainPoolProvider.fetchFromContract(poolId);
 
-    console.log('line 65');
     /** Publish a job for new pool */
     if (syncedPool.status === PoolStatus.ACTIVE) {
       await this.scheduleExecutePoolJob(syncedPool);
     }
+
     /** Publish sync pool activity event */
     await this.publishSyncPoolActivityEvent(poolId);
 
-    console.log('line 71');
     await this.poolRepo.updateOne(
       { _id: new Types.ObjectId(syncedPool.id) },
       syncedPool,
@@ -133,6 +132,9 @@ export class SyncPoolService {
           /** Publish sync pool activity event */
           await this.publishSyncPoolActivityEvent(id);
 
+          /**
+           * @dev Convert to instance
+           */
           return plainToInstance(PoolEntity, syncedPool);
         } catch (e) {
           console.error(e);

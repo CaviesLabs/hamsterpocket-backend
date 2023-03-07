@@ -1,3 +1,5 @@
+require('console-stamp')(console);
+
 /**
  * @dev Import core modules.
  */

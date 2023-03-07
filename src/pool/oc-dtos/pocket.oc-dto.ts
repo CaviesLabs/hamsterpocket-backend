@@ -103,8 +103,6 @@ export function mapStopConditions(
     const spentAmountReach =
       side === 'buy' ? spentQuoteTokenAmountReach : spentBaseTokenAmountReach;
 
-    console.log({ spentAmountReach });
-
     if (spentAmountReach) {
       stopConditions.spentBaseTokenReach = spentAmountReach.value.toNumber();
 
@@ -118,8 +116,6 @@ export function mapStopConditions(
      */
     const receivedTargetAmountReach =
       side === 'buy' ? baseTokenAmountReach : quoteTokenAmountReach;
-
-    console.log({ receivedTargetAmountReach });
 
     if (receivedTargetAmountReach) {
       stopConditions.receivedTargetTokenReach =
@@ -138,7 +134,6 @@ export function mapStopConditions(
 
 const determineTradeSideData = (pocketData: OcPocket): Partial<PoolEntity> => {
   const [sideValue] = Object.keys(pocketData.side);
-  console.log(pocketData.side, pocketData.stopConditions);
 
   switch (sideValue) {
     case 'buy':

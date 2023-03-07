@@ -98,6 +98,7 @@ PoolSchema.index(
 PoolSchema.index({ startTime: 'desc' }, { background: true });
 PoolSchema.index({ createdAt: 'desc' }, { background: true });
 PoolSchema.index({ progressPercent: 'desc' }, { background: true });
+PoolSchema.index({ ownerAddress: 'desc' }, { background: true });
 
 /**
  * @dev Define generic type for typescript reference.

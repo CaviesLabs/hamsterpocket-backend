@@ -4,8 +4,8 @@ import {
   POOL_ACTIVITY_QUEUE,
   SyncPoolActivityJobData,
   SYNC_POOL_ACTIVITY,
-} from '../../mq/queues/pool-activity.queue';
-import { SyncPoolActivityService } from '../services/sync-pool-activity.service';
+} from '../dto/pool-activity.queue';
+import { SyncPoolActivityService } from '../../pool/services/sync-pool-activity.service';
 
 @Processor(POOL_ACTIVITY_QUEUE)
 export class PoolActivityProcessor {

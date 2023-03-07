@@ -2,18 +2,18 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ConfigModule } from '@nestjs/config';
-import { APP_FILTER } from '@nestjs/core';
+import { BullModule } from '@nestjs/bull';
+import { parseRedisUrl } from 'parse-redis-url-simple';
 
 import { TokenMetadataModule } from './token-metadata/token-metadata.module';
 import { getMemoryServerMongoUri } from './orm/helper';
 import { RegistryProvider } from './providers/registry.provider';
-import { AllExceptionsFilter } from './exception.filter';
-import { AppController } from './app.controller';
 import { PoolModule } from './pool/pool.module';
 import { PortfolioModule } from './portfolio/portfolio.module';
+import { getRedisMemoryServerURI } from './mq/helper';
 import { WhitelistModule } from './whitelist/whitelist.module';
-import { MarketSeedingCommand } from './whitelist/commands/market-seeding.command';
 import { OrmModule } from './orm/orm.module';
+import { MqModule } from './mq/mq.module';
 
 @Module({
   imports: [
@@ -55,7 +55,31 @@ import { OrmModule } from './orm/orm.module';
         };
       },
     }),
+    BullModule.forRootAsync({
+      useFactory: async () => {
+        const registry = new RegistryProvider();
+        const env = registry.getConfig().NODE_ENV;
+        let uri;
 
+        if (env === 'test') {
+          uri = await getRedisMemoryServerURI();
+        } else {
+          uri = registry.getConfig().REDIS_URI;
+        }
+
+        const [redis] = parseRedisUrl(uri);
+
+        return {
+          redis: {
+            host: redis.host,
+            port: Number(redis.port),
+            password: redis.password,
+            keepAlive: 1,
+            db: Number(redis.database || 0),
+          },
+        };
+      },
+    }),
     /**
      * @dev Import other modules.
      */
@@ -64,21 +88,7 @@ import { OrmModule } from './orm/orm.module';
     PoolModule,
     PortfolioModule,
     OrmModule,
-  ],
-  /**
-   * @dev Import controller.
-   */
-  controllers: [AppController],
-
-  /**
-   * @dev Import main service.
-   */
-  providers: [
-    {
-      provide: APP_FILTER,
-      useClass: AllExceptionsFilter,
-    },
-    MarketSeedingCommand,
+    MqModule,
   ],
 })
-export class AppModule {}
+export class WorkerModule {}

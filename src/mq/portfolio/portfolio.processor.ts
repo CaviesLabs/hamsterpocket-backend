@@ -7,8 +7,8 @@ import {
   PORTFOLIO_QUEUE,
   UpdatePortfolioJobData,
   UPDATE_USER_TOKEN_PROCESS,
-} from '../../mq/queues/portfolio.queue';
-import { PortfolioService } from '../services/portfolio.service';
+} from '../dto/portfolio.queue';
+import { PortfolioService } from '../../portfolio/services/portfolio.service';
 import {
   WhitelistDocument,
   WhitelistModel,
@@ -41,6 +41,8 @@ export class PortfolioProcessor {
           this.portfolioService.updateUserToken(ownerAddress, token.address),
         ),
       );
+
+      console.info('Finished updating portfolio balance of', ownerAddress);
     } catch (e) {
       console.error('ERROR::JOB_FAILED_TO_UPDATE_USER_TOKEN', e);
     }

@@ -10,7 +10,7 @@ import {
   PORTFOLIO_QUEUE,
   UpdatePortfolioJobData,
   UPDATE_USER_TOKEN_PROCESS,
-} from '../../mq/queues/portfolio.queue';
+} from '../../mq/dto/portfolio.queue';
 
 import { PoolDocument, PoolModel } from '../../orm/model/pool.model';
 import {
@@ -20,7 +20,6 @@ import {
   PoolStatus,
   PriceConditionType,
 } from '../entities/pool.entity';
-import { PortfolioService } from '../../portfolio/services/portfolio.service';
 
 @Injectable()
 export class PoolMockService {
@@ -29,8 +28,6 @@ export class PoolMockService {
     private readonly poolRepo: Model<PoolDocument>,
     @InjectQueue(PORTFOLIO_QUEUE)
     private readonly portfolioQueue: Queue,
-
-    private readonly portfolioService: PortfolioService,
   ) {}
 
   private genPoolTemplate(): Partial<PoolEntity> {

@@ -1,12 +1,12 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model, PipelineStage } from 'mongoose';
+import { BadRequestException } from '@nestjs/common';
 
 import { PoolModel, PoolDocument } from '../../orm/model/pool.model';
 import {
   UserTokenDocument,
   UserTokenModel,
 } from '../../orm/model/user-token.model';
-import { BadRequestException } from '@nestjs/common';
 import {
   ListUserTokenDto,
   ListUserTokenSortOption,
@@ -80,7 +80,9 @@ export class PortfolioService {
     ]);
 
     if (!userBaseToken && !userTargetToken) {
-      console.trace('USER_TOKEN_NOT_FOUND, skipped this calculation');
+      console.log(
+        `USER_TOKEN_NOT_FOUND: ${tokenAddress} skipped this calculation`,
+      );
     }
 
     const userTokenSummary: UserTokenEntity = {
