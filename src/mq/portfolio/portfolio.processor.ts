@@ -35,12 +35,7 @@ export class PortfolioProcessor {
       /**
        * @dev Trigger updating balance
        */
-      const whitelistTokens = await this.whitelistRepo.find().exec();
-      await Promise.all(
-        whitelistTokens.map((token) =>
-          this.portfolioService.updateUserToken(ownerAddress, token.address),
-        ),
-      );
+      await this.portfolioService.syncUserPortfolio(ownerAddress);
 
       console.info('Finished updating portfolio balance of', ownerAddress);
     } catch (e) {

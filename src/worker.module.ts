@@ -26,6 +26,7 @@ import { MqModule } from './mq/mq.module';
      * @dev Enable schedule module.
      */
     ScheduleModule.forRoot(),
+
     /**
      * @dev Initialize database
      */

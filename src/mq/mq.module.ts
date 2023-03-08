@@ -17,6 +17,10 @@ import { PocketPublisher } from './pocket/pocket.publisher';
 import { PoolActivityPublisher } from './pocket-activity/pool-activity.publisher';
 import { PoolActivityProcessor } from './pocket-activity/pool-activity.processor';
 import { SyncPoolActivityService } from '../pool/services/sync-pool-activity.service';
+import { PriceFeedPublisher } from './price-feed/price-feed.publisher';
+import { SyncPriceService } from '../whitelist/services/sync-price.service';
+import { CoinGeckoClient } from '../providers/coin-gecko.client';
+import { NetworkProvider } from '../providers/network.provider';
 
 @Module({
   imports: [
@@ -39,6 +43,9 @@ import { SyncPoolActivityService } from '../pool/services/sync-pool-activity.ser
     RegistryProvider,
     SolanaPoolProvider,
     SyncPoolActivityService,
+    SyncPriceService,
+    CoinGeckoClient,
+    NetworkProvider,
 
     /**
      * @dev
@@ -49,6 +56,7 @@ import { SyncPoolActivityService } from '../pool/services/sync-pool-activity.ser
     PocketPublisher,
     PoolActivityPublisher,
     PoolActivityProcessor,
+    PriceFeedPublisher,
   ],
 })
 export class MqModule {}

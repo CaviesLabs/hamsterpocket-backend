@@ -57,6 +57,11 @@ export class PoolController {
     return this.syncPoolService.syncPoolById(id);
   }
 
+  @Post('/user/:ownerAddress/sync')
+  syncByOwnerAddress(@Param('ownerAddress') ownerAddress: string) {
+    return this.syncPoolService.syncPoolsByOwnerAddress(ownerAddress);
+  }
+
   @Get('/activity')
   async getPoolActivities(
     @Query() query: FindPoolActivityDto,
