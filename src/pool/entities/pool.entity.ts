@@ -99,34 +99,35 @@ export class PoolEntity {
  * External method because ORM model isn't need to implement.
  * Note: Require bind before call.
  */
-export function calculateProgressPercent(this: PoolEntity) {
-  if (!this.stopConditions) {
-    this.progressPercent = -1;
+export function calculateProgressPercent(pocket: PoolEntity) {
+  if (!pocket.stopConditions) {
+    pocket.progressPercent = -1;
     return;
   }
 
-  switch (this.mainProgressBy) {
+  switch (pocket.mainProgressBy) {
     case MainProgressBy.SPENT_BASE_TOKEN:
-      this.progressPercent =
-        this.currentSpentBaseToken / this.stopConditions.spentBaseTokenReach;
+      pocket.progressPercent =
+        pocket.currentSpentBaseToken /
+        pocket.stopConditions.spentBaseTokenReach;
       break;
 
     case MainProgressBy.RECEIVED_TARGET_TOKEN:
-      this.progressPercent =
-        this.currentReceivedTargetToken /
-        this.stopConditions.receivedTargetTokenReach;
+      pocket.progressPercent =
+        pocket.currentReceivedTargetToken /
+        pocket.stopConditions.receivedTargetTokenReach;
       break;
 
     case MainProgressBy.BATCH_AMOUNT:
-      this.progressPercent =
-        this.currentBatchAmount / this.stopConditions.batchAmountReach;
+      pocket.progressPercent =
+        pocket.currentBatchAmount / pocket.stopConditions.batchAmountReach;
       break;
 
     case MainProgressBy.END_TIME:
-      const startTimeInMillis = this.startTime.getTime();
-      const endTimeInMillis = this.stopConditions.endTime.getTime();
+      const startTimeInMillis = pocket.startTime.getTime();
+      const endTimeInMillis = pocket.stopConditions.endTime.getTime();
       const currentInMillis = new Date().getTime();
-      this.progressPercent =
+      pocket.progressPercent =
         (Math.min(currentInMillis, startTimeInMillis) - startTimeInMillis) /
         (endTimeInMillis - startTimeInMillis);
   }

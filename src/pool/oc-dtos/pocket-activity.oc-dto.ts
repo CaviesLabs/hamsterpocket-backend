@@ -37,7 +37,7 @@ function getUpdatedData(data: PocketEventUpdated): Partial<PoolActivityEntity> {
   const [status] = Object.keys(data.status);
   return {
     actor: data.actor.toBase58(),
-    status: eventStatusTypeMap[status],
+    type: eventStatusTypeMap[status],
     memo: data.memo,
   };
 }

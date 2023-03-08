@@ -57,6 +57,8 @@ export class PoolActivityPublisher implements OnApplicationBootstrap {
     );
 
     /** Publish repeatable job */
-    console.log(`[${SYNC_POOL_ACTIVITIES}] Added sync pocket job ...`);
+    console.log(
+      `[${SYNC_POOL_ACTIVITIES}] Added sync pocket activities job ...`,
+    );
   }
 }

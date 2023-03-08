@@ -45,6 +45,8 @@ export class SyncPoolActivityService {
       { id: 1, status: 1 },
     );
 
+    console.log(`Found ${poolIds.length} pool(s) to sync activities ...`);
+
     /**
      * @dev Sync all pool activities
      */

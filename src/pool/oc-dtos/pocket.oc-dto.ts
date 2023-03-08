@@ -81,7 +81,7 @@ export function mapStopConditions(
     if (batchAmountReach) {
       stopConditions.batchAmountReach = batchAmountReach.value.toNumber();
 
-      if (batchAmountReach.is_primary) {
+      if ((batchAmountReach as any).isPrimary) {
         mainProgressBy = MainProgressBy.BATCH_AMOUNT;
       }
     }
@@ -92,7 +92,7 @@ export function mapStopConditions(
     if (endTimeReach) {
       stopConditions.endTime = new Date(endTimeReach.value.toNumber());
 
-      if (endTimeReach.is_primary) {
+      if ((endTimeReach as any).isPrimary) {
         mainProgressBy = MainProgressBy.END_TIME;
       }
     }
@@ -106,7 +106,7 @@ export function mapStopConditions(
     if (spentAmountReach) {
       stopConditions.spentBaseTokenReach = spentAmountReach.value.toNumber();
 
-      if (spentAmountReach.is_primary) {
+      if ((spentAmountReach as any).isPrimary) {
         mainProgressBy = MainProgressBy.SPENT_BASE_TOKEN;
       }
     }
@@ -121,7 +121,7 @@ export function mapStopConditions(
       stopConditions.receivedTargetTokenReach =
         receivedTargetAmountReach.value.toNumber();
 
-      if (receivedTargetAmountReach.is_primary) {
+      if ((receivedTargetAmountReach as any).isPrimary) {
         mainProgressBy = MainProgressBy.RECEIVED_TARGET_TOKEN;
       }
     }
