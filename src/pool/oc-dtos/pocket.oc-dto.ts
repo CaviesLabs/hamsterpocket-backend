@@ -175,14 +175,16 @@ export function convertToPoolEntity(
     ownerAddress: pocketData.owner.toBase58(),
     name: pocketData.name,
     status: mapPocketStatus(pocketData.status),
-    startTime: new Date(pocketData.startAt.toNumber()),
+    startTime: new Date(pocketData.startAt.toNumber() * 1000),
+    nextExecutionAt: new Date(
+      pocketData.nextScheduledExecutionAt.toNumber() * 1000,
+    ),
     batchVolume: pocketData.batchVolume.toNumber(),
     frequency: {
       hours: pocketData.frequency.hours.toNumber(),
     },
     buyCondition: mapBuyCondition(pocketData.buyCondition),
     currentBatchAmount: pocketData.executedBatchAmount.toNumber(),
-    nextExecutionAt: new Date(pocketData.nextScheduledExecutionAt.toNumber()),
     marketKey: pocketData.marketKey.toBase58(),
   } as Partial<PoolEntity>);
 }
