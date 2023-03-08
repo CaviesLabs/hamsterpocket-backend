@@ -47,9 +47,9 @@ export class PoolController {
     });
   }
 
-  @Post()
-  createEmpty() {
-    return this.poolService.createEmpty();
+  @Post('/:ownerAddress')
+  createEmpty(@Param('ownerAddress') ownerAddress: string) {
+    return this.poolService.createEmpty(ownerAddress);
   }
 
   @Post('/:id/sync')

@@ -68,10 +68,17 @@ export class PoolService {
     return this.poolRepo.aggregate<PoolModel>(stages);
   }
 
-  async createEmpty() {
-    const [doc] = await this.poolRepo.create([{}], {
-      validateBeforeSave: false,
-    });
+  async createEmpty(ownerAddress: string) {
+    const [doc] = await this.poolRepo.create(
+      [
+        {
+          ownerAddress,
+        },
+      ],
+      {
+        validateBeforeSave: false,
+      },
+    );
 
     return doc;
   }
