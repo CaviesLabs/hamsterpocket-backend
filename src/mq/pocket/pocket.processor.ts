@@ -28,7 +28,13 @@ export class PocketProcessor {
         .find({
           status: PoolStatus.ACTIVE,
 
+          /**
+           * @dev Date filtering
+           */
           nextExecutionAt: {
+            $lte: new Date(),
+          },
+          startTime: {
             $lte: new Date(),
           },
         })
