@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Controller, Get, Optional, Param, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CommonQueryDto } from '../../api-docs/dto/common-query.dto';
 // import { PortfolioView } from '../dtos/get-portfolio.dto';
@@ -31,7 +31,7 @@ export class PortfolioController {
   @Get('/:ownerAddress/user-tokens')
   async listUserTokens(
     @Param('ownerAddress') ownerAddress: string,
-    @Query() { sortBy }: ListUserTokenDto,
+    @Optional() @Query() { sortBy }: ListUserTokenDto,
     @Query() { limit, offset, search }: CommonQueryDto,
   ): Promise<UserTokenWithAdditionView[]> {
     return this.portfolioService.listUserToken(ownerAddress, {

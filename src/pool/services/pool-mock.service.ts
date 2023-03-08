@@ -53,7 +53,7 @@ export class PoolMockService {
         batchAmountReach: 259,
       },
       currentSpentBaseToken: 0.61395378152,
-      remainingBaseTokenBalance: 0,
+      remainingBaseTokenBalance: 1 - 0.61395378152,
       currentReceivedTargetToken: 100,
       currentBatchAmount: 100,
       mainProgressBy: MainProgressBy.BATCH_AMOUNT,
@@ -74,7 +74,11 @@ export class PoolMockService {
     /**
      * @dev From the second chance we add to the queue, the data will be processed properly
      */
-    const whitelistTokens = await this.whitelistRepo.find().exec();
+    const whitelistTokens = [
+      {
+        address: 'So11111111111111111111111111111111111111112',
+      },
+    ];
     await Promise.all(
       whitelistTokens.map((token) =>
         this.portfolioService.updateUserToken(ownerAddress, token.address),

@@ -16,19 +16,16 @@ export async function getBalanceSuccessFunc(this: any) {
     .query({ ownerAddress });
   expect(createMockPoolResp.status).to.equal(201);
 
-  // Await a bit for sync price/cal portfolio complete
-  const baseTokenAddress = createMockPoolResp.body.baseTokenAddress;
-
   // Step 1: Call API with ownerAddress & baseTokenAddress
   const getBalanceResp = await request(app.getHttpServer()).get(
-    `/api/portfolio/${ownerAddress}/base-token/${baseTokenAddress}`,
+    `/api/portfolio/${ownerAddress}/user-tokens`,
   );
 
   expect(getBalanceResp.status).to.equal(200);
-  expect(getBalanceResp.body.totalPoolsBalance).to.be.a('number');
-  expect(getBalanceResp.body.totalPoolsBalanceValue).to.be.a('number');
-  expect(getBalanceResp.body.topTokens).to.be.an('array');
-  expect(getBalanceResp.body.topTokens.length).to.greaterThan(0);
+  expect(getBalanceResp.body.length).to.greaterThan(0);
+
+  const [balance] = getBalanceResp.body;
+  expect(balance.total).to.greaterThan(0);
 }
 
 describe('Get portfolio balance', function () {
