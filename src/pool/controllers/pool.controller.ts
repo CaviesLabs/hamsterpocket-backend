@@ -18,8 +18,10 @@ import {
   PoolActivityEntity,
   PoolActivityStatus,
 } from '../entities/pool-activity.entity';
+import { PoolActivityService } from '../services/pool-activity.service';
 import { PoolMockService } from '../services/pool-mock.service';
 import { PoolService } from '../services/pool.service';
+import { SyncPoolActivityService } from '../services/sync-pool-activity.service';
 import { SyncPoolService } from '../services/sync-pool.service';
 
 @Controller('pool')
@@ -30,6 +32,8 @@ export class PoolController {
     private readonly poolService: PoolService,
     private readonly syncPoolService: SyncPoolService,
     private readonly poolMockService: PoolMockService,
+    private readonly poolActivityService: PoolActivityService,
+    private readonly syncPoolActivityService: SyncPoolActivityService,
   ) {}
 
   @Get()
@@ -124,6 +128,11 @@ export class PoolController {
         createdAt: new Date(),
       },
     ];
+  }
+
+  @Post('/activity/:id')
+  async syncPoolActivity(@Param('id') poolId: string) {
+    await this.syncPoolActivityService.syncPoolActivities(poolId);
   }
 
   @Post('/mock/generate')

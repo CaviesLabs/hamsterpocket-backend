@@ -7,8 +7,9 @@ import { Queue } from 'bull';
 import { PoolDocument, PoolModel } from '../../orm/model/pool.model';
 import {
   POOL_ACTIVITY_QUEUE,
-  SYNC_POOL_ACTIVITY,
+  SYNC_POOL_ACTIVITIES,
 } from '../dto/pool-activity.queue';
+import { Duration } from 'luxon';
 
 @Injectable()
 export class PoolActivityPublisher implements OnApplicationBootstrap {
@@ -21,14 +22,41 @@ export class PoolActivityPublisher implements OnApplicationBootstrap {
   ) {}
 
   async onApplicationBootstrap() {
-    console.log('TODO: implement sync pool flow again');
+    this.createSyncActivitiesJob().catch((e) =>
+      console.log('ERROR::FAILED_TO_SYNC_POOL_ACTIVITY', e),
+    );
   }
 
-  async publishSyncPoolActivityEvent(poolId: string) {
+  async createSyncActivitiesJob() {
+    /**
+     * @dev Flush the queue
+     */
+    await this.poolActivityQueue.removeRepeatableByKey(POOL_ACTIVITY_QUEUE);
+
+    /**
+     * @dev Add a task to the queue
+     */
     await this.poolActivityQueue.add(
-      SYNC_POOL_ACTIVITY,
-      { poolId },
-      { jobId: poolId },
+      SYNC_POOL_ACTIVITIES,
+      {},
+      {
+        /** Use pool ID as jobId to upsert queue event */
+        jobId: SYNC_POOL_ACTIVITIES,
+        priority: 1,
+
+        /**
+         * @dev Sync data every 5 minutes
+         */
+        repeat: {
+          startDate: new Date(),
+          every: Duration.fromObject({
+            minutes: 5,
+          }).toMillis(),
+        },
+      },
     );
+
+    /** Publish repeatable job */
+    console.log(`[${SYNC_POOL_ACTIVITIES}] Added sync pocket job ...`);
   }
 }

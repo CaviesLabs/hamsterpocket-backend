@@ -1,10 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
-import {
-  PoolActivityModel,
-  PoolActivitySchema,
-} from './model/pool-activity.model';
+import { ActivityModel, PoolActivitySchema } from './model/pool-activity.model';
 import { PoolModel, PoolSchema } from './model/pool.model';
 import {
   TokenMetadataModel,
@@ -26,7 +23,7 @@ import { MarketDataSchema, MarketModel } from './model/market.model';
       { name: TokenMetadataModel.name, schema: TokenMetadataSchema },
       { name: WhitelistModel.name, schema: WhitelistSchema },
       { name: PoolModel.name, schema: PoolSchema },
-      { name: PoolActivityModel.name, schema: PoolActivitySchema },
+      { name: ActivityModel.name, schema: PoolActivitySchema },
       { name: UserTokenModel.name, schema: UserTokenSchema },
       { name: MarketModel.name, schema: MarketDataSchema },
     ]),

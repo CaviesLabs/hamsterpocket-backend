@@ -8,6 +8,7 @@ import { PoolService } from './services/pool.service';
 import { SyncPoolService } from './services/sync-pool.service';
 import { PortfolioService } from '../portfolio/services/portfolio.service';
 import { SyncPoolActivityService } from './services/sync-pool-activity.service';
+import { PoolActivityService } from './services/pool-activity.service';
 
 @Module({
   imports: [OrmModule],
@@ -20,6 +21,7 @@ import { SyncPoolActivityService } from './services/sync-pool-activity.service';
     SyncPoolService,
     SyncPoolActivityService,
     PoolMockService,
+    PoolActivityService,
     PortfolioService,
   ],
   controllers: [PoolController],

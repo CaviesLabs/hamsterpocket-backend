@@ -13,14 +13,7 @@ export type OcPocketStatus = PocketTypes['PocketStatus'];
 
 type PocketEvents = IdlEvents<Pocket>;
 
-export type OcEventName =
-  | 'PocketCreated'
-  | 'PocketDeposited'
-  | 'PocketUpdated'
-  | 'DidSwap'
-  | 'PocketWithdrawn'
-  | 'VaultCreated'
-  | 'PocketConfigUpdated';
+export type OcEventName = keyof PocketEvents;
 
 export type PocketEventCreated = PocketEvents['PocketCreated'];
 export type PocketEventDeposited = PocketEvents['PocketDeposited'];
