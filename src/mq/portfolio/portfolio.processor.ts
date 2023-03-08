@@ -30,14 +30,20 @@ export class PortfolioProcessor {
   async updatePortfolio(job: Job<UpdatePortfolioJobData>) {
     try {
       const { ownerAddress } = job.data;
-      console.log('Started updating portfolio balance of', ownerAddress);
+      console.log(
+        `[${UPDATE_USER_TOKEN_PROCESS}] Started updating portfolio balance of`,
+        ownerAddress,
+      );
 
       /**
        * @dev Trigger updating balance
        */
       await this.portfolioService.syncUserPortfolio(ownerAddress);
 
-      console.info('Finished updating portfolio balance of', ownerAddress);
+      console.info(
+        `[${UPDATE_USER_TOKEN_PROCESS}] Finished updating portfolio balance of`,
+        ownerAddress,
+      );
     } catch (e) {
       console.error('ERROR::JOB_FAILED_TO_UPDATE_USER_TOKEN', e);
     }

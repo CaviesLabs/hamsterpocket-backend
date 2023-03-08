@@ -11,6 +11,7 @@ import {
   UPDATE_USER_TOKEN_PROCESS,
   UpdatePortfolioJobData,
 } from '../dto/portfolio.queue';
+import { BUY_TOKEN_PROCESS } from '../dto/pool.queue';
 
 @Injectable()
 export class PortfolioPublisher implements OnApplicationBootstrap {
@@ -25,12 +26,6 @@ export class PortfolioPublisher implements OnApplicationBootstrap {
     /**
      * @dev Clean up
      */
-    await this.portfolioQueue.empty();
-    console.log(
-      'await this.portfolioQueue.getRepeatableJobs()',
-      await this.portfolioQueue.getRepeatableJobs(),
-    );
-
     const repeatableJobs = await this.portfolioQueue.getRepeatableJobs();
     await Promise.all(
       repeatableJobs.map((job) =>
@@ -38,15 +33,12 @@ export class PortfolioPublisher implements OnApplicationBootstrap {
       ),
     );
 
-    console.log(
-      'await this.portfolioQueue.getRepeatableJobs()',
-      await this.portfolioQueue.getRepeatableJobs(),
-    );
-
     /**
      * @dev Start new queue
      */
-    console.log('Started adding queues for portfolio update ...');
+    console.log(
+      `[${BUY_TOKEN_PROCESS}] Started adding queues for portfolio update ...`,
+    );
 
     /**
      * @dev Aggregate owner address first

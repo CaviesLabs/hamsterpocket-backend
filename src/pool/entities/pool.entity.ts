@@ -67,6 +67,8 @@ export class PoolEntity {
 
   startTime: Date;
 
+  nextExecutionAt: Date;
+
   depositedAmount: number;
 
   batchVolume: number;

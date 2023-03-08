@@ -1,5 +1,6 @@
 import { Processor, Process } from '@nestjs/bull';
 import { Job } from 'bull';
+
 import {
   POOL_ACTIVITY_QUEUE,
   SyncPoolActivityJobData,
@@ -12,6 +13,7 @@ export class PoolActivityProcessor {
   constructor(
     private readonly syncPoolActivityService: SyncPoolActivityService,
   ) {}
+
   @Process(SYNC_POOL_ACTIVITY)
   async syncPoolActivityJob(job: Job<SyncPoolActivityJobData>) {
     try {

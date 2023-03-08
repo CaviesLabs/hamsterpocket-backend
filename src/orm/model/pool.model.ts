@@ -42,6 +42,9 @@ export class PoolModel extends BaseModel implements PoolEntity {
   @Prop({ type: Date })
   startTime: Date;
 
+  @Prop({ type: Date })
+  nextExecutionAt: Date;
+
   @Prop({ type: Number, default: 0 })
   depositedAmount: number;
 

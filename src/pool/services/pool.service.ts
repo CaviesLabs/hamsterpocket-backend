@@ -77,6 +77,8 @@ export class PoolService {
   }
 
   async executeSwapToken(poolId: string) {
+    console.log('Executing swap for pool', poolId);
+
     /**
      * @dev Find neccessary data
      */
@@ -89,13 +91,14 @@ export class PoolService {
      * @dev Raise error if we cannot find any associated market
      */
     if (!market) {
-      throw new Error('INVALID_MARKET');
+      console.log('ERROR_SWAP: INVALID_MARKET, skipped. PoolId:', poolId);
+      return;
     }
 
     /**
      * @dev Trigger swap. TODO: try/catch and log events emitted from swap transaction.
      */
-    await this.onChainPoolProvider.executeSwapToken({
+    const txId = await this.onChainPoolProvider.executeSwapToken({
       pocketId: poolId,
       baseMint: market.baseMint,
       quoteMint: market.quoteMint,
@@ -103,6 +106,7 @@ export class PoolService {
       marketAuthority: market.marketAuthority,
       marketProgramId: market.marketProgramId,
     });
+    console.log('[SWAPPED_SUCCESSFULLY] TxId:', txId);
 
     /**
      * @dev Sync pool after execute swap

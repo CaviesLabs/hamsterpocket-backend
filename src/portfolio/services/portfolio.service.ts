@@ -95,8 +95,6 @@ export class PortfolioService {
       { $project: { _id: 0 } },
     ]);
 
-    console.log({ userBaseToken, userTargetToken });
-
     if (!userBaseToken && !userTargetToken) {
       console.log(
         `USER_TOKEN_NOT_FOUND: ${tokenAddress} skipped this calculation`,

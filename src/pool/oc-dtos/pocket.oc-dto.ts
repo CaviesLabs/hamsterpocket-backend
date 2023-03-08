@@ -182,5 +182,7 @@ export function convertToPoolEntity(
     },
     buyCondition: mapBuyCondition(pocketData.buyCondition),
     currentBatchAmount: pocketData.executedBatchAmount.toNumber(),
+    nextExecutionAt: new Date(pocketData.nextScheduledExecutionAt.toNumber()),
+    marketKey: pocketData.marketKey.toBase58(),
   } as Partial<PoolEntity>);
 }

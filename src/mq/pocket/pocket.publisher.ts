@@ -1,20 +1,14 @@
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { Duration } from 'luxon';
 
-import { PoolDocument, PoolModel } from '../../orm/model/pool.model';
 import { PORTFOLIO_QUEUE } from '../dto/portfolio.queue';
-import { PoolEntity } from '../../pool/entities/pool.entity';
 import { BUY_TOKEN_PROCESS, POOL_QUEUE, SYNC_POCKETS } from '../dto/pool.queue';
 
 @Injectable()
 export class PocketPublisher implements OnApplicationBootstrap {
   constructor(
-    @InjectModel(PoolModel.name)
-    private readonly poolRepo: Model<PoolDocument>,
     @InjectQueue(PORTFOLIO_QUEUE)
     private readonly portfolioQueue: Queue,
     @InjectQueue(POOL_QUEUE)
@@ -22,42 +16,53 @@ export class PocketPublisher implements OnApplicationBootstrap {
   ) {}
 
   async onApplicationBootstrap() {
-    this.syncPocket().catch((e) =>
+    /**
+     * @dev Create jobs when bootstrapping application
+     */
+    this.createSyncPocketJob().catch((e) =>
       console.log('ERROR::FAILED_TO_SYNC_POCKET', e),
     );
-    // this.executeSwap().catch(e => console.log("ERROR::FAILED_TO_EXECUTE_SWAP", e));
+
+    this.createExecuteSwapJobs().catch((e) =>
+      console.log('ERROR::FAILED_TO_EXECUTE_SWAP', e),
+    );
   }
 
-  async executeSwap(pool: PoolEntity) {
-    /** Calculate job repeat options */
-    const frequency = Duration.fromObject(pool.frequency).toMillis();
-    let limit: number = undefined;
-    if (pool.stopConditions?.batchAmountReach) {
-      limit = pool.stopConditions.spentBaseTokenReach - pool.currentBatchAmount;
-    }
+  async createExecuteSwapJobs() {
+    /**
+     * @dev Flush the queue
+     */
+    await this.pocketQueue.removeRepeatableByKey(BUY_TOKEN_PROCESS);
 
     /** Publish repeatable job */
     await this.pocketQueue.add(
       BUY_TOKEN_PROCESS,
-      {
-        poolId: pool.id,
-      },
+      {},
       {
         /** Use pool ID as jobId to upsert queue event */
-        jobId: pool.id,
+        jobId: BUY_TOKEN_PROCESS,
+        priority: 1,
+
+        /**
+         * @dev Repeat every minute
+         */
         repeat: {
-          startDate: pool.startTime,
-          every: frequency,
-          endDate: pool.stopConditions?.endTime,
-          limit,
+          startDate: new Date(),
+          every: Duration.fromObject({
+            minutes: 1,
+          }).toMillis(),
         },
       },
     );
+
+    console.log(`[${BUY_TOKEN_PROCESS}] Added execute swap jobs ...`);
   }
 
-  async syncPocket() {
-    /** Publish repeatable job */
-    console.log('Started syncing pockets');
+  async createSyncPocketJob() {
+    /**
+     * @dev Flush the queue
+     */
+    await this.pocketQueue.removeRepeatableByKey(SYNC_POCKETS);
 
     /**
      * @dev Add a task to the queue
@@ -68,6 +73,11 @@ export class PocketPublisher implements OnApplicationBootstrap {
       {
         /** Use pool ID as jobId to upsert queue event */
         jobId: SYNC_POCKETS,
+        priority: 1,
+
+        /**
+         * @dev Sync data every 5 minutes
+         */
         repeat: {
           startDate: new Date(),
           every: Duration.fromObject({
@@ -76,5 +86,8 @@ export class PocketPublisher implements OnApplicationBootstrap {
         },
       },
     );
+
+    /** Publish repeatable job */
+    console.log(`[${SYNC_POCKETS}] Added sync pocket job ...`);
   }
 }

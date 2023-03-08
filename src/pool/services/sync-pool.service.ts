@@ -55,6 +55,10 @@ export class SyncPoolService {
       },
       { id: 1, status: 1 },
     );
+
+    /**
+     * @dev Sync all pools
+     */
     const syncedPools = await Promise.all(
       poolIds.map(async ({ id }) => {
         try {
@@ -68,7 +72,7 @@ export class SyncPoolService {
            */
           return plainToInstance(PoolEntity, syncedPool);
         } catch (e) {
-          console.error(e);
+          console.log('FAILED_TO_SYNC_POOL:', id, e.message);
           return null;
         }
       }),
