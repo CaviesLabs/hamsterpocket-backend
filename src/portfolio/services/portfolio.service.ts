@@ -83,6 +83,7 @@ export class PortfolioService {
       console.log(
         `USER_TOKEN_NOT_FOUND: ${tokenAddress} skipped this calculation`,
       );
+      return;
     }
 
     const userTokenSummary: UserTokenEntity = {

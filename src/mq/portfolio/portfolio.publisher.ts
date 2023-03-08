@@ -30,7 +30,7 @@ export class PortfolioPublisher implements OnApplicationBootstrap {
     /**
      * @dev Start new queue
      */
-    console.log('Started adding dto for portfolio update ...');
+    console.log('Started adding queues for portfolio update ...');
 
     /**
      * @dev Aggregate owner address first

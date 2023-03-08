@@ -5,11 +5,11 @@
   },
   "name": "hamsterpocket",
   "version": "0.0.1",
-  "description": "Hamsterpocket package.",
+  "description": "Hamsterpocket package",
   "author": "khang@cavies.xyz",
   "private": true,
   "type": "commonjs",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "redisMemoryServer": {
     "debug": "1"
   },
@@ -18,6 +18,8 @@
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
+    "start:worker-dev": "nest start -c nest-cli.worker.json",
+    "start:worker-prod": "node dist/worker.js",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
