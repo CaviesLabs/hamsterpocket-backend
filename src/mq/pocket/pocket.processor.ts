@@ -8,6 +8,7 @@ import { PoolService } from '../../pool/services/pool.service';
 import { SyncPoolService } from '../../pool/services/sync-pool.service';
 import { PoolStatus } from '../../pool/entities/pool.entity';
 import { PoolDocument, PoolModel } from '../../orm/model/pool.model';
+import { MarketModel } from '../../orm/model/market.model';
 
 @Processor(POOL_QUEUE)
 export class PocketProcessor {
@@ -17,15 +18,28 @@ export class PocketProcessor {
 
     @InjectModel(PoolModel.name)
     private readonly poolRepo: Model<PoolDocument>,
+
+    @InjectModel(MarketModel.name)
+    private readonly marketDataRepo: Model<MarketModel>,
   ) {}
   @Process(BUY_TOKEN_PROCESS)
   async buyTokenJob() {
     try {
+      const whitelistedMarketIds = await this.marketDataRepo.find(
+        {},
+        {
+          marketId: 1,
+        },
+      );
+
       /**
        * @dev Filter all proper pools
        */
       const pools = await this.poolRepo
         .find({
+          marketKey: {
+            $in: whitelistedMarketIds.map((elm) => elm.marketId),
+          },
           status: PoolStatus.ACTIVE,
 
           /**
