@@ -15,6 +15,7 @@ import { PriceFeedSyncCommand } from './commands/price-feed.command';
     /** Providers */
     NetworkProvider,
     CoinGeckoClient,
+
     /** Services */
     WhitelistService,
     SyncPriceService,
@@ -26,6 +27,6 @@ import { PriceFeedSyncCommand } from './commands/price-feed.command';
     PriceFeedSyncCommand,
   ],
   controllers: [WhitelistController],
-  exports: [],
+  exports: [SyncPriceService],
 })
 export class WhitelistModule {}

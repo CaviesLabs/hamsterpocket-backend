@@ -54,10 +54,10 @@ import { OrmModule } from './orm/orm.module';
      * @dev Import other modules.
      */
     TokenMetadataModule,
-    WhitelistModule,
     PoolModule,
     PortfolioModule,
     OrmModule,
+    WhitelistModule,
   ],
   /**
    * @dev Import controller.
