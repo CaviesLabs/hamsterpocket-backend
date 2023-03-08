@@ -68,7 +68,7 @@ export class PoolMockService {
     });
 
     /** Trigger calculate Pool progress */
-    calculateProgressPercent.bind(poolData)();
+    calculateProgressPercent(poolData);
     const pool = await this.poolRepo.create(poolData);
 
     /**
