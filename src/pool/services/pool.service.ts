@@ -98,26 +98,32 @@ export class PoolService {
     /**
      * @dev Trigger swap. TODO: try/catch and log events emitted from swap transaction.
      */
-    const txId = await this.onChainPoolProvider.executeSwapToken({
-      pocketId: poolId,
-      baseMint: market.baseMint,
-      quoteMint: market.quoteMint,
-      marketKey: market.marketId,
-      marketAuthority: market.marketAuthority,
-      marketProgramId: market.marketProgramId,
-    });
-    console.log('[SWAPPED_SUCCESSFULLY] TxId:', txId);
-
-    /**
-     * @dev Sync pool after execute swap
-     */
-    const syncedPool = await this.onChainPoolProvider.fetchFromContract(poolId);
-    await this.poolRepo.updateOne(
-      { _id: new Types.ObjectId(poolId) },
-      syncedPool,
-      {
-        upsert: true,
-      },
-    );
+    try {
+      const txId = await this.onChainPoolProvider.executeSwapToken({
+        pocketId: poolId,
+        baseMint: market.baseMint,
+        quoteMint: market.quoteMint,
+        marketKey: market.marketId,
+        marketAuthority: market.marketAuthority,
+        marketProgramId: market.marketProgramId,
+      });
+      console.log('[SWAPPED_SUCCESSFULLY] TxId:', txId);
+    } catch (e) {
+      throw e;
+    } finally {
+      /**
+       * @dev Sync pool after execute swap
+       */
+      const syncedPool = await this.onChainPoolProvider.fetchFromContract(
+        poolId,
+      );
+      await this.poolRepo.updateOne(
+        { _id: new Types.ObjectId(poolId) },
+        syncedPool,
+        {
+          upsert: true,
+        },
+      );
+    }
   }
 }
