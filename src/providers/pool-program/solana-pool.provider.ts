@@ -135,7 +135,7 @@ export class SolanaPoolProvider implements OnModuleInit {
           eventName: name as OcEventName,
           eventData: data as OcPocketEvent,
           transaction,
-          createdAt: new Date(blockTime),
+          createdAt: new Date(blockTime * 1000),
         });
       }
     }

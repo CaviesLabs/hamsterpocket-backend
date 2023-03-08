@@ -11,9 +11,12 @@ import { BaseModel } from '../base.model';
 
 @Injectable()
 @Schema({ collection: 'pool_activities', timestamps: false })
-export class PoolActivityModel extends BaseModel implements PoolActivityEntity {
+export class ActivityModel extends BaseModel implements PoolActivityEntity {
   @Prop({ type: Types.ObjectId })
   poolId: Types.ObjectId;
+
+  @Prop({ type: String, required: false })
+  actor?: string;
 
   @Prop({ type: String, enum: PoolActivityStatus })
   status: PoolActivityStatus;
@@ -32,13 +35,15 @@ export class PoolActivityModel extends BaseModel implements PoolActivityEntity {
 
   @Prop({ type: String })
   memo: string;
+
+  @Prop({ type: Date })
+  createdAt: Date;
 }
 
 /**
  * @dev Trigger create schema.
  */
-export const PoolActivitySchema =
-  SchemaFactory.createForClass(PoolActivityModel);
+export const PoolActivitySchema = SchemaFactory.createForClass(ActivityModel);
 
 /**
  * @dev Define generic type for typescript reference.

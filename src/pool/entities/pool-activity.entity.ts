@@ -7,7 +7,9 @@ export enum PoolActivityStatus {
 
 export enum ActivityType {
   CREATED = 'ACTIVITY_TYPE::CREATED',
-  UPDATED = 'ACTIVITY_TYPE::UPDATED',
+  PAUSED = 'ACTIVITY_TYPE::PAUSED',
+  CONTINUE = 'ACTIVITY_TYPE::CONTINUE',
+  CLOSED = 'ACTIVITY_TYPE::CLOSED',
   DEPOSITED = 'ACTIVITY_TYPE::DEPOSITED',
   WITHDRAWN = 'ACTIVITY_TYPE::WITHDRAWN',
   SWAPPED = 'ACTIVITY_TYPE::SWAPPED',
@@ -19,6 +21,8 @@ export enum ActivityType {
 
 export class PoolActivityEntity {
   poolId: Types.ObjectId;
+
+  actor?: string;
 
   status: PoolActivityStatus;
 

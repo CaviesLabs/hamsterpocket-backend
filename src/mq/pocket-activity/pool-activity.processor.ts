@@ -1,10 +1,8 @@
 import { Processor, Process } from '@nestjs/bull';
-import { Job } from 'bull';
 
 import {
   POOL_ACTIVITY_QUEUE,
-  SyncPoolActivityJobData,
-  SYNC_POOL_ACTIVITY,
+  SYNC_POOL_ACTIVITIES,
 } from '../dto/pool-activity.queue';
 import { SyncPoolActivityService } from '../../pool/services/sync-pool-activity.service';
 
@@ -14,10 +12,10 @@ export class PoolActivityProcessor {
     private readonly syncPoolActivityService: SyncPoolActivityService,
   ) {}
 
-  @Process(SYNC_POOL_ACTIVITY)
-  async syncPoolActivityJob(job: Job<SyncPoolActivityJobData>) {
+  @Process(SYNC_POOL_ACTIVITIES)
+  async syncPoolActivityJob() {
     try {
-      await this.syncPoolActivityService.syncPoolActivities(job.data.poolId);
+      await this.syncPoolActivityService.syncAllPoolActivities();
     } catch (e) {
       console.error('ERROR::JOB_FAILED_TO_SYNC_ACTIVITY', e);
     }

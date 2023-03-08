@@ -3,35 +3,78 @@ import { Types } from 'mongoose';
 import {
   OcEventName,
   OcPocketEvent,
+  OcPocketStatus,
   PocketEventDeposited,
+  PocketEventDidSwap,
+  PocketEventUpdated,
   PocketEventWithdrawn,
-  // PocketEventPocketWithdrawn,
 } from '../../providers/pool-program/pocket.type';
 import {
   ActivityType,
   PoolActivityEntity,
   PoolActivityStatus,
 } from '../entities/pool-activity.entity';
+import { PoolEntity } from '../entities/pool.entity';
 
 const eventNameTypeMap: Record<OcEventName, ActivityType> = {
   PocketCreated: ActivityType.CREATED,
   PocketDeposited: ActivityType.DEPOSITED,
-  PocketUpdated: ActivityType.UPDATED,
+  PocketUpdated: undefined,
   DidSwap: ActivityType.SWAPPED,
   PocketWithdrawn: ActivityType.WITHDRAWN,
   VaultCreated: ActivityType.VAULT_CREATED,
   PocketConfigUpdated: ActivityType.POCKET_CONFIG_UPDATED,
 };
 
+const eventStatusTypeMap: Record<keyof OcPocketStatus, ActivityType> = {
+  active: ActivityType.CONTINUE,
+  closed: ActivityType.CLOSED,
+  paused: ActivityType.PAUSED,
+  withdrawn: ActivityType.WITHDRAWN,
+};
+
+function getUpdatedData(data: PocketEventUpdated): Partial<PoolActivityEntity> {
+  const [status] = Object.keys(data.status);
+  return {
+    actor: data.actor.toBase58(),
+    status: eventStatusTypeMap[status],
+    memo: data.memo,
+  };
+}
+
+function getDepositedData(
+  data: PocketEventDeposited,
+): Partial<PoolActivityEntity> {
+  return {
+    baseTokenAmount: data.amount.toNumber(),
+  };
+}
+
+function getDidSwapData(data: PocketEventDidSwap): Partial<PoolActivityEntity> {
+  return {
+    baseTokenAmount: data.fromAmount.toNumber(),
+    targetTokenAmount: data.toAmount.toNumber(),
+  };
+}
+
+function getWithdrawnData(
+  data: PocketEventWithdrawn,
+): Partial<PoolActivityEntity> {
+  return {
+    baseTokenAmount: data.baseTokenAmount.toNumber(),
+    targetTokenAmount: data.quoteTokenAmount.toNumber(),
+  };
+}
+
 export function convertToPoolActivityEntity(
-  poolId: string,
+  pool: PoolEntity,
   transactionId: string,
   eventName: OcEventName,
   data: OcPocketEvent,
   createdAt: Date,
 ): PoolActivityEntity {
   const activity: Partial<PoolActivityEntity> = {
-    poolId: new Types.ObjectId(poolId),
+    poolId: new Types.ObjectId(pool.id),
     status: PoolActivityStatus.SUCCESSFUL,
     type: eventNameTypeMap[eventName],
     transactionId,
@@ -40,25 +83,20 @@ export function convertToPoolActivityEntity(
   switch (eventName) {
     /** Unload for these cases */
     case 'PocketCreated':
-    case 'PocketUpdated':
     case 'PocketConfigUpdated':
     case 'VaultCreated':
       break;
+    case 'PocketUpdated':
+      Object.assign(activity, getUpdatedData(data as PocketEventUpdated));
+      break;
     case 'PocketDeposited':
-      activity.baseTokenAmount = (
-        data as PocketEventDeposited
-      ).amount.toNumber();
+      Object.assign(activity, getDepositedData(data as PocketEventDeposited));
       break;
     case 'DidSwap':
-      // TODO: map baseTokenAmount + targetTokenAmount
+      Object.assign(activity, getDidSwapData(data as PocketEventDidSwap));
       break;
     case 'PocketWithdrawn':
-      activity.baseTokenAmount = (
-        data as PocketEventWithdrawn
-      ).baseTokenAmount.toNumber();
-      activity.targetTokenAmount = (
-        data as PocketEventWithdrawn
-      ).quoteTokenAmount.toNumber();
+      Object.assign(activity, getWithdrawnData(data as PocketEventWithdrawn));
       break;
   }
 
