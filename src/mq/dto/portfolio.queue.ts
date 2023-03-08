@@ -1,4 +1,4 @@
-export const PORTFOLIO_QUEUE = 'pool';
+export const PORTFOLIO_QUEUE = 'portfolio';
 
 /**
  * Queue configuration for update user's portfolio.

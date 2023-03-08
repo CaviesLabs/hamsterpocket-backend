@@ -26,6 +26,22 @@ export class PortfolioPublisher implements OnApplicationBootstrap {
      * @dev Clean up
      */
     await this.portfolioQueue.empty();
+    console.log(
+      'await this.portfolioQueue.getRepeatableJobs()',
+      await this.portfolioQueue.getRepeatableJobs(),
+    );
+
+    const repeatableJobs = await this.portfolioQueue.getRepeatableJobs();
+    await Promise.all(
+      repeatableJobs.map((job) =>
+        this.portfolioQueue.removeRepeatableByKey(job.key),
+      ),
+    );
+
+    console.log(
+      'await this.portfolioQueue.getRepeatableJobs()',
+      await this.portfolioQueue.getRepeatableJobs(),
+    );
 
     /**
      * @dev Start new queue
@@ -73,9 +89,11 @@ export class PortfolioPublisher implements OnApplicationBootstrap {
           {
             // persist job id as address so that it cannot be duplicated
             jobId: address,
+            priority: 1,
 
             // Add a repeat strategy so that we can keep portfolio update
             repeat: {
+              startDate: new Date(),
               every: Duration.fromObject({
                 minutes: 1,
               }).toMillis(),
