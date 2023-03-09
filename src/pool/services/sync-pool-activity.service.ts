@@ -108,29 +108,33 @@ export class SyncPoolActivityService {
             poolId: new Types.ObjectId(poolId),
           };
 
-          /**
-           * @dev Save the pool
-           */
-          if (activity.type === ActivityType.CLOSED) {
-            await this.poolRepo.findByIdAndUpdate(pool.id, {
-              $set: {
-                endedAt: activity.createdAt,
-              },
-            });
-          }
+          try {
+            /**
+             * @dev Save the pool
+             */
+            if (activity.type === ActivityType.CLOSED) {
+              await this.poolRepo.findByIdAndUpdate(pool.id, {
+                $set: {
+                  endedAt: activity.createdAt,
+                },
+              });
+            }
 
-          if (activity.type === ActivityType.CLOSED) {
-            await this.poolRepo.findByIdAndUpdate(pool.id, {
-              $set: {
-                closedAt: activity.createdAt,
-              },
-            });
-          }
+            if (activity.type === ActivityType.CLOSED) {
+              await this.poolRepo.findByIdAndUpdate(pool.id, {
+                $set: {
+                  closedAt: activity.createdAt,
+                },
+              });
+            }
+          } catch {}
 
           return activity;
         },
       ),
     );
+
+    console.log({ mappedActivities });
 
     await this.poolActivityRepo.create(mappedActivities);
   }
