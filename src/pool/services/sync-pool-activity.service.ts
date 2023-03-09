@@ -134,8 +134,6 @@ export class SyncPoolActivityService {
       ),
     );
 
-    console.log({ mappedActivities });
-
     await this.poolActivityRepo.create(mappedActivities);
   }
 }

@@ -53,69 +53,73 @@ export class StatisticsService implements OnApplicationBootstrap {
 
     const poolsCount = await this.poolRepo.count();
 
-    const [{ totalVolume }] = await this.poolActivityRepo.aggregate([
-      { $match: { type: ActivityType.SWAPPED } },
-      {
-        $lookup: {
-          from: 'pools',
-          as: 'pool_docs',
-          localField: 'poolId',
-          foreignField: '_id',
-        },
-      },
-      {
-        $lookup: {
-          from: 'whitelists',
-          as: 'whitelists_docs',
-          localField: 'pool_docs.0.baseTokenAddress',
-          foreignField: 'address',
-        },
-      },
-      {
-        $project: {
-          eventVolume: {
-            $add: [
-              {
-                $divide: [
-                  {
-                    $multiply: [
-                      '$baseTokenAmount',
-                      {
-                        $arrayElemAt: ['$whitelists_docs.estimatedValue', 0],
-                      },
-                    ],
-                  },
-                  {
-                    $arrayElemAt: ['$whitelists_docs.decimals', 0],
-                  },
-                ],
-              },
-              {
-                $divide: [
-                  {
-                    $multiply: [
-                      '$targetTokenAmount',
-                      {
-                        $arrayElemAt: ['$whitelists_docs.estimatedValue', 0],
-                      },
-                    ],
-                  },
-                  {
-                    $arrayElemAt: ['$whitelists_docs.decimals', 0],
-                  },
-                ],
-              },
-            ],
+    let totalVolume = 0;
+
+    try {
+      [{ totalVolume }] = await this.poolActivityRepo.aggregate([
+        { $match: { type: ActivityType.SWAPPED } },
+        {
+          $lookup: {
+            from: 'pools',
+            as: 'pool_docs',
+            localField: 'poolId',
+            foreignField: '_id',
           },
         },
-      },
-      {
-        $group: {
-          _id: null,
-          totalVolume: { $sum: '$eventVolume' },
+        {
+          $lookup: {
+            from: 'whitelists',
+            as: 'whitelists_docs',
+            localField: 'pool_docs.0.baseTokenAddress',
+            foreignField: 'address',
+          },
         },
-      },
-    ]);
+        {
+          $project: {
+            eventVolume: {
+              $add: [
+                {
+                  $divide: [
+                    {
+                      $multiply: [
+                        '$baseTokenAmount',
+                        {
+                          $arrayElemAt: ['$whitelists_docs.estimatedValue', 0],
+                        },
+                      ],
+                    },
+                    {
+                      $arrayElemAt: ['$whitelists_docs.decimals', 0],
+                    },
+                  ],
+                },
+                {
+                  $divide: [
+                    {
+                      $multiply: [
+                        '$targetTokenAmount',
+                        {
+                          $arrayElemAt: ['$whitelists_docs.estimatedValue', 0],
+                        },
+                      ],
+                    },
+                    {
+                      $arrayElemAt: ['$whitelists_docs.decimals', 0],
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            totalVolume: { $sum: '$eventVolume' },
+          },
+        },
+      ]);
+    } catch {}
 
     return this.statisticsRepo.create({
       users: usersCount,
