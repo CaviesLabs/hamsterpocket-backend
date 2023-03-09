@@ -21,6 +21,7 @@ import { PriceFeedPublisher } from './price-feed/price-feed.publisher';
 import { SyncPriceService } from '../whitelist/services/sync-price.service';
 import { CoinGeckoClient } from '../providers/coin-gecko.client';
 import { NetworkProvider } from '../providers/network.provider';
+import { StatisticPublisher } from './statistic/statistic.publisher';
 
 @Module({
   imports: [
@@ -57,6 +58,7 @@ import { NetworkProvider } from '../providers/network.provider';
     PoolActivityPublisher,
     PoolActivityProcessor,
     PriceFeedPublisher,
+    StatisticPublisher,
   ],
 })
 export class MqModule {}
