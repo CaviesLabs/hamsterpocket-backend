@@ -13,6 +13,7 @@ import {
 import { UserTokenModel, UserTokenSchema } from './model/user-token.model';
 import { WhitelistModel, WhitelistSchema } from './model/whitelist.model';
 import { MarketDataSchema, MarketModel } from './model/market.model';
+import { StatisticsModel, StatisticsSchema } from './model/statistic.model';
 
 @Module({
   /**
@@ -29,6 +30,7 @@ import { MarketDataSchema, MarketModel } from './model/market.model';
       { name: PoolActivityModel.name, schema: PoolActivitySchema },
       { name: UserTokenModel.name, schema: UserTokenSchema },
       { name: MarketModel.name, schema: MarketDataSchema },
+      { name: StatisticsModel.name, schema: StatisticsSchema },
     ]),
   ],
   exports: [

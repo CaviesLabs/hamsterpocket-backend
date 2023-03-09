@@ -12,6 +12,7 @@ import { PoolModule } from './pool/pool.module';
 import { PortfolioModule } from './portfolio/portfolio.module';
 import { WhitelistModule } from './whitelist/whitelist.module';
 import { OrmModule } from './orm/orm.module';
+import { StatisticsModule } from './statistics/statistics.module';
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { OrmModule } from './orm/orm.module';
     PortfolioModule,
     OrmModule,
     WhitelistModule,
+    StatisticsModule,
   ],
   /**
    * @dev Import controller.
