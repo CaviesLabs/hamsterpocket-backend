@@ -112,7 +112,7 @@ export class SyncPoolActivityService {
             /**
              * @dev Save the pool
              */
-            if (activity.type === ActivityType.CLOSED) {
+            if (activity.type === ActivityType.WITHDRAWN) {
               await this.poolRepo.findByIdAndUpdate(pool.id, {
                 $set: {
                   endedAt: activity.createdAt,
