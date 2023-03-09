@@ -80,6 +80,7 @@ export function convertToPoolActivityEntity(
     transactionId,
     createdAt,
   };
+
   switch (eventName) {
     /** Unload for these cases */
     case 'PocketCreated':

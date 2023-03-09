@@ -82,7 +82,7 @@ export class SolanaPoolProvider implements OnModuleInit {
     const [pocketAccount] = PublicKey.findProgramAddressSync(
       [
         anchor.utils.bytes.utf8.encode('SEED::POCKET::POCKET_SEED'),
-        anchor.utils.bytes.utf8.encode(poolId),
+        anchor.utils.bytes.utf8.encode(poolId.toString()),
       ],
       this.program.programId,
     );
@@ -103,7 +103,7 @@ export class SolanaPoolProvider implements OnModuleInit {
     const [pocketAccount] = PublicKey.findProgramAddressSync(
       [
         anchor.utils.bytes.utf8.encode('SEED::POCKET::POCKET_SEED'),
-        anchor.utils.bytes.utf8.encode(poolId),
+        anchor.utils.bytes.utf8.encode(poolId.toString()),
       ],
       this.program.programId,
     );

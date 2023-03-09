@@ -54,6 +54,6 @@ export class PoolActivityService {
     stages.push({ $match: filter });
     /** Pagination stages */
     stages.push({ $skip: offset }, { $limit: limit });
-    return await this.poolActivityRepo.aggregate(stages);
+    return this.poolActivityRepo.aggregate(stages);
   }
 }

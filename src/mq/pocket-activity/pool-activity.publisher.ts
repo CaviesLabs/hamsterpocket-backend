@@ -50,7 +50,7 @@ export class PoolActivityPublisher implements OnApplicationBootstrap {
         repeat: {
           startDate: new Date(),
           every: Duration.fromObject({
-            minutes: 5,
+            minutes: 1,
           }).toMillis(),
         },
       },

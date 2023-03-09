@@ -31,10 +31,10 @@ export class SyncPoolActivityService {
       {
         status: {
           $in: [
-            PoolStatus.CREATED,
             PoolStatus.ACTIVE,
             PoolStatus.PAUSED,
             PoolStatus.CLOSED,
+            PoolStatus.ENDED,
           ],
         },
         updatedAt: {
@@ -53,9 +53,9 @@ export class SyncPoolActivityService {
     await Promise.all(
       poolIds.map(async (pool) => {
         try {
-          await this.syncPoolActivities(pool.id);
+          await this.syncPoolActivities(pool._id);
         } catch (e) {
-          console.log('FAILED_TO_SYNC_POOL_ACTIVITIES:', pool.id, e.message);
+          console.log('FAILED_TO_SYNC_POOL_ACTIVITIES:', pool._id, e.message);
         }
       }),
     );
@@ -77,8 +77,12 @@ export class SyncPoolActivityService {
 
     const newActivities = await this.onChainPoolProvider.fetchActivities(
       poolId,
-      100,
+      1000,
       latest?.transactionId,
+    );
+
+    console.log(
+      `[syncPoolActivities] Found ${newActivities.length} emitted event(s) for pocket ${poolId}`,
     );
 
     if (newActivities.length == 0) return;
@@ -86,14 +90,18 @@ export class SyncPoolActivityService {
     const pool = await this.poolRepo.findById(poolId);
 
     const mappedActivities = newActivities.map(
-      ({ eventName, eventData, transaction, createdAt }) =>
-        convertToPoolActivityEntity(
-          pool,
-          transaction.signatures[0],
-          eventName,
-          eventData,
-          createdAt,
-        ),
+      ({ eventName, eventData, transaction, createdAt }) => {
+        return {
+          ...convertToPoolActivityEntity(
+            pool,
+            transaction.signatures[0],
+            eventName,
+            eventData,
+            createdAt,
+          ),
+          poolId: new Types.ObjectId(poolId),
+        };
+      },
     );
     await this.poolActivityRepo.create(mappedActivities);
   }

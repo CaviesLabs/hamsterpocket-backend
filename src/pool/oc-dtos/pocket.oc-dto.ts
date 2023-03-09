@@ -25,7 +25,7 @@ export function mapPocketStatus(pocketData: OcPocket): PoolStatus {
         endTimeCondition?.endTimeReach.value.toNumber() * 1000 || 0,
       );
 
-      if (endDate.getTime() <= new Date().getTime()) {
+      if (endTimeCondition && endDate.getTime() <= new Date().getTime()) {
         return PoolStatus.CLOSED;
       }
 
