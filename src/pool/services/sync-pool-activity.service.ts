@@ -81,9 +81,11 @@ export class SyncPoolActivityService {
       latest?.transactionId,
     );
 
-    console.log(
-      `[syncPoolActivities] Found ${newActivities.length} emitted event(s) for pocket ${poolId}`,
-    );
+    if (newActivities.length > 0) {
+      console.log(
+        `[syncPoolActivities] Found ${newActivities.length} emitted event(s) for pocket ${poolId}`,
+      );
+    }
 
     if (newActivities.length == 0) return;
 
