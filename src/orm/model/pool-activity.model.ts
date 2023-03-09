@@ -11,7 +11,7 @@ import { BaseModel } from '../base.model';
 
 @Injectable()
 @Schema({ collection: 'pool_activities', timestamps: false })
-export class ActivityModel extends BaseModel implements PoolActivityEntity {
+export class PoolActivityModel extends BaseModel implements PoolActivityEntity {
   @Prop({ type: Types.ObjectId })
   poolId: Types.ObjectId;
 
@@ -43,7 +43,8 @@ export class ActivityModel extends BaseModel implements PoolActivityEntity {
 /**
  * @dev Trigger create schema.
  */
-export const PoolActivitySchema = SchemaFactory.createForClass(ActivityModel);
+export const PoolActivitySchema =
+  SchemaFactory.createForClass(PoolActivityModel);
 
 /**
  * @dev Define generic type for typescript reference.

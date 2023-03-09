@@ -7,17 +7,12 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { Types } from 'mongoose';
 
 import { CommonQueryDto } from '../../api-docs/dto/common-query.dto';
 import { RegistryProvider } from '../../providers/registry.provider';
 import { FindPoolActivityDto } from '../dtos/find-pool-activity.dto';
 import { FindPoolDto } from '../dtos/find-pool.dto';
-import {
-  ActivityType,
-  PoolActivityEntity,
-  PoolActivityStatus,
-} from '../entities/pool-activity.entity';
+import { PoolActivityEntity } from '../entities/pool-activity.entity';
 import { PoolActivityService } from '../services/pool-activity.service';
 import { PoolMockService } from '../services/pool-mock.service';
 import { PoolService } from '../services/pool.service';
@@ -68,70 +63,22 @@ export class PoolController {
 
   @Get('/activity')
   async getPoolActivities(
-    @Query() query: FindPoolActivityDto,
+    @Query() { limit, offset, search }: CommonQueryDto,
+    @Query() { ownerAddress, timeFrom, timeTo, statuses }: FindPoolActivityDto,
   ): Promise<PoolActivityEntity[]> {
-    console.log(query);
-    return [
-      {
-        poolId: new Types.ObjectId(),
-        baseTokenAmount: 100,
-        targetTokenAmount: 0,
-        status: PoolActivityStatus.SUCCESSFUL,
-        transactionId:
-          '469qjjQfqYKdYiogKrCGdgBSWT2Ufi1pXdUxVFZj22roEvLswbmCctySyMhvPnjqoaUkFw6hfr3Tx6zohwrtLDh3',
-        type: ActivityType.DEPOSITED,
-        memo: '',
-        createdAt: new Date(),
-      },
-      {
-        poolId: new Types.ObjectId(),
-        baseTokenAmount: 90,
-        targetTokenAmount: 10,
-        status: PoolActivityStatus.SUCCESSFUL,
-        transactionId:
-          '469qjjQfqYKdYiogKrCGdgBSWT2Ufi1pXdUxVFZj22roEvLswbmCctySyMhvPnjqoaUkFw6hfr3Tx6zohwrtLDh3',
-        type: ActivityType.SWAPPED,
-        memo: '',
-        createdAt: new Date(),
-      },
-      {
-        poolId: new Types.ObjectId(),
-        baseTokenAmount: 90,
-        targetTokenAmount: 10,
-        status: PoolActivityStatus.SUCCESSFUL,
-        transactionId:
-          '469qjjQfqYKdYiogKrCGdgBSWT2Ufi1pXdUxVFZj22roEvLswbmCctySyMhvPnjqoaUkFw6hfr3Tx6zohwrtLDh3',
-        type: ActivityType.SKIPPED,
-        memo: '',
-        createdAt: new Date(),
-      },
-      {
-        poolId: new Types.ObjectId(),
-        baseTokenAmount: 90,
-        targetTokenAmount: 10,
-        status: PoolActivityStatus.FAILED,
-        transactionId:
-          '469qjjQfqYKdYiogKrCGdgBSWT2Ufi1pXdUxVFZj22roEvLswbmCctySyMhvPnjqoaUkFw6hfr3Tx6zohwrtLDh3',
-        type: ActivityType.SWAPPED,
-        memo: '',
-        createdAt: new Date(),
-      },
-      {
-        poolId: new Types.ObjectId(),
-        baseTokenAmount: 0,
-        targetTokenAmount: 0,
-        status: PoolActivityStatus.SUCCESSFUL,
-        transactionId:
-          '469qjjQfqYKdYiogKrCGdgBSWT2Ufi1pXdUxVFZj22roEvLswbmCctySyMhvPnjqoaUkFw6hfr3Tx6zohwrtLDh3',
-        type: ActivityType.WITHDRAWN,
-        memo: '',
-        createdAt: new Date(),
-      },
-    ];
+    return this.poolActivityService.find({
+      ownerAddress,
+      timeFrom,
+      timeTo,
+      statuses,
+      limit,
+      offset,
+      search,
+    });
   }
 
-  @Post('/activity/:id')
-  async syncPoolActivity(@Param('id') poolId: string) {
+  @Post('/:id/activity/sync')
+  async syncPoolActivities(@Param('id') poolId: string) {
     await this.syncPoolActivityService.syncPoolActivities(poolId);
   }
 

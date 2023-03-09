@@ -12,11 +12,13 @@ export class FindPoolActivityDto {
   @ArrayType()
   statuses?: ActivityType[];
 
+  @IsOptional()
   @IsDate()
   @Type(() => Date)
-  timeFrom: Date;
+  timeFrom?: Date;
 
+  @IsOptional()
   @IsDate()
   @Type(() => Date)
-  timeTo: Date;
+  timeTo?: Date;
 }

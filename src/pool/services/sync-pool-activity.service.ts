@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import {
   PoolActivityDocument,
-  ActivityModel,
+  PoolActivityModel,
 } from '../../orm/model/pool-activity.model';
 import { PoolDocument, PoolModel } from '../../orm/model/pool.model';
 import { SolanaPoolProvider } from '../../providers/pool-program/solana-pool.provider';
@@ -16,7 +16,7 @@ import { convertToPoolActivityEntity } from '../oc-dtos/pocket-activity.oc-dto';
 export class SyncPoolActivityService {
   constructor(
     private readonly onChainPoolProvider: SolanaPoolProvider,
-    @InjectModel(ActivityModel.name)
+    @InjectModel(PoolActivityModel.name)
     private readonly poolActivityRepo: Model<PoolActivityDocument>,
     @InjectModel(PoolModel.name)
     private readonly poolRepo: Model<PoolDocument>,
@@ -42,7 +42,7 @@ export class SyncPoolActivityService {
           $lt: timer.startedAt.minus({ minutes: 5 }).toJSDate(),
         },
       },
-      { id: 1, status: 1 },
+      { _id: 1, status: 1 },
     );
 
     console.log(`Found ${poolIds.length} pool(s) to sync activities ...`);
@@ -51,11 +51,11 @@ export class SyncPoolActivityService {
      * @dev Sync all pool activities
      */
     await Promise.all(
-      poolIds.map(async ({ id }) => {
+      poolIds.map(async (pool) => {
         try {
-          await this.syncPoolActivities(id);
+          await this.syncPoolActivities(pool.id);
         } catch (e) {
-          console.log('FAILED_TO_SYNC_POOL_ACTIVITIES:', id, e.message);
+          console.log('FAILED_TO_SYNC_POOL_ACTIVITIES:', pool.id, e.message);
         }
       }),
     );

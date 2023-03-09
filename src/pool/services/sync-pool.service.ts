@@ -53,18 +53,18 @@ export class SyncPoolService {
           $lt: timer.startedAt.minus({ minutes: 5 }).toJSDate(),
         },
       },
-      { id: 1, status: 1 },
+      { _id: 1, status: 1 },
     );
 
     /**
      * @dev Sync all pools
      */
     const syncedPools = await Promise.all(
-      poolIds.map(async ({ id }) => {
+      poolIds.map(async (pool) => {
         try {
           /** Fetch pool latest update */
           const syncedPool = await this.onChainPoolProvider.fetchFromContract(
-            id,
+            pool.id,
           );
 
           /**
@@ -72,7 +72,7 @@ export class SyncPoolService {
            */
           return plainToInstance(PoolEntity, syncedPool);
         } catch (e) {
-          console.log('FAILED_TO_SYNC_POOL:', id, e.message);
+          console.log('FAILED_TO_SYNC_POOL:', pool.id, e.message);
           return null;
         }
       }),
