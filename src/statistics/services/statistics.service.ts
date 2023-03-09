@@ -66,8 +66,16 @@ export class StatisticsService implements OnApplicationBootstrap {
       {
         $lookup: {
           from: 'whitelists',
-          as: 'whitelists_docs',
+          as: 'baseToken_docs',
           localField: 'pool_docs.0.baseTokenAddress',
+          foreignField: 'address',
+        },
+      },
+      {
+        $lookup: {
+          from: 'whitelists',
+          as: 'targetToken_docs',
+          localField: 'pool_docs.0.targetTokenAddress',
           foreignField: 'address',
         },
       },
@@ -81,12 +89,17 @@ export class StatisticsService implements OnApplicationBootstrap {
                     $multiply: [
                       '$baseTokenAmount',
                       {
-                        $arrayElemAt: ['$whitelists_docs.estimatedValue', 0],
+                        $arrayElemAt: ['$baseToken_docs.estimatedValue', 0],
                       },
                     ],
                   },
                   {
-                    $arrayElemAt: ['$whitelists_docs.decimals', 0],
+                    $pow: [
+                      10,
+                      {
+                        $arrayElemAt: ['$baseToken_docs.decimals', 0],
+                      },
+                    ],
                   },
                 ],
               },
@@ -96,12 +109,17 @@ export class StatisticsService implements OnApplicationBootstrap {
                     $multiply: [
                       '$targetTokenAmount',
                       {
-                        $arrayElemAt: ['$whitelists_docs.estimatedValue', 0],
+                        $arrayElemAt: ['$targetToken_docs.estimatedValue', 0],
                       },
                     ],
                   },
                   {
-                    $arrayElemAt: ['$whitelists_docs.decimals', 0],
+                    $pow: [
+                      10,
+                      {
+                        $arrayElemAt: ['$targetToken_docs.decimals', 0],
+                      },
+                    ],
                   },
                 ],
               },
