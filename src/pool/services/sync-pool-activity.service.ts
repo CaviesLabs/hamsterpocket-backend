@@ -94,7 +94,7 @@ export class SyncPoolActivityService {
 
     const pool = await this.poolRepo.findById(poolId);
 
-    const mappedActivities = Promise.all(
+    const mappedActivities = await Promise.all(
       newActivities.map(
         async ({ eventName, eventData, transaction, createdAt }) => {
           const activity = {
