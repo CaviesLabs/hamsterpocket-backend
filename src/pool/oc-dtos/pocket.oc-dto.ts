@@ -3,7 +3,6 @@ import { plainToInstance } from 'class-transformer';
 import {
   OcBuyCondition,
   OcPocket,
-  OcPocketStatus,
   OcStopConditions,
 } from '../../providers/pool-program/pocket.type';
 
@@ -16,9 +15,20 @@ import {
   MainProgressBy,
 } from '../entities/pool.entity';
 
-export function mapPocketStatus(ocStatus: OcPocketStatus): PoolStatus {
-  switch (Object.keys(ocStatus)[0]) {
+export function mapPocketStatus(pocketData: OcPocket): PoolStatus {
+  switch (Object.keys(pocketData.status)[0]) {
     case 'active':
+      const endTimeCondition = pocketData.stopConditions.find(
+        (condition) => !!condition.endTimeReach,
+      );
+      const endDate = new Date(
+        endTimeCondition?.endTimeReach.value.toNumber() * 1000 || 0,
+      );
+
+      if (endDate.getTime() <= new Date().getTime()) {
+        return PoolStatus.CLOSED;
+      }
+
       return PoolStatus.ACTIVE;
 
     case 'closed':
@@ -174,7 +184,7 @@ export function convertToPoolEntity(
     address: address.toBase58(),
     ownerAddress: pocketData.owner.toBase58(),
     name: pocketData.name,
-    status: mapPocketStatus(pocketData.status),
+    status: mapPocketStatus(pocketData),
     startTime: new Date(pocketData.startAt.toNumber() * 1000),
     nextExecutionAt: new Date(
       pocketData.nextScheduledExecutionAt.toNumber() * 1000,
