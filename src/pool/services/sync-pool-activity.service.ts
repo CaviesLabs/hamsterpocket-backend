@@ -8,7 +8,10 @@ import {
 import { PoolDocument, PoolModel } from '../../orm/model/pool.model';
 import { SolanaPoolProvider } from '../../providers/pool-program/solana-pool.provider';
 import { Timer } from '../../providers/utils.provider';
-import { PoolActivityStatus } from '../entities/pool-activity.entity';
+import {
+  ActivityType,
+  PoolActivityStatus,
+} from '../entities/pool-activity.entity';
 import { PoolStatus } from '../entities/pool.entity';
 import { convertToPoolActivityEntity } from '../oc-dtos/pocket-activity.oc-dto';
 
@@ -91,20 +94,44 @@ export class SyncPoolActivityService {
 
     const pool = await this.poolRepo.findById(poolId);
 
-    const mappedActivities = newActivities.map(
-      ({ eventName, eventData, transaction, createdAt }) => {
-        return {
-          ...convertToPoolActivityEntity(
-            pool,
-            transaction.signatures[0],
-            eventName,
-            eventData,
-            createdAt,
-          ),
-          poolId: new Types.ObjectId(poolId),
-        };
-      },
+    const mappedActivities = Promise.all(
+      newActivities.map(
+        async ({ eventName, eventData, transaction, createdAt }) => {
+          const activity = {
+            ...convertToPoolActivityEntity(
+              pool,
+              transaction.signatures[0],
+              eventName,
+              eventData,
+              createdAt,
+            ),
+            poolId: new Types.ObjectId(poolId),
+          };
+
+          /**
+           * @dev Save the pool
+           */
+          if (activity.type === ActivityType.CLOSED) {
+            await this.poolRepo.findByIdAndUpdate(pool.id, {
+              $set: {
+                endedAt: activity.createdAt,
+              },
+            });
+          }
+
+          if (activity.type === ActivityType.CLOSED) {
+            await this.poolRepo.findByIdAndUpdate(pool.id, {
+              $set: {
+                closedAt: activity.createdAt,
+              },
+            });
+          }
+
+          return activity;
+        },
+      ),
     );
+
     await this.poolActivityRepo.create(mappedActivities);
   }
 }

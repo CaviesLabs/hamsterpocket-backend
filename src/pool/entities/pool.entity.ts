@@ -93,6 +93,10 @@ export class PoolEntity {
   mainProgressBy: MainProgressBy | undefined;
 
   progressPercent: number;
+
+  endedAt: Date;
+
+  closedAt: Date;
 }
 
 /**
