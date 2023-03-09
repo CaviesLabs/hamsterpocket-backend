@@ -100,7 +100,7 @@ export function mapStopConditions(
      * @dev Map end time reach
      */
     if (endTimeReach) {
-      stopConditions.endTime = new Date(endTimeReach.value.toNumber());
+      stopConditions.endTime = new Date(endTimeReach.value.toNumber() * 1000);
 
       if ((endTimeReach as any).isPrimary) {
         mainProgressBy = MainProgressBy.END_TIME;
