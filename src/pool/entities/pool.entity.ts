@@ -134,7 +134,7 @@ export function calculateProgressPercent(pocket: PoolEntity) {
       const endTimeInMillis = pocket.stopConditions.endTime.getTime();
       const currentInMillis = new Date().getTime();
       pocket.progressPercent =
-        (Math.min(currentInMillis, startTimeInMillis) - startTimeInMillis) /
+        (Math.max(currentInMillis, startTimeInMillis) - startTimeInMillis) /
         (endTimeInMillis - startTimeInMillis);
   }
 }
