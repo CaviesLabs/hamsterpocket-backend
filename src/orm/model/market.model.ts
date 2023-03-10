@@ -58,6 +58,9 @@ export class MarketModel extends BaseModel implements MarketEntity {
   @Prop({ type: Number })
   marketVersion: number;
 
+  @Prop({ type: Number })
+  minOrderSizeForBaseMint: number;
+
   @Prop({ type: String })
   marketProgramId: string;
 
