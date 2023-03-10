@@ -1,6 +1,5 @@
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model, PipelineStage } from 'mongoose';
-// import { BadRequestException } from '@nestjs/common';
+import { Model, PipelineStage } from 'mongoose';
 
 import { PoolModel, PoolDocument } from '../../orm/model/pool.model';
 import {
@@ -14,7 +13,6 @@ import {
 } from '../dtos/list-user-token.dto';
 import { CommonQueryDto } from '../../api-docs/dto/common-query.dto';
 import { UserTokenEntity } from '../entities/user-token.entity';
-// import { PortfolioView, TopToken } from '../dtos/get-portfolio.dto';
 import {
   WhitelistDocument,
   WhitelistModel,
@@ -121,14 +119,6 @@ export class PortfolioService {
     { limit, offset, search, sortBy }: ListUserTokenDto & CommonQueryDto,
   ): Promise<UserTokenWithAdditionView[]> {
     const stages: PipelineStage[] = [];
-    /** Filter & search stage */
-    const filter: FilterQuery<UserTokenEntity> = {
-      ownerAddress,
-    };
-    if (search) {
-      filter.$text = { $search: search };
-    }
-    stages.push({ $match: filter });
 
     /** Add value and additional fields */
     stages.push(
@@ -141,6 +131,23 @@ export class PortfolioService {
           foreignField: 'address',
         },
       },
+      {
+        $match: {
+          ownerAddress,
+          $or: [
+            {
+              'whitelist_docs.name': {
+                $regex: new RegExp(search, 'i'),
+              },
+            },
+            {
+              'whitelist_docs.address': {
+                $regex: new RegExp(search, 'i'),
+              },
+            },
+          ],
+        },
+      },
       /** Add tokenName, tokenSymbol, calculate value */
       {
         $addFields: {
@@ -151,20 +158,33 @@ export class PortfolioService {
             $arrayElemAt: ['$whitelist_docs.symbol', 0],
           },
           value: {
-            $multiply: [
-              '$total',
-              { $arrayElemAt: ['$whitelist_docs.estimatedValue', 0] },
+            $divide: [
+              {
+                $multiply: [
+                  '$total',
+                  { $arrayElemAt: ['$whitelist_docs.estimatedValue', 0] },
+                ],
+              },
+              {
+                $pow: [
+                  10,
+                  {
+                    $arrayElemAt: ['$whitelist_docs.decimals', 0],
+                  },
+                ],
+              },
             ],
           },
         },
       },
-      /** Remove the `whitelist_docs` field */
+
       {
         $project: {
           whitelist_docs: 0,
         },
       },
     );
+
     /** Sort stage if requested */
     if (sortBy && sortBy.length > 0) {
       const sort: Record<string, 1 | -1> = {};
@@ -185,107 +205,4 @@ export class PortfolioService {
     stages.push({ $skip: offset }, { $limit: limit });
     return this.userTokenRepo.aggregate<UserTokenWithAdditionView>(stages);
   }
-  // TODO: split calculation that respect native decimals of every token
-  // private async getPortfolioTotalEstimatedValue(
-  //   ownerAddress: string,
-  // ): Promise<number> {
-  //   const [portfolioValue] = await this.userTokenRepo.aggregate<{
-  //     totalValue: number;
-  //   }>([
-  //     { $match: { ownerAddress } },
-  //     {
-  //       $group: {
-  //         _id: { tokenAddress: '$tokenAddress' },
-  //         totalToken: { $sum: '$total' },
-  //       },
-  //     },
-  //     {
-  //       $lookup: {
-  //         from: 'whitelists',
-  //         as: 'whitelist_docs',
-  //         localField: '_id.tokenAddress',
-  //         foreignField: 'address',
-  //       },
-  //     },
-  //     {
-  //       $project: {
-  //         totalTokenValue: {
-  //           $multiply: [
-  //             '$totalToken',
-  //             { $first: '$whitelist_docs.estimatedValue' },
-  //           ],
-  //         },
-  //       },
-  //     },
-  //     {
-  //       $group: {
-  //         _id: { ownerAddress: '$ownerAddress' },
-  //         totalValue: { $sum: '$totalTokenValue' },
-  //       },
-  //     },
-  //   ]);
-  //   /** In new created account, portfolioValue is undefined */
-  //   return portfolioValue?.totalValue || 0;
-  // }
-  //
-  // async getBalance(
-  //   ownerAddress: string,
-  //   baseTokenAddress: string,
-  // ): Promise<PortfolioView> {
-  //   /** Fetch the price */
-  //   const tokenData = await this.whitelistRepo.findOne({
-  //     address: baseTokenAddress,
-  //   });
-  //   if (!tokenData) {
-  //     throw new BadRequestException('UNSUPPORTED_TOKEN');
-  //   }
-  //
-  //   /** Get the portfolio total value */
-  //   const totalValue = await this.getPortfolioTotalEstimatedValue(ownerAddress);
-  //
-  //   /** Query top tokens if exists */
-  //   let topTokens: TopToken[] = [];
-  //   if (totalValue != 0) {
-  //     topTokens = await this.userTokenRepo.aggregate<TopToken>([
-  //       { $match: { ownerAddress } },
-  //       {
-  //         $lookup: {
-  //           from: 'whitelists',
-  //           as: 'whitelist_docs',
-  //           localField: 'tokenAddress',
-  //           foreignField: 'address',
-  //         },
-  //       },
-  //       {
-  //         $project: {
-  //           symbol: { $first: '$whitelist_docs.symbol' },
-  //           total: '$total',
-  //           price: { $first: '$whitelist_docs.estimatedValue' },
-  //           percent: {
-  //             $divide: [
-  //               {
-  //                 $multiply: [
-  //                   '$total',
-  //                   { $first: '$whitelist_docs.estimatedValue' },
-  //                 ],
-  //               },
-  //               totalValue,
-  //             ],
-  //           },
-  //         },
-  //       },
-  //       {
-  //         $project: { whitelist_docs: 0 },
-  //       },
-  //       { $sort: { percent: -1 } },
-  //       { $limit: 10 },
-  //     ]);
-  //   }
-  //
-  //   return {
-  //     totalPoolsBalance: totalValue / tokenData.estimatedValue,
-  //     totalPoolsBalanceValue: totalValue,
-  //     topTokens,
-  //   };
-  // }
 }
