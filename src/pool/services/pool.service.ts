@@ -15,7 +15,6 @@ export class PoolService {
     private readonly onChainPoolProvider: SolanaPoolProvider,
     @InjectModel(PoolModel.name)
     private readonly poolRepo: Model<PoolDocument>,
-
     @InjectModel(MarketModel.name)
     private readonly marketDataRepo: Model<MarketModel>,
   ) {}
@@ -29,16 +28,81 @@ export class PoolService {
     statuses,
   }: CommonQueryDto & FindPoolDto): Promise<PoolEntity[]> {
     const stages: PipelineStage[] = [];
-
     /** Filter & search stage */
     const filter: FilterQuery<PoolDocument> = { ownerAddress };
 
-    if (statuses && statuses.length >= 0) {
-      filter.status = { $in: statuses };
+    if (search) {
+      /** Map pool stage */
+      stages.push({
+        $lookup: {
+          from: 'whitelists',
+          as: 'baseTokenInfo',
+          localField: 'baseTokenAddress',
+          foreignField: 'address',
+        },
+      });
+
+      stages.push({
+        $lookup: {
+          from: 'whitelists',
+          as: 'targetTokenInfo',
+          localField: 'targetTokenAddress',
+          foreignField: 'address',
+        },
+      });
+
+      const regexSearch = new RegExp(search, 'i');
+
+      /**
+       * @dev Base token info
+       */
+      filter.$or = [
+        /**
+         * @dev Base token info
+         */
+        {
+          'baseTokenInfo.address': {
+            $regex: regexSearch,
+          },
+        },
+        {
+          'baseTokenInfo.symbol': {
+            $regex: regexSearch,
+          },
+        },
+        {
+          'baseTokenInfo.name': {
+            $regex: regexSearch,
+          },
+        },
+        /**
+         * @dev Target token info
+         */
+        {
+          'targetTokenInfo.address': {
+            $regex: regexSearch,
+          },
+        },
+        {
+          'targetTokenInfo.symbol': {
+            $regex: regexSearch,
+          },
+        },
+        {
+          'targetTokenInfo.name': {
+            $regex: regexSearch,
+          },
+        },
+        {
+          name: {
+            $regex: regexSearch,
+          },
+        },
+      ];
     }
 
-    if (search) {
-      filter.$text = { $search: search };
+    if (statuses && statuses.length >= 0) {
+      filter.status = { $in: statuses };
     }
 
     stages.push({ $match: filter });

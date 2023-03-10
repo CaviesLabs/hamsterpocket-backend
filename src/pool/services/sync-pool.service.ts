@@ -31,22 +31,10 @@ export class SyncPoolService {
     /** Fetch pool latest update */
     const syncedPool = await this.onChainPoolProvider.fetchFromContract(poolId);
 
-    const baseToken = (await this.whitelistRepo.findOne({
-      address: syncedPool.baseTokenAddress,
-    })) || { symbol: undefined };
-    const targetToken = (await this.whitelistRepo.findOne({
-      address: syncedPool.targetTokenAddress,
-    })) || { symbol: undefined };
-
     await this.poolRepo.updateOne(
       { _id: new Types.ObjectId(syncedPool.id) },
       {
         ...syncedPool,
-        textIndex: `${syncedPool.name}-${syncedPool.address}-${syncedPool.id}-${
-          syncedPool.baseTokenAddress
-        }-${syncedPool.targetTokenAddress}-${baseToken.symbol || ''}-${
-          targetToken.symbol || ''
-        }`,
       },
       {
         upsert: true,
@@ -91,20 +79,8 @@ export class SyncPoolService {
           /**
            * @dev Convert to instance
            */
-          const baseToken = (await this.whitelistRepo.findOne({
-            address: syncedPool.baseTokenAddress,
-          })) || { symbol: undefined };
-          const targetToken = (await this.whitelistRepo.findOne({
-            address: syncedPool.targetTokenAddress,
-          })) || { symbol: undefined };
-
           return plainToInstance(PoolEntity, {
             ...syncedPool,
-            textIndex: `${syncedPool.name}-${syncedPool.address}-${
-              syncedPool.id
-            }-${syncedPool.baseTokenAddress}-${syncedPool.targetTokenAddress}-${
-              baseToken.symbol || ''
-            }-${targetToken.symbol || ''}`,
           });
         } catch (e) {
           console.log('FAILED_TO_SYNC_POOL:', pool.id, e.message);

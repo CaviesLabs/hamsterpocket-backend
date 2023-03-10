@@ -55,10 +55,10 @@ export class PoolActivityService {
       filter.createdAt = {};
     }
     if (!!timeFrom) {
-      filter.createdAt.$gt = timeFrom;
+      filter.createdAt.$gt = new Date(timeFrom);
     }
     if (!!timeTo) {
-      filter.createdAt.$lt = timeTo;
+      filter.createdAt.$lt = new Date(timeTo);
     }
 
     stages.push({ $match: filter });
