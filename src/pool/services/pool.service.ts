@@ -30,6 +30,14 @@ export class PoolService {
     const stages: PipelineStage[] = [];
     /** Map pool stage */
     stages.push({
+      $addFields: {
+        idString: {
+          $toString: '$_id',
+        },
+      },
+    });
+
+    stages.push({
       $lookup: {
         from: 'whitelists',
         as: 'baseTokenInfo',
@@ -95,6 +103,11 @@ export class PoolService {
         },
         {
           name: {
+            $regex: regexSearch,
+          },
+        },
+        {
+          idString: {
             $regex: regexSearch,
           },
         },
