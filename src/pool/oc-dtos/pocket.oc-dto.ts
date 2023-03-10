@@ -193,7 +193,9 @@ export function convertToPoolEntity(
     frequency: {
       hours: pocketData.frequency.hours.toNumber(),
     },
-    buyCondition: mapBuyCondition(pocketData.buyCondition),
+    buyCondition: pocketData.buyCondition
+      ? mapBuyCondition(pocketData.buyCondition)
+      : null,
     currentBatchAmount: pocketData.executedBatchAmount.toNumber(),
     marketKey: pocketData.marketKey.toBase58(),
   } as Partial<PoolEntity>);
