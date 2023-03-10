@@ -87,6 +87,9 @@ export class PoolModel extends BaseModel implements PoolEntity {
 
   @Prop({ type: Date })
   closedAt: Date;
+
+  @Prop({ type: String })
+  textIndex: string;
 }
 
 /**
@@ -98,7 +101,10 @@ export const PoolSchema = SchemaFactory.createForClass(PoolModel);
  * @dev Trigger create index if not exists
  */
 /** Search index */
-PoolSchema.index({ address: 'text', name: 'text' }, { background: true });
+PoolSchema.index(
+  { textIndex: 'text', address: 'text', name: 'text' },
+  { background: true },
+);
 /** Sort indexes */
 PoolSchema.index(
   { ownerAddress: 'asc', baseTokenAddress: 'asc' },

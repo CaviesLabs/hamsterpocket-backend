@@ -23,6 +23,17 @@ export class PoolActivityService {
     search,
   }: FindPoolActivityDto & CommonQueryDto) {
     const stages: PipelineStage[] = [];
+
+    if (!!search) {
+      stages.push({
+        $match: {
+          $text: {
+            $search: search,
+          },
+        },
+      });
+    }
+
     /** Map pool stage */
     stages.push({
       $lookup: {
@@ -32,12 +43,13 @@ export class PoolActivityService {
         foreignField: '_id',
       },
     });
+
     /** Filter stage */
     const filter: FilterQuery<PoolActivityModel> = {
       'pool_docs.ownerAddress': ownerAddress,
     };
     if (statuses && statuses.length > 0) {
-      filter.statuses = { $in: statuses };
+      filter.type = { $in: statuses };
     }
     if (!!timeFrom || !!timeTo) {
       filter.createdAt = {};
@@ -48,10 +60,9 @@ export class PoolActivityService {
     if (!!timeTo) {
       filter.createdAt.$lt = timeTo;
     }
-    if (!!search) {
-      filter.$text = { $search: search };
-    }
+
     stages.push({ $match: filter });
+
     /** Pagination stages */
     stages.push({ $skip: offset }, { $limit: limit });
     return this.poolActivityRepo.aggregate(stages);

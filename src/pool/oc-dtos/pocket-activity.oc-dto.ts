@@ -79,6 +79,7 @@ export function convertToPoolActivityEntity(
     type: eventNameTypeMap[eventName],
     transactionId,
     createdAt,
+    textIndex: `${pool.name}-${pool.id}`,
   };
 
   switch (eventName) {

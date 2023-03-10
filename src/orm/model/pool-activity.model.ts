@@ -10,7 +10,7 @@ import {
 import { BaseModel } from '../base.model';
 
 @Injectable()
-@Schema({ collection: 'pool_activities', timestamps: false })
+@Schema({ collection: 'pool_activities', timestamps: false, autoIndex: true })
 export class PoolActivityModel extends BaseModel implements PoolActivityEntity {
   @Prop({ type: Types.ObjectId })
   poolId: Types.ObjectId;
@@ -38,6 +38,9 @@ export class PoolActivityModel extends BaseModel implements PoolActivityEntity {
 
   @Prop({ type: Date })
   createdAt: Date;
+
+  @Prop({ type: String, required: false })
+  textIndex: string;
 }
 
 /**
@@ -45,6 +48,8 @@ export class PoolActivityModel extends BaseModel implements PoolActivityEntity {
  */
 export const PoolActivitySchema =
   SchemaFactory.createForClass(PoolActivityModel);
+
+PoolActivitySchema.index({ textIndex: 'text', actor: 'text', poolId: 'text' });
 
 /**
  * @dev Define generic type for typescript reference.

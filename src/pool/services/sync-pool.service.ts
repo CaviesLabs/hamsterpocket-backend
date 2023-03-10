@@ -7,6 +7,10 @@ import { PoolDocument, PoolModel } from '../../orm/model/pool.model';
 import { Timer } from '../../providers/utils.provider';
 import { PoolEntity, PoolStatus } from '../entities/pool.entity';
 import { SolanaPoolProvider } from '../../providers/pool-program/solana-pool.provider';
+import {
+  WhitelistDocument,
+  WhitelistModel,
+} from '../../orm/model/whitelist.model';
 
 @Injectable()
 export class SyncPoolService {
@@ -14,6 +18,9 @@ export class SyncPoolService {
     private readonly onChainPoolProvider: SolanaPoolProvider,
     @InjectModel(PoolModel.name)
     private readonly poolRepo: Model<PoolDocument>,
+
+    @InjectModel(WhitelistModel.name)
+    private readonly whitelistRepo: Model<WhitelistDocument>,
   ) {}
 
   async syncPoolById(poolId: string) {
@@ -24,9 +31,23 @@ export class SyncPoolService {
     /** Fetch pool latest update */
     const syncedPool = await this.onChainPoolProvider.fetchFromContract(poolId);
 
+    const baseToken = (await this.whitelistRepo.findOne({
+      address: syncedPool.baseTokenAddress,
+    })) || { name: undefined };
+    const targetToken = (await this.whitelistRepo.findOne({
+      address: syncedPool.targetTokenAddress,
+    })) || { name: undefined };
+
     await this.poolRepo.updateOne(
       { _id: new Types.ObjectId(syncedPool.id) },
-      syncedPool,
+      {
+        ...syncedPool,
+        textIndex: `${syncedPool.name}-${syncedPool.address}-${syncedPool.id}-${
+          syncedPool.baseTokenAddress
+        }-${syncedPool.targetTokenAddress}-${baseToken.name || ''}-${
+          targetToken.name || ''
+        }`,
+      },
       {
         upsert: true,
       },
@@ -70,7 +91,21 @@ export class SyncPoolService {
           /**
            * @dev Convert to instance
            */
-          return plainToInstance(PoolEntity, syncedPool);
+          const baseToken = (await this.whitelistRepo.findOne({
+            address: syncedPool.baseTokenAddress,
+          })) || { name: undefined };
+          const targetToken = (await this.whitelistRepo.findOne({
+            address: syncedPool.targetTokenAddress,
+          })) || { name: undefined };
+
+          return plainToInstance(PoolEntity, {
+            ...syncedPool,
+            textIndex: `${syncedPool.name}-${syncedPool.address}-${
+              syncedPool.id
+            }-${syncedPool.baseTokenAddress}-${syncedPool.targetTokenAddress}-${
+              baseToken.name || ''
+            }-${targetToken.name || ''}`,
+          });
         } catch (e) {
           console.log('FAILED_TO_SYNC_POOL:', pool.id, e.message);
           return null;

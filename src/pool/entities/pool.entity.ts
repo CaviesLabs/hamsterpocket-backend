@@ -97,6 +97,8 @@ export class PoolEntity {
   endedAt: Date;
 
   closedAt: Date;
+
+  textIndex: string;
 }
 
 /**
