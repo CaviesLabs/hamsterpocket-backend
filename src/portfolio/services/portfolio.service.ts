@@ -158,6 +158,12 @@ export class PortfolioService {
             $arrayElemAt: ['$whitelist_docs.symbol', 0],
           },
           value: {
+            $multiply: [
+              '$total',
+              { $arrayElemAt: ['$whitelist_docs.estimatedValue', 0] },
+            ],
+          },
+          usdValue: {
             $divide: [
               {
                 $multiply: [
@@ -192,10 +198,10 @@ export class PortfolioService {
         switch (option) {
           /** Sort by estimated value */
           case ListUserTokenSortOption.VALUE_ASC:
-            sort['value'] = 1;
+            sort['usdValue'] = 1;
             break;
           case ListUserTokenSortOption.VALUE_DESC:
-            sort['value'] = -1;
+            sort['usdValue'] = -1;
             break;
         }
       }
