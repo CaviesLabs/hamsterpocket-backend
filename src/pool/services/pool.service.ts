@@ -133,7 +133,8 @@ export class PoolService {
         /** Sort progress stage */
         stages.push({
           $sort: {
-            progress: sortBy === FindPoolSortOption.PROGRESS_ASC ? 1 : -1,
+            progressPercent:
+              sortBy === FindPoolSortOption.PROGRESS_ASC ? 1 : -1,
           },
         });
         break;
