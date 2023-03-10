@@ -47,8 +47,10 @@ export class PoolActivityService {
     const filter: FilterQuery<PoolActivityModel> = {
       'pool_docs.ownerAddress': ownerAddress,
     };
+
+    filter.type = { $ne: ActivityType.VAULT_CREATED };
     if (statuses && statuses.length > 0) {
-      filter.type = { $in: statuses, $ne: ActivityType.VAULT_CREATED };
+      filter.type = { ...filter.type, $in: statuses };
     }
     if (!!timeFrom || !!timeTo) {
       filter.createdAt = {};
