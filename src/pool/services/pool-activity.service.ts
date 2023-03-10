@@ -6,6 +6,7 @@ import {
   PoolActivityDocument,
 } from '../../orm/model/pool-activity.model';
 import { FindPoolActivityDto } from '../dtos/find-pool-activity.dto';
+import { ActivityType } from '../entities/pool-activity.entity';
 
 export class PoolActivityService {
   constructor(
@@ -47,7 +48,7 @@ export class PoolActivityService {
       'pool_docs.ownerAddress': ownerAddress,
     };
     if (statuses && statuses.length > 0) {
-      filter.type = { $in: statuses };
+      filter.type = { $in: statuses, $ne: ActivityType.VAULT_CREATED };
     }
     if (!!timeFrom || !!timeTo) {
       filter.createdAt = {};
