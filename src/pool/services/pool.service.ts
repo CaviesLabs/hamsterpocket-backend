@@ -28,29 +28,29 @@ export class PoolService {
     statuses,
   }: CommonQueryDto & FindPoolDto): Promise<PoolEntity[]> {
     const stages: PipelineStage[] = [];
+    /** Map pool stage */
+    stages.push({
+      $lookup: {
+        from: 'whitelists',
+        as: 'baseTokenInfo',
+        localField: 'baseTokenAddress',
+        foreignField: 'address',
+      },
+    });
+
+    stages.push({
+      $lookup: {
+        from: 'whitelists',
+        as: 'targetTokenInfo',
+        localField: 'targetTokenAddress',
+        foreignField: 'address',
+      },
+    });
+
     /** Filter & search stage */
     const filter: FilterQuery<PoolDocument> = { ownerAddress };
 
     if (search) {
-      /** Map pool stage */
-      stages.push({
-        $lookup: {
-          from: 'whitelists',
-          as: 'baseTokenInfo',
-          localField: 'baseTokenAddress',
-          foreignField: 'address',
-        },
-      });
-
-      stages.push({
-        $lookup: {
-          from: 'whitelists',
-          as: 'targetTokenInfo',
-          localField: 'targetTokenAddress',
-          foreignField: 'address',
-        },
-      });
-
       const regexSearch = new RegExp(search, 'i');
 
       /**
