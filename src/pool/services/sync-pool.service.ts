@@ -33,10 +33,10 @@ export class SyncPoolService {
 
     const baseToken = (await this.whitelistRepo.findOne({
       address: syncedPool.baseTokenAddress,
-    })) || { name: undefined };
+    })) || { symbol: undefined };
     const targetToken = (await this.whitelistRepo.findOne({
       address: syncedPool.targetTokenAddress,
-    })) || { name: undefined };
+    })) || { symbol: undefined };
 
     await this.poolRepo.updateOne(
       { _id: new Types.ObjectId(syncedPool.id) },
@@ -44,8 +44,8 @@ export class SyncPoolService {
         ...syncedPool,
         textIndex: `${syncedPool.name}-${syncedPool.address}-${syncedPool.id}-${
           syncedPool.baseTokenAddress
-        }-${syncedPool.targetTokenAddress}-${baseToken.name || ''}-${
-          targetToken.name || ''
+        }-${syncedPool.targetTokenAddress}-${baseToken.symbol || ''}-${
+          targetToken.symbol || ''
         }`,
       },
       {
@@ -93,18 +93,18 @@ export class SyncPoolService {
            */
           const baseToken = (await this.whitelistRepo.findOne({
             address: syncedPool.baseTokenAddress,
-          })) || { name: undefined };
+          })) || { symbol: undefined };
           const targetToken = (await this.whitelistRepo.findOne({
             address: syncedPool.targetTokenAddress,
-          })) || { name: undefined };
+          })) || { symbol: undefined };
 
           return plainToInstance(PoolEntity, {
             ...syncedPool,
             textIndex: `${syncedPool.name}-${syncedPool.address}-${
               syncedPool.id
             }-${syncedPool.baseTokenAddress}-${syncedPool.targetTokenAddress}-${
-              baseToken.name || ''
-            }-${targetToken.name || ''}`,
+              baseToken.symbol || ''
+            }-${targetToken.symbol || ''}`,
           });
         } catch (e) {
           console.log('FAILED_TO_SYNC_POOL:', pool.id, e.message);
