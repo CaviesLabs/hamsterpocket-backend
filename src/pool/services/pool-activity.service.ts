@@ -24,16 +24,6 @@ export class PoolActivityService {
   }: FindPoolActivityDto & CommonQueryDto) {
     const stages: PipelineStage[] = [];
 
-    if (!!search) {
-      stages.push({
-        $match: {
-          $text: {
-            $search: search,
-          },
-        },
-      });
-    }
-
     /** Map pool stage */
     stages.push({
       $lookup: {
@@ -41,6 +31,14 @@ export class PoolActivityService {
         as: 'pool_docs',
         localField: 'poolId',
         foreignField: '_id',
+      },
+    });
+
+    stages.push({
+      $addFields: {
+        poolIdString: {
+          $toString: '$poolId',
+        },
       },
     });
 
@@ -59,6 +57,23 @@ export class PoolActivityService {
     }
     if (!!timeTo) {
       filter.createdAt.$lt = new Date(timeTo);
+    }
+
+    if (search) {
+      const searchRegex = new RegExp(search, 'i');
+
+      filter.$or = [
+        {
+          'pool_docs.name': {
+            $regex: searchRegex,
+          },
+        },
+        {
+          poolIdString: {
+            $regex: searchRegex,
+          },
+        },
+      ];
     }
 
     stages.push({ $match: filter });
