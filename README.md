@@ -109,7 +109,15 @@ yarn
 ### **Step 3: Configure the project** ⚙️
 
 Please refer to the `example.config.json` to adjust your desired configuration. Please contact <a href="mailto:khang@cavies.xyz">khang@cavies.xyz</a> or  <a href="mailto:dev@cavies.xyz">dev@cavies.xyz</a> for any inquiries.
+
+### **Step 4: Run the project locally**
+
+```bash
+yarn start:dev && yarn start:worker-dev
+```
+
 ## **Contribution** 🤝
+
 
 Hamsterpocket is an Open Source project and we encourage everyone to help us making it better. If you are interested in contributing to the project, please feel free to do so.
 
