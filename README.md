@@ -85,7 +85,7 @@ Hamsterpocket (Pocket) is an Open Source self-managed dollar-cost-averaging prot
 - [hamsterpocket-program](https://github.com/CaviesLabs/hamsterpocket-program) - Rust smart contract repository
 
 ## **Getting started** 🚀
-Create a new Hamsterpocket project with Open Source integration in just a few steps. For the Enterprise integration, please [contact sales](https://vuestorefront.io/contact/sales).
+Create a new Hamsterpocket project with Open Source integration in just a few steps.
 
 ### **Step 1: Clone this repo** 🧰
 
@@ -136,7 +136,7 @@ How you can help us:
 
 ## **Careers** 👩‍💻👨‍💻
 
-We are growing and we are looking for talented people to join our team. If you are interested in working with us, please check our [Careers page](https://vuestorefront.io/careers).
+We are growing and we are looking for talented people to join our team. If you are interested in working with us, please check our [Careers page](https://www.notion.so/cavies/Job-Board-320ac7987dc64a53b0d3d3e7c52c5ce7).
 
 ## **Contacts** 📱📱
 
