@@ -1,5 +1,7 @@
 #!groovy
 
+def buildBadge = addEmbeddableBadgeConfiguration(id: "backend-build-${GIT_BRANCH}", subject: "hamsterpocket build")
+
 pipeline {
     agent {
         label 'hamsterbox'
@@ -24,6 +26,18 @@ pipeline {
                         docker system prune --volumes -f
                     '''
                 }
+            }
+        }
+
+        failure {
+            script {
+                buildBadge.setStatus("failed")
+            }
+        }
+
+        success {
+            script {
+                buildBadge.setStatus("passing")
             }
         }
     }
@@ -53,6 +67,8 @@ pipeline {
                                 parameters([booleanParam(defaultValue: false,
                                         description: 'Trigger a dokku deployment.',
                                         name: 'DOKKU_DEPLOY')])])
+
+                    buildBadge.setStatus("running")
                 }
             }
         }
@@ -115,5 +131,6 @@ pipeline {
                 }
             }
         }
+
     }
 }
