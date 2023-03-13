@@ -1,6 +1,6 @@
 #!groovy
 
-def buildBadge = addEmbeddableBadgeConfiguration(id: "backend-build-${GIT_BRANCH}", subject: "hamsterpocket build")
+def buildBadge = addEmbeddableBadgeConfiguration(id: "hamsterpocket-backend-build", subject: "hamsterpocket-backend-build")
 
 pipeline {
     agent {
