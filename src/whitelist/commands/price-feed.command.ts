@@ -2,6 +2,7 @@ import { Command, CommandRunner, Option } from 'nest-commander';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as fs from 'fs';
+import { Injectable } from '@nestjs/common';
 
 import { chain } from 'stream-chain';
 import { parser } from 'stream-json';
@@ -15,6 +16,7 @@ interface CommandOptions {
   path: string;
 }
 
+@Injectable()
 @Command({ name: 'price-feed-sync' })
 export class PriceFeedSyncCommand extends CommandRunner {
   constructor(

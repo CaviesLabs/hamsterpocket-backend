@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as fs from 'fs';
 import { plainToInstance } from 'class-transformer';
+import { Injectable } from '@nestjs/common';
 
 import { chain } from 'stream-chain';
 import { parser } from 'stream-json';
@@ -16,6 +17,7 @@ interface BasicCommandOptions {
   path: string;
 }
 
+@Injectable()
 @Command({ name: 'seeding-market' })
 export class MarketSeedingCommand extends CommandRunner {
   constructor(
@@ -42,6 +44,7 @@ export class MarketSeedingCommand extends CommandRunner {
       throw new Error('JSON_PATH_NOT_SPECIFIED');
     }
 
+    await this.marketDataRepo.base.connection.getClient().connect();
     // now process data
     await this.process(options.path);
 

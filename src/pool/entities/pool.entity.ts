@@ -69,8 +69,6 @@ export class PoolEntity {
 
   nextExecutionAt: Date;
 
-  depositedAmount: number;
-
   batchVolume: number;
 
   frequency: DurationObjectUnits;
@@ -82,11 +80,10 @@ export class PoolEntity {
   stopConditions: StopConditions | undefined;
 
   /** Progression fields */
-  currentSpentBaseToken: number;
 
   remainingBaseTokenBalance: number;
 
-  currentReceivedTargetToken: number;
+  currentTargetTokenBalance: number;
 
   currentBatchAmount: number;
 
@@ -98,7 +95,14 @@ export class PoolEntity {
 
   closedAt: Date;
 
-  textIndex: string;
+  /**
+   * @dev Archived information used for statistic
+   */
+  depositedAmount: number;
+
+  currentSpentBaseToken: number;
+
+  currentReceivedTargetToken: number;
 }
 
 /**

@@ -151,11 +151,8 @@ const determineTradeSideData = (pocketData: OcPocket): Partial<PoolEntity> => {
         baseTokenAddress: pocketData.quoteTokenMintAddress.toBase58(),
         targetTokenAddress: pocketData.baseTokenMintAddress.toBase58(),
         depositedAmount: pocketData.totalQuoteDepositAmount.toNumber(),
-        currentSpentBaseToken: pocketData.totalQuoteDepositAmount
-          .sub(pocketData.quoteTokenBalance)
-          .toNumber(),
+        currentTargetTokenBalance: pocketData.baseTokenBalance.toNumber(),
         remainingBaseTokenBalance: pocketData.quoteTokenBalance.toNumber(),
-        currentReceivedTargetToken: pocketData.baseTokenBalance.toNumber(),
         ...mapStopConditions(pocketData.stopConditions, sideValue),
       };
 
@@ -164,11 +161,8 @@ const determineTradeSideData = (pocketData: OcPocket): Partial<PoolEntity> => {
         baseTokenAddress: pocketData.baseTokenMintAddress.toBase58(),
         targetTokenAddress: pocketData.quoteTokenMintAddress.toBase58(),
         depositedAmount: pocketData.totalBaseDepositAmount.toNumber(),
-        currentSpentBaseToken: pocketData.totalBaseDepositAmount
-          .sub(pocketData.baseTokenBalance)
-          .toNumber(),
+        currentTargetTokenBalance: pocketData.quoteTokenBalance.toNumber(),
         remainingBaseTokenBalance: pocketData.baseTokenBalance.toNumber(),
-        currentReceivedTargetToken: pocketData.quoteTokenBalance.toNumber(),
         ...mapStopConditions(pocketData.stopConditions, sideValue),
       };
   }

@@ -135,5 +135,10 @@ export class SyncPoolActivityService {
     );
 
     await this.poolActivityRepo.create(mappedActivities);
+    // TODO: re-calculate progress
   }
+  //
+  // private syncPoolProgress(poolId: string) {
+  //   const stages: PipelineStage[] = [];
+  // }
 }

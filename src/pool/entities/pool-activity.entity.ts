@@ -37,6 +37,4 @@ export class PoolActivityEntity {
   memo: string;
 
   createdAt: Date;
-
-  textIndex: string;
 }
