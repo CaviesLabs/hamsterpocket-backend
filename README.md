@@ -22,8 +22,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/CaviesLabs/hamsterpocket-frontend/">
-    <img alt="GitHub Repository Stars Count" src="https://img.shields.io/github/stars/CaviesLabs/hamsterpocket-frontend?style=social" />
+  <a href="https://github.com/CaviesLabs/hamsterpocket-backend/">
+    <img alt="GitHub Repository Stars Count" src="https://img.shields.io/github/stars/CaviesLabs/hamsterpocket-backend?style=social" />
   </a>
     <a href="https://twitter.com/CaviesLabs">
         <img alt="Follow Us on Twitter" src="https://img.shields.io/twitter/follow/CaviesLabs?style=social" />
@@ -37,13 +37,13 @@
         <img alt="Build Status" src="https://build.cavies.xyz/buildStatus/icon?job=hamsterpocket%2Fhamsterpocket-backend%2Fdevelop" />
     </a>
     <a href="https://github.com/CaviesLabs/hamsterpocket-backend">
-        <img alt="License" src="https://img.shields.io/github/license/CaviesLabs/hamsterpocket-frontend" />
+        <img alt="License" src="https://img.shields.io/github/license/CaviesLabs/hamsterpocket-backend" />
     </a>
     <a href="https://github.com/CaviesLabs/hamsterpocket-backend/pulls">
         <img alt="PRs Welcome" src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" />
     </a>
-    <a href="https://coveralls.io/github/CaviesLabs/hamsterpocket-frontend/?branch=next">
-        <img alt="Coverage Status" src="https://coveralls.io/repos/github/CaviesLabs/hamsterpocket-frontend/badge.svg?branch=next" />
+    <a href="https://coveralls.io/github/CaviesLabs/hamsterpocket-backend/?branch=next">
+        <img alt="Coverage Status" src="https://coveralls.io/repos/github/CaviesLabs/hamsterpocket-backend/badge.svg?branch=next" />
     </a>
 </p>
 
@@ -125,7 +125,7 @@ If you have any questions about contributing, please refer to our twitter <a hre
 <img alt="Follow Us on Twitter" src="https://img.shields.io/twitter/follow/CaviesLabs?style=social" />
 </a> - we are happy to help you!
 
-Discovered a 🐜 or have feature suggestion? Feel free to [create an issue](https://github.com/CaviesLabs/hamsterpocket-frontend/issues/new/choose) on Github.
+Discovered a 🐜 or have feature suggestion? Feel free to [create an issue](https://github.com/CaviesLabs/hamsterpocket-backend/issues/new/choose) on Github.
 
 ## **Support us** ❤️
 
