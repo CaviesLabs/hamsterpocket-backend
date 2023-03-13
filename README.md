@@ -47,7 +47,7 @@
     </a>
 </p>
 
-![Hero image](https://files.slack.com/files-pri/T03N86YEZ6Z-F04TF1HTMLN/banner.png?pub_secret=42940cedd0)
+![Hero image](https://files.slack.com/files-pri/T03N86YEZ6Z-F04TQLW6JCU/heroimage.png?pub_secret=014779ae87)
 
 Hamsterpocket (Pocket) is an Open Source self-managed dollar-cost-averaging protocol that lets users create and run their own saving pools (“pockets”) that will automatically execute the chosen strategies over time.
 
