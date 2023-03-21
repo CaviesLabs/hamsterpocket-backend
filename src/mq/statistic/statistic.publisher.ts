@@ -35,19 +35,23 @@ export class StatisticPublisher implements OnApplicationBootstrap {
     const timer = new Timer('CALCULATE_STATISTIC');
     timer.start();
 
-    const [{ usersCount }] = await this.poolRepo.aggregate<{
-      usersCount: number;
-    }>([
-      {
-        $match: { status: { $ne: PoolStatus.CREATED } },
-      },
-      {
-        $group: { _id: { ownerAddress: '$ownerAddress' } },
-      },
-      {
-        $group: { _id: null, usersCount: { $sum: 1 } },
-      },
-    ]);
+    let usersCount = 0;
+
+    try {
+      [{ usersCount }] = await this.poolRepo.aggregate<{
+        usersCount: number;
+      }>([
+        {
+          $match: { status: { $ne: PoolStatus.CREATED } },
+        },
+        {
+          $group: { _id: { ownerAddress: '$ownerAddress' } },
+        },
+        {
+          $group: { _id: null, usersCount: { $sum: 1 } },
+        },
+      ]);
+    } catch {}
 
     const poolsCount = await this.poolRepo.count();
 
