@@ -118,19 +118,19 @@ export function calculateProgressPercent(pocket: PoolEntity) {
   switch (pocket.mainProgressBy) {
     case MainProgressBy.SPENT_BASE_TOKEN:
       pocket.progressPercent =
-        pocket.currentSpentBaseToken ||
-        0 / pocket.stopConditions.spentBaseTokenReach;
+        pocket.currentSpentBaseToken /
+        pocket.stopConditions.spentBaseTokenReach;
       break;
 
     case MainProgressBy.RECEIVED_TARGET_TOKEN:
       pocket.progressPercent =
-        pocket.currentReceivedTargetToken ||
-        0 / pocket.stopConditions.receivedTargetTokenReach;
+        pocket.currentReceivedTargetToken /
+        pocket.stopConditions.receivedTargetTokenReach;
       break;
 
     case MainProgressBy.BATCH_AMOUNT:
       pocket.progressPercent =
-        pocket.currentBatchAmount || 0 / pocket.stopConditions.batchAmountReach;
+        pocket.currentBatchAmount / pocket.stopConditions.batchAmountReach;
       break;
 
     case MainProgressBy.END_TIME:

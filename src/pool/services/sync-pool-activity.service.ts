@@ -71,6 +71,18 @@ export class SyncPoolActivityService {
       await this.poolActivityRepo.deleteMany({
         poolId: new Types.ObjectId(poolId),
       });
+
+      await this.poolRepo.updateOne(
+        {
+          _id: new Types.ObjectId(poolId),
+        },
+        {
+          $set: {
+            currentReceivedTargetToken: 0,
+            currentSpentBaseToken: 0,
+          },
+        },
+      );
     }
 
     const latest = await this.poolActivityRepo.findOne(
@@ -119,32 +131,47 @@ export class SyncPoolActivityService {
              * @dev Save the pool
              */
             if (activity.type === ActivityType.WITHDRAWN) {
-              await this.poolRepo.findByIdAndUpdate(pool.id, {
-                $set: {
-                  endedAt: activity.createdAt,
+              await this.poolRepo.updateOne(
+                {
+                  _id: new Types.ObjectId(poolId),
                 },
-              });
+                {
+                  $set: {
+                    endedAt: activity.createdAt,
+                  },
+                },
+              );
             }
 
             if (activity.type === ActivityType.CLOSED) {
-              await this.poolRepo.findByIdAndUpdate(pool.id, {
-                $set: {
-                  closedAt: activity.createdAt,
+              await this.poolRepo.updateOne(
+                {
+                  _id: new Types.ObjectId(poolId),
                 },
-              });
+                {
+                  $set: {
+                    closedAt: activity.createdAt,
+                  },
+                },
+              );
             }
 
             if (activity.type === ActivityType.SWAPPED) {
-              await this.poolRepo.findByIdAndUpdate(pool.id, {
-                $set: {
+              await this.poolRepo.updateOne(
+                {
+                  _id: new Types.ObjectId(poolId),
+                },
+                {
                   $inc: {
                     currentReceivedTargetToken: activity.targetTokenAmount,
                     currentSpentBaseToken: activity.baseTokenAmount,
                   },
                 },
-              });
+              );
             }
-          } catch {}
+          } catch (e) {
+            console.log(e);
+          }
 
           return activity;
         },

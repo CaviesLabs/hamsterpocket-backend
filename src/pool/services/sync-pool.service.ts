@@ -27,10 +27,6 @@ export class SyncPoolService {
   ) {}
 
   async syncPoolById(poolId: string) {
-    const existedPool = await this.poolRepo.findById(poolId);
-    /** No need to sync ended pool */
-    if (existedPool.status === PoolStatus.ENDED) return;
-
     /** Fetch pool latest update */
     const syncedPool = await this.onChainPoolProvider.fetchFromContract(poolId);
 
@@ -43,6 +39,8 @@ export class SyncPoolService {
         upsert: true,
       },
     );
+
+    await this.poolActivityService.syncPoolActivities(poolId, true);
   }
 
   async syncPools() {
