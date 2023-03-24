@@ -121,14 +121,6 @@ export class SyncPoolService {
     const poolIds = await this.poolRepo.find(
       {
         ownerAddress,
-        status: {
-          $in: [
-            PoolStatus.CREATED,
-            PoolStatus.ACTIVE,
-            PoolStatus.PAUSED,
-            PoolStatus.CLOSED,
-          ],
-        },
       },
       { id: 1, status: 1 },
     );
