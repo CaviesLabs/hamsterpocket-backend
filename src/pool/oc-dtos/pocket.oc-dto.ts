@@ -192,5 +192,8 @@ export function convertToPoolEntity(
       : null,
     currentBatchAmount: pocketData.executedBatchAmount.toNumber(),
     marketKey: pocketData.marketKey.toBase58(),
+    // Below fields will be updated once the events data is computed
+    currentSpentBaseToken: 0,
+    currentReceivedTargetToken: 0,
   } as Partial<PoolEntity>);
 }
