@@ -79,7 +79,7 @@ export class PortfolioService {
             targetTokenAddress: '$targetTokenAddress',
           },
           total: {
-            $sum: '$currentReceivedTargetToken',
+            $sum: '$currentTargetTokenBalance',
           },
         },
       },
