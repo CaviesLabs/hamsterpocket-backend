@@ -67,7 +67,6 @@ export class SyncPoolActivityService {
   }
 
   async syncPoolActivities(poolId: string, cleanUp = false) {
-    console.log({ poolId, cleanUp });
     if (cleanUp) {
       await this.poolActivityRepo.deleteMany({
         poolId: new Types.ObjectId(poolId),
