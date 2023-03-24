@@ -94,47 +94,51 @@ export class SolanaPoolProvider implements OnModuleInit {
     limit: number,
     lastTransaction?: string,
   ) {
-    const [pocketAccount] = PublicKey.findProgramAddressSync(
-      [
-        anchor.utils.bytes.utf8.encode('SEED::POCKET::POCKET_SEED'),
-        anchor.utils.bytes.utf8.encode(poolId.toString()),
-      ],
-      this.program.programId,
-    );
+    try {
+      const [pocketAccount] = PublicKey.findProgramAddressSync(
+        [
+          anchor.utils.bytes.utf8.encode('SEED::POCKET::POCKET_SEED'),
+          anchor.utils.bytes.utf8.encode(poolId.toString()),
+        ],
+        this.program.programId,
+      );
 
-    const transactions =
-      await this.connection.getConfirmedSignaturesForAddress2(pocketAccount, {
-        until: lastTransaction,
-        limit,
-      });
-
-    const parsedTransactions = await this.connection.getParsedTransactions(
-      transactions.map(({ signature }) => signature),
-      {
-        commitment: 'confirmed',
-      },
-    );
-
-    const eventParser = new EventParser(
-      this.program.programId,
-      new BorshCoder(this.program.idl),
-    );
-
-    const poolActivities: EventWithTransaction[] = [];
-
-    for (const { meta, blockTime, transaction } of parsedTransactions) {
-      const events = eventParser.parseLogs(meta.logMessages);
-      for (const { name, data } of events) {
-        poolActivities.push({
-          eventName: name as OcEventName,
-          eventData: data as OcPocketEvent,
-          transaction,
-          createdAt: new Date(blockTime * 1000),
+      const transactions =
+        await this.connection.getConfirmedSignaturesForAddress2(pocketAccount, {
+          until: lastTransaction,
+          limit,
         });
-      }
-    }
 
-    return poolActivities;
+      const parsedTransactions = await this.connection.getParsedTransactions(
+        transactions.map(({ signature }) => signature),
+        {
+          commitment: 'confirmed',
+        },
+      );
+
+      const eventParser = new EventParser(
+        this.program.programId,
+        new BorshCoder(this.program.idl),
+      );
+
+      const poolActivities: EventWithTransaction[] = [];
+
+      for (const { meta, blockTime, transaction } of parsedTransactions) {
+        const events = eventParser.parseLogs(meta.logMessages);
+        for (const { name, data } of events) {
+          poolActivities.push({
+            eventName: name as OcEventName,
+            eventData: data as OcPocketEvent,
+            transaction,
+            createdAt: new Date(blockTime * 1000),
+          });
+        }
+      }
+
+      return poolActivities;
+    } catch {
+      return [];
+    }
   }
 
   public async executeSwapToken(opt: {
