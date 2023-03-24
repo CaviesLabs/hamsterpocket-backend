@@ -87,6 +87,9 @@ export class PoolModel extends BaseModel implements PoolEntity {
 
   @Prop({ type: Date })
   closedAt: Date;
+
+  @Prop({ type: Number, default: 0 })
+  currentTargetTokenBalance: number;
 }
 
 /**

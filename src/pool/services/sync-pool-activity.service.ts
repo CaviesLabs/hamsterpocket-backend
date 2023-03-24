@@ -12,7 +12,7 @@ import {
   ActivityType,
   PoolActivityStatus,
 } from '../entities/pool-activity.entity';
-import { PoolStatus } from '../entities/pool.entity';
+import { calculateProgressPercent, PoolStatus } from '../entities/pool.entity';
 import { convertToPoolActivityEntity } from '../oc-dtos/pocket-activity.oc-dto';
 
 @Injectable()
@@ -66,7 +66,13 @@ export class SyncPoolActivityService {
     timer.stop();
   }
 
-  async syncPoolActivities(poolId: string) {
+  async syncPoolActivities(poolId: string, cleanUp = false) {
+    if (cleanUp) {
+      await this.poolActivityRepo.deleteMany({
+        poolId: new Types.ObjectId(poolId),
+      });
+    }
+
     const latest = await this.poolActivityRepo.findOne(
       {
         poolId: new Types.ObjectId(poolId),
@@ -127,6 +133,17 @@ export class SyncPoolActivityService {
                 },
               });
             }
+
+            if (activity.type === ActivityType.SWAPPED) {
+              await this.poolRepo.findByIdAndUpdate(pool.id, {
+                $set: {
+                  $inc: {
+                    currentReceivedTargetToken: activity.targetTokenAmount,
+                    currentSpentBaseToken: activity.baseTokenAmount,
+                  },
+                },
+              });
+            }
           } catch {}
 
           return activity;
@@ -135,10 +152,9 @@ export class SyncPoolActivityService {
     );
 
     await this.poolActivityRepo.create(mappedActivities);
-    // TODO: re-calculate progress
+
+    // re-calcualte progress percent
+    await calculateProgressPercent(pool);
+    await pool.save();
   }
-  //
-  // private syncPoolProgress(poolId: string) {
-  //   const stages: PipelineStage[] = [];
-  // }
 }

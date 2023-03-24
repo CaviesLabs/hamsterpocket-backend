@@ -11,6 +11,7 @@ import {
   WhitelistDocument,
   WhitelistModel,
 } from '../../orm/model/whitelist.model';
+import { SyncPoolActivityService } from './sync-pool-activity.service';
 
 @Injectable()
 export class SyncPoolService {
@@ -21,6 +22,8 @@ export class SyncPoolService {
 
     @InjectModel(WhitelistModel.name)
     private readonly whitelistRepo: Model<WhitelistDocument>,
+
+    private readonly poolActivityService: SyncPoolActivityService,
   ) {}
 
   async syncPoolById(poolId: string) {
@@ -103,6 +106,12 @@ export class SyncPoolService {
         }),
     );
 
+    await Promise.all(
+      poolIds.map((poolId) =>
+        this.poolActivityService.syncPoolActivities(poolId.toString()),
+      ),
+    );
+
     timer.stop();
   }
 
@@ -159,6 +168,13 @@ export class SyncPoolService {
             },
           };
         }),
+    );
+
+    // sync activities
+    await Promise.all(
+      poolIds.map((poolId) =>
+        this.poolActivityService.syncPoolActivities(poolId.toString(), true),
+      ),
     );
 
     timer.stop();

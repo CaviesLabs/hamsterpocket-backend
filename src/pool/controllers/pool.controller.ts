@@ -52,8 +52,9 @@ export class PoolController {
   }
 
   @Post('/:id/sync')
-  syncOne(@Param('id') id: string) {
-    return this.syncPoolService.syncPoolById(id);
+  async syncOne(@Param('id') id: string) {
+    await this.syncPoolService.syncPoolById(id);
+    await this.syncPoolActivityService.syncPoolActivities(id, true);
   }
 
   @Post('/user/:ownerAddress/sync')

@@ -6,10 +6,7 @@ import { BorshCoder, EventParser } from '@project-serum/anchor';
 import { OpenOrders } from '@openbook-dex/openbook';
 import * as bs from 'bs58';
 
-import {
-  calculateProgressPercent,
-  PoolEntity,
-} from '../../pool/entities/pool.entity';
+import { PoolEntity } from '../../pool/entities/pool.entity';
 import { IDL, Pocket } from './pocket.idl';
 import { RegistryProvider } from '../registry.provider';
 import { convertToPoolEntity } from '../../pool/oc-dtos/pocket.oc-dto';
@@ -89,10 +86,7 @@ export class SolanaPoolProvider implements OnModuleInit {
 
     const pocketData = await this.program.account.pocket.fetch(pocketAccount);
 
-    const pool = convertToPoolEntity(pocketAccount, pocketData);
-    calculateProgressPercent(pool);
-
-    return pool;
+    return convertToPoolEntity(pocketAccount, pocketData);
   }
 
   async fetchActivities(
