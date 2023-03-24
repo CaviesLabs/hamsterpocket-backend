@@ -67,6 +67,7 @@ export class SyncPoolActivityService {
   }
 
   async syncPoolActivities(poolId: string, cleanUp = false) {
+    console.log({ poolId, cleanUp });
     if (cleanUp) {
       await this.poolActivityRepo.deleteMany({
         poolId: new Types.ObjectId(poolId),
@@ -154,7 +155,8 @@ export class SyncPoolActivityService {
     await this.poolActivityRepo.create(mappedActivities);
 
     // re-calcualte progress percent
-    await calculateProgressPercent(pool);
-    await pool.save();
+    const latestPool = await this.poolRepo.findById(poolId);
+    await calculateProgressPercent(latestPool);
+    await latestPool.save();
   }
 }
