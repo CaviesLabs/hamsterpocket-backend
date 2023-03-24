@@ -107,8 +107,8 @@ export class SyncPoolService {
     );
 
     await Promise.all(
-      poolIds.map((poolId) =>
-        this.poolActivityService.syncPoolActivities(poolId.toString()),
+      poolIds.map(({ id }) =>
+        this.poolActivityService.syncPoolActivities(id.toString()),
       ),
     );
 
@@ -172,8 +172,8 @@ export class SyncPoolService {
 
     // sync activities
     await Promise.all(
-      poolIds.map((poolId) =>
-        this.poolActivityService.syncPoolActivities(poolId.toString(), true),
+      poolIds.map(({ id }) =>
+        this.poolActivityService.syncPoolActivities(id.toString(), true),
       ),
     );
 
