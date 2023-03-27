@@ -14,9 +14,6 @@ import { convertToPoolEntity } from '../../pool/oc-dtos/pocket.oc-dto';
 import { OcEventName, OcPocketEvent } from './pocket.type';
 import { ProgramAccountsProvider } from './program-accounts.provider';
 
-export const SOLANA_DEVNET_RPC_ENDPOINT = 'https://api.devnet.solana.com';
-export const SOLANA_MAINNET_RPC_RPC_ENDPOINT =
-  'https://boldest-few-field.solana-mainnet.quiknode.pro/0ffa9f9f5e9141aa33a030081b78fdfe40bfbae6/';
 // export const SOLANA_MAINNET_RPC_RPC_ENDPOINT =
 //   'https://api.mainnet-beta.solana.com';
 
@@ -44,23 +41,12 @@ export class SolanaPoolProvider implements OnModuleInit {
     const { SOLANA_CLUSTER, POCKET_PROGRAM_ADDRESS } =
       this.registry.getConfig();
 
-    switch (SOLANA_CLUSTER) {
-      case 'devnet':
-        this.rpcEndpoint = SOLANA_DEVNET_RPC_ENDPOINT;
-        break;
-      case 'mainnet':
-        this.rpcEndpoint = SOLANA_MAINNET_RPC_RPC_ENDPOINT;
-        break;
-      default:
-        throw new Error('RPC not supported');
-    }
-
     const defaultKeyPair = Keypair.fromSecretKey(
       Uint8Array.from(bs.decode(this.registry.getConfig().OPERATOR_SECRET_KEY)),
     );
     const senderWallet = new NodeWallet(defaultKeyPair);
 
-    this.cluster = SOLANA_CLUSTER;
+    this.rpcEndpoint = SOLANA_CLUSTER;
     this.connection = new Connection(this.rpcEndpoint);
 
     this.provider = new anchor.AnchorProvider(this.connection, senderWallet, {
