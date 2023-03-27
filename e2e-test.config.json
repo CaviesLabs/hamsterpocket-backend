@@ -8,7 +8,7 @@
   "DOMAIN": "hamsterbox.xyz",
   "HOST_URI": "https://hamsterbox.xyz/profile",
   "SOLSCAN_API_KEY": "test",
-  "SOLANA_CLUSTER": "devnet",
+  "SOLANA_CLUSTER": "https://solana-rpc.hamsterbox.xyz/",
   "POCKET_PROGRAM_ADDRESS": "DL1BQwRmN4Ye4fsmDnPipNrm1XU24x8yDU7c5Ltsqvvc",
   "OPERATOR_SECRET_KEY": "4TJYWMuorKRT8xGwZewgAH2gvY6WfEwK3SRbtRYrSS9wcx3CGUnbjT9p7vA9KznqRDeYBtXpMP8Krqr8xvdUGhnU"
 }
