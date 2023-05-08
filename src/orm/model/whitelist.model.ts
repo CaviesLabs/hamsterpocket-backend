@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { ChainID } from 'src/pool/entities/pool.entity';
+import { ChainID } from '../../pool/entities/pool.entity';
 import {
   EntityType,
   WhitelistEntity,
