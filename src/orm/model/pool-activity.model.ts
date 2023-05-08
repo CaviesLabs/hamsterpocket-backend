@@ -8,10 +8,14 @@ import {
   PoolActivityStatus,
 } from '../../pool/entities/pool-activity.entity';
 import { BaseModel } from '../base.model';
+import { ChainID } from '../../pool/entities/pool.entity';
 
 @Injectable()
 @Schema({ collection: 'pool_activities', timestamps: false, autoIndex: true })
 export class PoolActivityModel extends BaseModel implements PoolActivityEntity {
+  @Prop({ type: String, enum: ChainID, default: ChainID.Solana })
+  chainId: ChainID;
+
   @Prop({ type: Types.ObjectId })
   poolId: Types.ObjectId;
 

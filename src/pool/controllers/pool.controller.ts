@@ -18,6 +18,9 @@ import { PoolMockService } from '../services/pool-mock.service';
 import { PoolService } from '../services/pool.service';
 import { SyncPoolActivityService } from '../services/sync-pool-activity.service';
 import { SyncPoolService } from '../services/sync-pool.service';
+import { CreateEmptyPoolDto } from '../dtos/create-empty-pool.dto';
+import { SyncEvmPoolService } from '../services/sync-evm-pool.service';
+import { SyncEvmPoolActivityService } from '../services/sync-evm-pool-activity.service';
 
 @Controller('pool')
 @ApiTags('pool')
@@ -29,15 +32,18 @@ export class PoolController {
     private readonly poolMockService: PoolMockService,
     private readonly poolActivityService: PoolActivityService,
     private readonly syncPoolActivityService: SyncPoolActivityService,
+    private readonly syncEVMPoolService: SyncEvmPoolService,
+    private readonly syncEvmPoolActivityService: SyncEvmPoolActivityService,
   ) {}
 
   @Get()
   find(
     @Query() { search, limit, offset }: CommonQueryDto,
-    @Query() { ownerAddress, statuses, sortBy }: FindPoolDto,
+    @Query() { ownerAddress, statuses, sortBy, chainId }: FindPoolDto,
   ) {
     return this.poolService.find({
       search,
+      chainId,
       limit,
       offset,
       ownerAddress,
@@ -46,9 +52,29 @@ export class PoolController {
     });
   }
 
-  @Post('/:ownerAddress')
-  createEmpty(@Param('ownerAddress') ownerAddress: string) {
-    return this.poolService.createEmpty(ownerAddress);
+  @Post('/:chainId/:ownerAddress')
+  createEmpty(@Param() params: CreateEmptyPoolDto) {
+    return this.poolService.createEmpty(params.ownerAddress, params.chainId);
+  }
+
+  @Get('/:id/')
+  async getPocketDetails(@Param('id') id: string) {
+    return this.poolService.getPoolDetail(id);
+  }
+
+  @Post('/evm/:id/sync')
+  async evmSyncSinglePocket(@Param('id') id: string) {
+    await this.syncEVMPoolService.syncPoolById(id);
+  }
+
+  @Post('/user/evm/:ownerAddress/sync')
+  evmSyncByOwnerAddress(@Param('ownerAddress') ownerAddress: string) {
+    return this.syncEVMPoolService.syncPoolsByOwnerAddress(ownerAddress);
+  }
+
+  @Post('/evm/:id/activity/sync')
+  async evmSyncPoolActivities(@Param('id') poolId: string) {
+    await this.syncEvmPoolActivityService.syncPoolActivities(poolId);
   }
 
   @Post('/:id/sync')
@@ -61,12 +87,19 @@ export class PoolController {
     return this.syncPoolService.syncPoolsByOwnerAddress(ownerAddress);
   }
 
+  @Post('/:id/activity/sync')
+  async syncPoolActivities(@Param('id') poolId: string) {
+    await this.syncPoolActivityService.syncPoolActivities(poolId);
+  }
+
   @Get('/activity')
   async getPoolActivities(
     @Query() { limit, offset, search }: CommonQueryDto,
-    @Query() { ownerAddress, timeFrom, timeTo, statuses }: FindPoolActivityDto,
+    @Query()
+    { ownerAddress, timeFrom, chainId, timeTo, statuses }: FindPoolActivityDto,
   ): Promise<PoolActivityEntity[]> {
     return this.poolActivityService.find({
+      chainId,
       ownerAddress,
       timeFrom,
       timeTo,
@@ -75,11 +108,6 @@ export class PoolController {
       offset,
       search,
     });
-  }
-
-  @Post('/:id/activity/sync')
-  async syncPoolActivities(@Param('id') poolId: string) {
-    await this.syncPoolActivityService.syncPoolActivities(poolId);
   }
 
   @Post('/mock/generate')

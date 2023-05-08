@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 
 import {
   IsNotEmpty,
+  IsObject,
   IsPort,
   IsString,
   IsUrl,
@@ -84,17 +85,8 @@ export class SystemConfig {
   })
   HOST_URI: string;
 
-  @IsString()
-  @IsNotEmpty()
-  SOLANA_CLUSTER: string;
-
-  @IsString()
-  @IsNotEmpty()
-  POCKET_PROGRAM_ADDRESS: string;
-
-  @IsString()
-  @IsNotEmpty()
-  SOLSCAN_API_KEY: string;
+  @IsObject()
+  NETWORKS: object;
 
   /**
    * @dev Validate schema.

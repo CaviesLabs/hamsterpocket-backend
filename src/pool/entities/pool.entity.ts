@@ -26,83 +26,73 @@ export enum PriceConditionType {
 
 export enum MainProgressBy {
   END_TIME = 'MAIN_PROGRESS_BY::END_TIME',
-
   SPENT_BASE_TOKEN = 'MAIN_PROGRESS_BY::SPENT_BASE_TOKEN',
   RECEIVED_TARGET_TOKEN = 'MAIN_PROGRESS_BY::RECEIVED_TARGET_TOKEN',
   BATCH_AMOUNT = 'MAIN_PROGRESS_BY::BATCH_AMOUNT',
 }
-
+export enum ChainID {
+  Solana = 'solana',
+  BSC = 'bsc_mainnet',
+  Mumbai = 'mumbai',
+}
 export class BuyCondition {
   type: PriceConditionType;
-
   value: number[];
 }
-
 export class StopConditions {
   endTime?: Date;
-
   spentBaseTokenReach?: number;
-
   receivedTargetTokenReach?: number;
-
   batchAmountReach?: number;
 }
-
+export enum TradingStopType {
+  Unset = 'TRADING_STOP::UNSET',
+  Price = 'TRADING_STOP::PRICE',
+  PortfolioPercentageDiff = 'TRADING_STOP::PORTFOLIO_PERCENTAGE_DIFF',
+  PortfolioValueDiff = 'TRADING_STOP::PORTFOLIO_VALUE_DIFF',
+}
+export class TradingStopCondition {
+  stopType: TradingStopType;
+  value: number;
+}
 export class PoolEntity {
   id: string;
-
+  chainId: ChainID;
   address: string;
-
   ownerAddress: string;
-
   name: string;
-
   status: PoolStatus;
-
   baseTokenAddress: string;
-
   targetTokenAddress: string;
-
   marketKey: string;
-
   startTime: Date;
-
   nextExecutionAt: Date;
-
   batchVolume: number;
-
   frequency: DurationObjectUnits;
-
   @Type(() => BuyCondition)
   buyCondition: BuyCondition | undefined;
-
   @Type(() => StopConditions)
   stopConditions: StopConditions | undefined;
-
+  @Type(() => TradingStopCondition)
+  stopLossCondition: TradingStopCondition | undefined;
+  @Type(() => TradingStopCondition)
+  takeProfitCondition: TradingStopCondition | undefined;
   /** Progression fields */
-
   remainingBaseTokenBalance: number;
-
   currentTargetTokenBalance: number;
-
   currentBatchAmount: number;
-
   mainProgressBy: MainProgressBy | undefined;
-
   progressPercent: number;
-
   endedAt: Date;
-
   closedAt: Date;
-
   /**
    * @dev Archived information used for statistic
    */
   depositedAmount: number;
-
   currentSpentBaseToken: number;
-
   currentReceivedTargetToken: number;
+  totalClosedPositionInTargetTokenAmount: number;
+  totalReceivedFundInBaseTokenAmount: number;
 }
 
 /**

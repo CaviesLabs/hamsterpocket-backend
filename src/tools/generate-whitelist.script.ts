@@ -6,6 +6,7 @@ import {
   EntityType,
   WhitelistEntity,
 } from '../whitelist/entities/whitelist.entity';
+import { ChainID } from '../pool/entities/pool.entity';
 
 const mintAddresses = [
   'So11111111111111111111111111111111111111112',
@@ -21,6 +22,7 @@ async function generateWhitelist() {
       data: { name, symbol, decimals, icon },
     } = await metadataProvider.getCurrencyDetail(address);
     whitelist.push({
+      chainId: ChainID.Solana,
       entityType: EntityType.TOKEN,
       address,
       name,

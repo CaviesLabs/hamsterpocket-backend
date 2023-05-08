@@ -50,7 +50,8 @@ export class TokenMetadataProvider {
     }>(`https://pro-api.solscan.io/v1.0/nft/wallet/list_nft/${address}`, {
       method: 'GET',
       headers: {
-        token: new RegistryProvider().getConfig().SOLSCAN_API_KEY,
+        token: new RegistryProvider().getConfig().NETWORKS['solana']
+          .INDEXER_API_KEY,
       },
     });
   }
@@ -70,7 +71,8 @@ export class TokenMetadataProvider {
       {
         method: 'GET',
         headers: {
-          token: new RegistryProvider().getConfig().SOLSCAN_API_KEY,
+          token: new RegistryProvider().getConfig().NETWORKS['solana']
+            .INDEXER_API_KEY,
         },
       },
     );

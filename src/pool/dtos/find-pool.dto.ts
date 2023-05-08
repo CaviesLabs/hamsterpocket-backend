@@ -1,6 +1,6 @@
 import { IsEnum, IsOptional, IsString } from 'class-validator';
 import { ArrayType } from '../../api-docs/array-type.decorator';
-import { PoolStatus } from '../entities/pool.entity';
+import { ChainID, PoolStatus } from '../entities/pool.entity';
 
 export enum FindPoolSortOption {
   DATE_START_DESC = 'DATE_START_DESC',
@@ -10,6 +10,9 @@ export enum FindPoolSortOption {
 }
 
 export class FindPoolDto {
+  @IsEnum(ChainID)
+  chainId: ChainID;
+
   @IsString()
   ownerAddress: string;
 

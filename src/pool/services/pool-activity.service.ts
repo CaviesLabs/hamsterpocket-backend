@@ -15,6 +15,7 @@ export class PoolActivityService {
   ) {}
 
   async find({
+    chainId,
     ownerAddress,
     statuses,
     timeTo,
@@ -46,6 +47,7 @@ export class PoolActivityService {
     /** Filter stage */
     const filter: FilterQuery<PoolActivityModel> = {
       'pool_docs.ownerAddress': ownerAddress,
+      chainId,
     };
 
     filter.type = { $ne: ActivityType.VAULT_CREATED };

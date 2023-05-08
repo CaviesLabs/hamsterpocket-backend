@@ -1,12 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model, PipelineStage, Types } from 'mongoose';
 
 import { CommonQueryDto } from '../../api-docs/dto/common-query.dto';
 import { PoolModel, PoolDocument } from '../../orm/model/pool.model';
-import { SolanaPoolProvider } from '../../providers/pool-program/solana-pool.provider';
+import { SolanaPoolProvider } from '../../providers/solana-pocket-program/solana-pool.provider';
 import { FindPoolDto, FindPoolSortOption } from '../dtos/find-pool.dto';
-import { PoolEntity } from '../entities/pool.entity';
+import { ChainID, PoolEntity } from '../entities/pool.entity';
 import { MarketModel } from '../../orm/model/market.model';
 
 @Injectable()
@@ -20,6 +20,7 @@ export class PoolService {
   ) {}
 
   async find({
+    chainId,
     search,
     limit,
     offset,
@@ -56,7 +57,7 @@ export class PoolService {
     });
 
     /** Filter & search stage */
-    const filter: FilterQuery<PoolDocument> = { ownerAddress };
+    const filter: FilterQuery<PoolDocument> = { ownerAddress, chainId };
 
     if (search) {
       const regexSearch = new RegExp(search, 'i');
@@ -146,11 +147,12 @@ export class PoolService {
     return this.poolRepo.aggregate<PoolModel>(stages);
   }
 
-  async createEmpty(ownerAddress: string) {
+  async createEmpty(ownerAddress: string, chainId: ChainID) {
     const [doc] = await this.poolRepo.create(
       [
         {
           ownerAddress,
+          chainId,
         },
       ],
       {
@@ -161,11 +163,21 @@ export class PoolService {
     return doc;
   }
 
+  async getPoolDetail(id: string) {
+    const pool = await this.poolRepo.findById(id);
+
+    if (!pool) {
+      throw new NotFoundException('OBJECT_NOT_FOUND');
+    }
+
+    return pool;
+  }
+
   async executeSwapToken(poolId: string) {
-    console.log('Executing swap for pool', poolId);
+    console.log('Executing pocket for pool', poolId);
 
     /**
-     * @dev Find neccessary data
+     * @dev Find necessary data
      */
     const pool = await this.poolRepo.findById(poolId);
     const market = await this.marketDataRepo.findOne({
@@ -181,7 +193,7 @@ export class PoolService {
     }
 
     /**
-     * @dev Trigger swap. TODO: try/catch and log events emitted from swap transaction.
+     * @dev Trigger pocket. TODO: try/catch and log events emitted from pocket transaction.
      */
     try {
       const txId = await this.onChainPoolProvider.executeSwapToken({
@@ -197,7 +209,7 @@ export class PoolService {
       throw e;
     } finally {
       /**
-       * @dev Sync pool after execute swap
+       * @dev Sync pool after execute pocket
        */
       const syncedPool = await this.onChainPoolProvider.fetchFromContract(
         poolId,

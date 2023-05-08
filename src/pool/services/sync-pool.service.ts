@@ -5,8 +5,8 @@ import { Model, Types } from 'mongoose';
 
 import { PoolDocument, PoolModel } from '../../orm/model/pool.model';
 import { Timer } from '../../providers/utils.provider';
-import { PoolEntity, PoolStatus } from '../entities/pool.entity';
-import { SolanaPoolProvider } from '../../providers/pool-program/solana-pool.provider';
+import { ChainID, PoolEntity, PoolStatus } from '../entities/pool.entity';
+import { SolanaPoolProvider } from '../../providers/solana-pocket-program/solana-pool.provider';
 import {
   WhitelistDocument,
   WhitelistModel,
@@ -27,20 +27,21 @@ export class SyncPoolService {
   ) {}
 
   async syncPoolById(poolId: string) {
-    /** Fetch pool latest update */
-    const syncedPool = await this.onChainPoolProvider.fetchFromContract(poolId);
+    const pool = await this.poolRepo.findById(poolId);
+    if (!pool || pool.chainId !== ChainID.Solana) return;
+
+    const data = await this.onChainPoolProvider.fetchFromContract(poolId);
+    await this.poolActivityService.syncPoolActivities(poolId, true);
 
     await this.poolRepo.updateOne(
-      { _id: new Types.ObjectId(syncedPool.id) },
+      { _id: new Types.ObjectId(data.id) },
       {
-        ...syncedPool,
+        ...data,
       },
       {
         upsert: true,
       },
     );
-
-    await this.poolActivityService.syncPoolActivities(poolId, true);
   }
 
   async syncPools() {
@@ -50,6 +51,7 @@ export class SyncPoolService {
     /** Only pick _id and status */
     const poolIds = await this.poolRepo.find(
       {
+        chainId: ChainID.Solana,
         status: {
           $in: [
             PoolStatus.CREATED,
@@ -63,7 +65,7 @@ export class SyncPoolService {
           $lt: timer.startedAt.minus({ minutes: 5 }).toJSDate(),
         },
       },
-      { _id: 1, status: 1 },
+      { _id: 1, status: 1, chainId: 1 },
     );
 
     /**
@@ -121,6 +123,7 @@ export class SyncPoolService {
     const poolIds = await this.poolRepo.find(
       {
         ownerAddress,
+        chainId: ChainID.Solana,
       },
       { id: 1, status: 1 },
     );

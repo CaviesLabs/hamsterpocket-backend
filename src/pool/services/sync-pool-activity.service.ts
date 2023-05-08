@@ -6,14 +6,14 @@ import {
   PoolActivityModel,
 } from '../../orm/model/pool-activity.model';
 import { PoolDocument, PoolModel } from '../../orm/model/pool.model';
-import { SolanaPoolProvider } from '../../providers/pool-program/solana-pool.provider';
+import { SolanaPoolProvider } from '../../providers/solana-pocket-program/solana-pool.provider';
 import { Timer } from '../../providers/utils.provider';
 import {
   ActivityType,
   PoolActivityStatus,
 } from '../entities/pool-activity.entity';
 import { calculateProgressPercent, PoolStatus } from '../entities/pool.entity';
-import { convertToPoolActivityEntity } from '../oc-dtos/pocket-activity.oc-dto';
+import { convertToPoolActivityEntity } from '../../providers/solana-pocket-program/pocket-activity.oc-dto';
 
 @Injectable()
 export class SyncPoolActivityService {

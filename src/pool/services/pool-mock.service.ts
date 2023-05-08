@@ -8,6 +8,7 @@ import { Model } from 'mongoose';
 import { PoolDocument, PoolModel } from '../../orm/model/pool.model';
 import {
   calculateProgressPercent,
+  ChainID,
   MainProgressBy,
   PoolEntity,
   PoolStatus,
@@ -33,6 +34,7 @@ export class PoolMockService {
 
   private genPoolTemplate(): Partial<PoolEntity> {
     return {
+      chainId: ChainID.Solana,
       name: 'Batch',
       status: PoolStatus.ACTIVE,
       /** SOL */

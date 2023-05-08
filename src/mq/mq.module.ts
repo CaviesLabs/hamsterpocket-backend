@@ -9,7 +9,7 @@ import { PortfolioProcessor } from './portfolio/portfolio.processor';
 import { OrmModule } from '../orm/orm.module';
 import { PortfolioService } from '../portfolio/services/portfolio.service';
 import { PoolService } from '../pool/services/pool.service';
-import { SolanaPoolProvider } from '../providers/pool-program/solana-pool.provider';
+import { SolanaPoolProvider } from '../providers/solana-pocket-program/solana-pool.provider';
 import { RegistryProvider } from '../providers/registry.provider';
 import { SyncPoolService } from '../pool/services/sync-pool.service';
 import { PocketProcessor } from './pocket/pocket.processor';

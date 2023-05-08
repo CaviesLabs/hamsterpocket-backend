@@ -1,3 +1,5 @@
+import { ChainID } from '../../pool/entities/pool.entity';
+
 export enum EntityType {
   TOKEN = 'token',
   NFT = 'nft',
@@ -5,6 +7,8 @@ export enum EntityType {
 
 export class WhitelistEntity {
   id: string;
+
+  chainId: ChainID;
 
   address: string;
 

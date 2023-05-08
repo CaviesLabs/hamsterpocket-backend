@@ -5,10 +5,12 @@ import { Document } from 'mongoose';
 
 import {
   BuyCondition,
+  ChainID,
   MainProgressBy,
   PoolEntity,
   PoolStatus,
   StopConditions,
+  TradingStopCondition,
 } from '../../pool/entities/pool.entity';
 import { BaseModel } from '../base.model';
 
@@ -16,6 +18,21 @@ import { BaseModel } from '../base.model';
 @Schema({ collection: 'pools', timestamps: true })
 export class PoolModel extends BaseModel implements PoolEntity {
   id: string;
+
+  @Prop({ type: String, enum: ChainID, default: ChainID.Solana })
+  chainId: ChainID;
+
+  @Prop({ type: Object })
+  stopLossCondition: TradingStopCondition;
+
+  @Prop({ type: Object })
+  takeProfitCondition: TradingStopCondition;
+
+  @Prop({ type: Number })
+  totalClosedPositionInTargetTokenAmount: number;
+
+  @Prop({ type: Number })
+  totalReceivedFundInBaseTokenAmount: number;
 
   @Prop({ type: String })
   marketKey: string;

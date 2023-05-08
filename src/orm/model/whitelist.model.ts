@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { ChainID } from 'src/pool/entities/pool.entity';
 import {
   EntityType,
   WhitelistEntity,
@@ -8,6 +9,9 @@ import { BaseModel } from '../base.model';
 @Schema({ collection: 'whitelists' })
 export class WhitelistModel extends BaseModel implements WhitelistEntity {
   id: string;
+
+  @Prop({ type: String, enum: ChainID })
+  chainId: ChainID;
 
   @Prop({ type: String, unique: true })
   address: string;
