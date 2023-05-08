@@ -8,6 +8,7 @@ import { SolanaPoolProvider } from '../../providers/solana-pocket-program/solana
 import { FindPoolDto, FindPoolSortOption } from '../dtos/find-pool.dto';
 import { ChainID, PoolEntity } from '../entities/pool.entity';
 import { MarketModel } from '../../orm/model/market.model';
+import { EVMBasedPocketProvider } from '../../providers/evm-pocket-program/evm.provider';
 
 @Injectable()
 export class PoolService {
@@ -147,6 +148,11 @@ export class PoolService {
     return this.poolRepo.aggregate<PoolModel>(stages);
   }
 
+  /**
+   * @dev Create empty pool
+   * @param ownerAddress
+   * @param chainId
+   */
   async createEmpty(ownerAddress: string, chainId: ChainID) {
     const [doc] = await this.poolRepo.create(
       [
@@ -163,6 +169,10 @@ export class PoolService {
     return doc;
   }
 
+  /**
+   * @dev Get pool details
+   * @param id
+   */
   async getPoolDetail(id: string) {
     const pool = await this.poolRepo.findById(id);
 
@@ -173,6 +183,70 @@ export class PoolService {
     return pool;
   }
 
+  /**
+   * @dev Execute swap token on EVM
+   * @param poolId
+   * @param chainId
+   */
+  async executeSwapTokenOnEVM(poolId: string, chainId: ChainID) {
+    try {
+      const tx = await new EVMBasedPocketProvider(chainId).tryMakingDCASwap(
+        poolId,
+      );
+      console.log('[SWAPPED_SUCCESSFULLY] TxId:', tx.hash);
+    } catch (e) {
+      throw e;
+    } finally {
+      /**
+       * @dev Sync pool after execute pocket
+       */
+      const syncedPool = await new EVMBasedPocketProvider(chainId).fetchPocket(
+        poolId,
+      );
+      await this.poolRepo.updateOne(
+        { _id: new Types.ObjectId(poolId) },
+        syncedPool,
+        {
+          upsert: true,
+        },
+      );
+    }
+  }
+
+  /**
+   * @dev Execute swap token on EVM
+   * @param poolId
+   * @param chainId
+   */
+  async executeClosingPosition(poolId: string, chainId: ChainID) {
+    try {
+      const tx = await new EVMBasedPocketProvider(chainId).tryClosingPosition(
+        poolId,
+      );
+      console.log('[CLOSED_POSITION_SUCCESSFULLY] TxId:', tx.hash);
+    } catch (e) {
+      throw e;
+    } finally {
+      /**
+       * @dev Sync pool after execute pocket
+       */
+      const syncedPool = await new EVMBasedPocketProvider(chainId).fetchPocket(
+        poolId,
+      );
+      await this.poolRepo.updateOne(
+        { _id: new Types.ObjectId(poolId) },
+        syncedPool,
+        {
+          upsert: true,
+        },
+      );
+    }
+  }
+
+  /**
+   * @dev Execute swap token on solana
+   * @param poolId
+   */
   async executeSwapToken(poolId: string) {
     console.log('Executing pocket for pool', poolId);
 
