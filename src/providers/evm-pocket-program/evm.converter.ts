@@ -255,6 +255,7 @@ export class EVMPocketConverter {
       //nextBlock
     } = await this.provider.fetchEvents(blockNumber);
 
+    console.log({ data });
     return data.map((event) => {
       // const eventLogData = event.args;
       // const eventType = event.name;
@@ -267,6 +268,9 @@ export class EVMPocketConverter {
         createdAt: new Date(event.timestamp),
         transactionId: event.transactionHash,
 
+        /**
+         * @dev To be feeded
+         */
         type: ActivityType.SWAPPED,
         baseTokenAmount: 0,
         targetTokenAmount: 0,

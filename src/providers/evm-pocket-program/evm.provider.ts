@@ -16,6 +16,7 @@ import {
 import { Types } from './libs/contracts/PocketRegistry';
 
 export class EVMBasedPocketProvider {
+  private readonly rpcProvider: ethers.providers.JsonRpcProvider;
   private readonly pocketRegistry: PocketRegistry;
   private readonly pocketVault: PocketVault;
   private readonly pocketChef: PocketChef;
@@ -40,12 +41,15 @@ export class EVMBasedPocketProvider {
     /**
      * @dev Initializes rpc provider
      */
-    const rpcProvider = new ethers.providers.JsonRpcProvider(RPC_URL);
+    this.rpcProvider = new ethers.providers.JsonRpcProvider(RPC_URL);
 
     /**
      * @dev Initializes variables
      */
-    this.signer = new ethers.Wallet(OPERATOR_SECRET_KEY as string, rpcProvider);
+    this.signer = new ethers.Wallet(
+      OPERATOR_SECRET_KEY as string,
+      this.rpcProvider,
+    );
     this.multicall3 = Multicall3__factory.connect(
       MULTICALL3_PROGRAM_ADDRESS,
       this.signer,
@@ -170,60 +174,64 @@ export class EVMBasedPocketProvider {
    * @param fromBlock
    */
   public async fetchEvents(fromBlock: number) {
-    const provider = await this.pocketRegistry.provider;
+    const provider = this.rpcProvider;
 
-    const pocketLogs = await Promise.all(
+    const expectedEvents = [
+      'PocketUpdated',
+      'PocketInitialized',
+      'Deposited',
+      'Withdrawn',
+      'Swapped',
+      'ClosedPosition',
+    ];
+    const registryLogs = await Promise.all(
       (
         await provider.getLogs({
           address: this.pocketRegistry.address,
           fromBlock, // default is limited to 5000 block
           toBlock: fromBlock + 5000,
-          topics: [
-            this.pocketRegistry.interface.events[
-              'PocketInitialized(address,string,address,tuple)'
-            ].format(),
-            this.pocketRegistry.interface.events[
-              'PocketUpdated(address,string,address,string,tuple)'
-            ].format(),
-          ],
         })
-      ).map(async (log) => ({
-        timestamp: (await provider.getBlock(log.blockHash)).timestamp,
-        transactionHash: log.transactionHash,
-        ...this.pocketRegistry.interface.parseLog(log),
-      })),
+      ).map(async (log) => {
+        let extraData;
+
+        try {
+          extraData = this.pocketRegistry.interface.parseLog(log);
+        } catch {}
+
+        return {
+          timestamp: (await provider.getBlock(log.blockHash)).timestamp,
+          transactionHash: log.transactionHash,
+          ...extraData,
+        };
+      }),
     );
 
     const vaultLogs = await Promise.all(
       (
         await provider.getLogs({
           address: this.pocketVault.address,
-          fromBlock,
+          fromBlock, // default is limited to 5000 block
           toBlock: fromBlock + 5000,
-          topics: [
-            this.pocketVault.interface.events[
-              'Deposited(address,string,address,uint256)'
-            ].format(),
-            this.pocketVault.interface.events[
-              'Withdrawn(address,string,address,uint256,address,uint256)'
-            ].format(),
-            this.pocketVault.interface.events[
-              'Swapped(address,string,address,uint256,address,uint256)'
-            ].format(),
-            this.pocketVault.interface.events[
-              'ClosedPosition(address,string,address,uint256,address,uint256)'
-            ].format(),
-          ],
         })
-      ).map(async (log) => ({
-        timestamp: (await provider.getBlock(log.blockHash)).timestamp,
-        transactionHash: log.transactionHash,
-        ...this.pocketVault.interface.parseLog(log),
-      })),
+      ).map(async (log) => {
+        let extraData;
+
+        try {
+          extraData = this.pocketVault.interface.parseLog(log);
+        } catch {}
+
+        return {
+          timestamp: (await provider.getBlock(log.blockHash)).timestamp,
+          transactionHash: log.transactionHash,
+          ...extraData,
+        };
+      }),
     );
 
     return {
-      data: pocketLogs.concat(vaultLogs),
+      data: registryLogs
+        .concat(vaultLogs)
+        .filter((log) => expectedEvents.includes(log.name)),
       nextBlock: fromBlock + 5001,
     };
   }
