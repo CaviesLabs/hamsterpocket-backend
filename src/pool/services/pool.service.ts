@@ -218,7 +218,7 @@ export class PoolService {
    * @param poolId
    * @param chainId
    */
-  async executeClosingPosition(poolId: string, chainId: ChainID) {
+  async executeClosingPositionOnEVM(poolId: string, chainId: ChainID) {
     try {
       const tx = await new EVMBasedPocketProvider(chainId).tryClosingPosition(
         poolId,

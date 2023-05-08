@@ -22,6 +22,8 @@ import { SyncPriceService } from '../whitelist/services/sync-price.service';
 import { CoinGeckoClient } from '../providers/coin-gecko.client';
 import { NetworkProvider } from '../providers/network.provider';
 import { StatisticPublisher } from './statistic/statistic.publisher';
+import { SyncEvmPoolActivityService } from '../pool/services/sync-evm-pool-activity.service';
+import { SyncEvmPoolService } from '../pool/services/sync-evm-pool.service';
 
 @Module({
   imports: [
@@ -45,6 +47,8 @@ import { StatisticPublisher } from './statistic/statistic.publisher';
     SolanaPoolProvider,
     SyncPoolActivityService,
     SyncPriceService,
+    SyncEvmPoolService,
+    SyncEvmPoolActivityService,
     CoinGeckoClient,
     NetworkProvider,
 

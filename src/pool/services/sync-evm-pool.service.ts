@@ -26,7 +26,7 @@ export class SyncEvmPoolService {
    * @param poolId
    */
   async syncPoolById(poolId: string) {
-    const timer = new Timer('Sync single pool');
+    const timer = new Timer('Sync single evm pool');
     timer.start();
 
     const pool = await this.poolRepo.findById(poolId);
@@ -90,7 +90,9 @@ export class SyncEvmPoolService {
 
     await Promise.all(
       data.map(async ({ _id: chainId, idList: poolIds }) => {
-        console.log(`Found ${poolIds.length} pocket(s) for syncing ...`);
+        console.log(
+          `Found ${poolIds.length} evm pocket(s) for syncing, on chain ${chainId} ...`,
+        );
 
         const pools = await new EVMPocketConverter(
           chainId,
@@ -120,7 +122,7 @@ export class SyncEvmPoolService {
    * @param ownerAddress
    */
   async syncPoolsByOwnerAddress(ownerAddress: string) {
-    const timer = new Timer('Sync pools by owner address');
+    const timer = new Timer('Sync evm pools by owner address');
     timer.start();
 
     /** Only pick _id and status */
@@ -145,7 +147,9 @@ export class SyncEvmPoolService {
 
     await Promise.all(
       data.map(async ({ _id: chainId, idList: poolIds }) => {
-        console.log(`Found ${poolIds.length} pocket(s) for ${ownerAddress}`);
+        console.log(
+          `Found ${poolIds.length} evm pocket(s) for ${ownerAddress}`,
+        );
 
         const pools = await new EVMPocketConverter(
           chainId,

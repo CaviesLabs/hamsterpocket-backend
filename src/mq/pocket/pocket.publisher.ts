@@ -4,7 +4,14 @@ import { Queue } from 'bull';
 import { Duration } from 'luxon';
 
 import { PORTFOLIO_QUEUE } from '../dto/portfolio.queue';
-import { BUY_TOKEN_PROCESS, POOL_QUEUE, SYNC_POCKETS } from '../dto/pool.queue';
+import {
+  BUY_EVM_TOKEN_PROCESS,
+  BUY_TOKEN_PROCESS,
+  CLOSE_EVM_POSITION_PROCESS,
+  POOL_QUEUE,
+  SYNC_EVM_POCKETS,
+  SYNC_POCKETS,
+} from '../dto/pool.queue';
 
 @Injectable()
 export class PocketPublisher implements OnApplicationBootstrap {
@@ -20,11 +27,22 @@ export class PocketPublisher implements OnApplicationBootstrap {
      * @dev Create jobs when bootstrapping application
      */
     this.createSyncPocketJob().catch((e) =>
-      console.log('ERROR::FAILED_TO_SYNC_POCKET', e),
+      console.log('ERROR::FAILED_TO_ADD_JOB', e),
+    );
+    this.createSyncEVMPocketJob().catch((e) =>
+      console.log('ERROR::FAILED_TO_ADD_JOB', e),
     );
 
     this.createExecuteSwapJobs().catch((e) =>
-      console.log('ERROR::FAILED_TO_EXECUTE_SWAP', e),
+      console.log('ERROR::FAILED_TO_ADD_JOB', e),
+    );
+
+    this.createExecuteEVMSwapJobs().catch((e) =>
+      console.log('ERROR::FAILED_TO_ADD_JOB', e),
+    );
+
+    this.createClosingEVMPositionJobs().catch((e) =>
+      console.log('ERROR::FAILED_TO_ADD_JOB', e),
     );
   }
 
@@ -58,6 +76,66 @@ export class PocketPublisher implements OnApplicationBootstrap {
     console.log(`[${BUY_TOKEN_PROCESS}] Added execute swap jobs ...`);
   }
 
+  async createExecuteEVMSwapJobs() {
+    /**
+     * @dev Flush the queue
+     */
+    await this.pocketQueue.removeRepeatableByKey(BUY_EVM_TOKEN_PROCESS);
+
+    /** Publish repeatable job */
+    await this.pocketQueue.add(
+      BUY_EVM_TOKEN_PROCESS,
+      {},
+      {
+        /** Use pool ID as jobId to upsert queue event */
+        jobId: BUY_EVM_TOKEN_PROCESS,
+        priority: 1,
+
+        /**
+         * @dev Repeat every minute
+         */
+        repeat: {
+          startDate: new Date(),
+          every: Duration.fromObject({
+            minutes: 1,
+          }).toMillis(),
+        },
+      },
+    );
+
+    console.log(`[${BUY_EVM_TOKEN_PROCESS}] Added execute swap jobs ...`);
+  }
+
+  async createClosingEVMPositionJobs() {
+    /**
+     * @dev Flush the queue
+     */
+    await this.pocketQueue.removeRepeatableByKey(CLOSE_EVM_POSITION_PROCESS);
+
+    /** Publish repeatable job */
+    await this.pocketQueue.add(
+      CLOSE_EVM_POSITION_PROCESS,
+      {},
+      {
+        /** Use pool ID as jobId to upsert queue event */
+        jobId: CLOSE_EVM_POSITION_PROCESS,
+        priority: 1,
+
+        /**
+         * @dev Repeat every minute
+         */
+        repeat: {
+          startDate: new Date(),
+          every: Duration.fromObject({
+            minutes: 1,
+          }).toMillis(),
+        },
+      },
+    );
+
+    console.log(`[${CLOSE_EVM_POSITION_PROCESS}] Added execute swap jobs ...`);
+  }
+
   async createSyncPocketJob() {
     /**
      * @dev Flush the queue
@@ -89,5 +167,38 @@ export class PocketPublisher implements OnApplicationBootstrap {
 
     /** Publish repeatable job */
     console.log(`[${SYNC_POCKETS}] Added sync pocket job ...`);
+  }
+
+  async createSyncEVMPocketJob() {
+    /**
+     * @dev Flush the queue
+     */
+    await this.pocketQueue.removeRepeatableByKey(SYNC_EVM_POCKETS);
+
+    /**
+     * @dev Add a task to the queue
+     */
+    await this.pocketQueue.add(
+      SYNC_EVM_POCKETS,
+      {},
+      {
+        /** Use pool ID as jobId to upsert queue event */
+        jobId: SYNC_EVM_POCKETS,
+        priority: 1,
+
+        /**
+         * @dev Sync data every 5 minutes
+         */
+        repeat: {
+          startDate: new Date(),
+          every: Duration.fromObject({
+            minutes: 5,
+          }).toMillis(),
+        },
+      },
+    );
+
+    /** Publish repeatable job */
+    console.log(`[${SYNC_EVM_POCKETS}] Added sync pocket job ...`);
   }
 }
