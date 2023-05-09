@@ -14,6 +14,7 @@ import { UserTokenModel, UserTokenSchema } from './model/user-token.model';
 import { WhitelistModel, WhitelistSchema } from './model/whitelist.model';
 import { MarketDataSchema, MarketModel } from './model/market.model';
 import { StatisticsModel, StatisticsSchema } from './model/statistic.model';
+import { SyncStatusModel, SyncStatusSchema } from './model/sync-status.model';
 
 @Module({
   /**
@@ -31,6 +32,7 @@ import { StatisticsModel, StatisticsSchema } from './model/statistic.model';
       { name: UserTokenModel.name, schema: UserTokenSchema },
       { name: MarketModel.name, schema: MarketDataSchema },
       { name: StatisticsModel.name, schema: StatisticsSchema },
+      { name: SyncStatusModel.name, schema: SyncStatusSchema },
     ]),
   ],
   exports: [

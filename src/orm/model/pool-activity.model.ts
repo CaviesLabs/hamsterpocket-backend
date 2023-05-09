@@ -28,11 +28,11 @@ export class PoolActivityModel extends BaseModel implements PoolActivityEntity {
   @Prop({ type: String, enum: ActivityType })
   type: ActivityType;
 
-  @Prop({ type: Number })
-  baseTokenAmount: number;
+  @Prop({ type: Number, required: false })
+  baseTokenAmount?: number;
 
-  @Prop({ type: Number })
-  targetTokenAmount: number;
+  @Prop({ type: Number, required: false })
+  targetTokenAmount?: number;
 
   @Prop({ type: String })
   transactionId: string;

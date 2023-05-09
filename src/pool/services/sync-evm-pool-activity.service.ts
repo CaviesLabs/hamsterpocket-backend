@@ -13,6 +13,10 @@ import {
   WhitelistDocument,
   WhitelistModel,
 } from '../../orm/model/whitelist.model';
+import {
+  SyncStatusDocument,
+  SyncStatusModel,
+} from '../../orm/model/sync-status.model';
 
 @Injectable()
 export class SyncEvmPoolActivityService {
@@ -25,6 +29,9 @@ export class SyncEvmPoolActivityService {
 
     @InjectModel(WhitelistModel.name)
     private readonly whitelistRepo: Model<WhitelistDocument>,
+
+    @InjectModel(SyncStatusModel.name)
+    private readonly syncStatusRepo: Model<SyncStatusDocument>,
   ) {}
 
   async syncAllPoolActivities() {
@@ -51,12 +58,24 @@ export class SyncEvmPoolActivityService {
 
     await Promise.all(
       data.map(async ({ _id: chainId }) => {
-        const events = await new EVMIndexer(
+        const syncStatus = await this.syncStatusRepo.findOne({ chainId });
+
+        /**
+         * @dev Aggregate data
+         */
+        const { data: events, syncedBlock } = await new EVMIndexer(
           chainId,
           this.poolRepo,
           this.whitelistRepo,
-        ).fetchEventEntities(35329403);
-        console.log({ events });
+        ).fetchEventEntities(syncStatus.syncedBlock + 1, syncStatus.blockDiff);
+
+        // @dev Bulk update data
+        await this.poolActivityRepo.insertMany(events);
+
+        // @dev Update synced block
+        await this.syncStatusRepo
+          .updateOne({ chainId }, { $set: { syncedBlock } })
+          .exec();
       }),
     );
 

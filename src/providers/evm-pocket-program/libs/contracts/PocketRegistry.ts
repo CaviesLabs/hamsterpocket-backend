@@ -1752,14 +1752,14 @@ export interface PocketRegistry extends BaseContract {
 
     "PocketInitialized(address,string,address,tuple,uint256)"(
       actor?: PromiseOrValue<string> | null,
-      pocketId?: PromiseOrValue<string> | null,
+      pocketId?: null,
       owner?: PromiseOrValue<string> | null,
       pocketData?: null,
       timestamp?: null
     ): PocketInitializedEventFilter;
     PocketInitialized(
       actor?: PromiseOrValue<string> | null,
-      pocketId?: PromiseOrValue<string> | null,
+      pocketId?: null,
       owner?: PromiseOrValue<string> | null,
       pocketData?: null,
       timestamp?: null
@@ -1767,7 +1767,7 @@ export interface PocketRegistry extends BaseContract {
 
     "PocketUpdated(address,string,address,string,tuple,uint256)"(
       actor?: PromiseOrValue<string> | null,
-      pocketId?: PromiseOrValue<string> | null,
+      pocketId?: null,
       owner?: PromiseOrValue<string> | null,
       reason?: null,
       pocketData?: null,
@@ -1775,7 +1775,7 @@ export interface PocketRegistry extends BaseContract {
     ): PocketUpdatedEventFilter;
     PocketUpdated(
       actor?: PromiseOrValue<string> | null,
-      pocketId?: PromiseOrValue<string> | null,
+      pocketId?: null,
       owner?: PromiseOrValue<string> | null,
       reason?: null,
       pocketData?: null,

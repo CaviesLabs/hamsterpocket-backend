@@ -87,7 +87,7 @@ export class SyncEvmPoolService {
         baseTokenAddress: elm.baseTokenAddress,
         targetTokenAddress: elm.targetTokenAddress,
         amount: BigNumber.from(
-          (elm.currentReceivedTargetToken || 0).toString(),
+          `0x${(elm.currentReceivedTargetToken || 0).toString(16)}`,
         ),
       })),
     );

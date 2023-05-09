@@ -13,7 +13,11 @@ export enum ActivityType {
   DEPOSITED = 'ACTIVITY_TYPE::DEPOSITED',
   WITHDRAWN = 'ACTIVITY_TYPE::WITHDRAWN',
   SWAPPED = 'ACTIVITY_TYPE::SWAPPED',
+  UPDATED = 'ACTIVITY_TYPE::UPDATED',
+  RESTARTED = 'ACTIVITY_TYPE::RESTARTED',
   CLOSED_POSITION = 'ACTIVITY_TYPE::CLOSED_POSITION',
+  STOP_LOSS = 'ACTIVITY_TYPE::STOP_LOSS',
+  TAKE_PROFIT = 'ACTIVITY_TYPE::TAKE_PROFIT',
   SKIPPED = 'ACTIVITY_TYPE::SKIPPED',
   /** Other events */
   VAULT_CREATED = 'ACTIVITY_TYPE::VAULT_CREATED',
@@ -26,8 +30,8 @@ export class PoolActivityEntity {
   actor?: string;
   status: PoolActivityStatus;
   type: ActivityType;
-  baseTokenAmount: number;
-  targetTokenAmount: number;
+  baseTokenAmount?: number;
+  targetTokenAmount?: number;
   transactionId: string;
   memo: string;
   createdAt: Date;

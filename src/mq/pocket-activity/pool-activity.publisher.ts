@@ -7,6 +7,7 @@ import { Queue } from 'bull';
 import { PoolDocument, PoolModel } from '../../orm/model/pool.model';
 import {
   POOL_ACTIVITY_QUEUE,
+  SYNC_EVM_POOL_ACTIVITIES,
   SYNC_POOL_ACTIVITIES,
 } from '../dto/pool-activity.queue';
 import { Duration } from 'luxon';
@@ -25,13 +26,17 @@ export class PoolActivityPublisher implements OnApplicationBootstrap {
     this.createSyncActivitiesJob().catch((e) =>
       console.log('ERROR::FAILED_TO_SYNC_POOL_ACTIVITY', e),
     );
+
+    this.createSyncEVMActivitiesJob().catch((e) =>
+      console.log('ERROR::FAILED_TO_SYNC_POOL_ACTIVITY', e),
+    );
   }
 
   async createSyncActivitiesJob() {
     /**
      * @dev Flush the queue
      */
-    await this.poolActivityQueue.removeRepeatableByKey(POOL_ACTIVITY_QUEUE);
+    await this.poolActivityQueue.removeRepeatableByKey(SYNC_POOL_ACTIVITIES);
 
     /**
      * @dev Add a task to the queue
@@ -59,6 +64,43 @@ export class PoolActivityPublisher implements OnApplicationBootstrap {
     /** Publish repeatable job */
     console.log(
       `[${SYNC_POOL_ACTIVITIES}] Added sync pocket activities job ...`,
+    );
+  }
+
+  async createSyncEVMActivitiesJob() {
+    /**
+     * @dev Flush the queue
+     */
+    await this.poolActivityQueue.removeRepeatableByKey(
+      SYNC_EVM_POOL_ACTIVITIES,
+    );
+
+    /**
+     * @dev Add a task to the queue
+     */
+    await this.poolActivityQueue.add(
+      SYNC_EVM_POOL_ACTIVITIES,
+      {},
+      {
+        /** Use pool ID as jobId to upsert queue event */
+        jobId: SYNC_EVM_POOL_ACTIVITIES,
+        priority: 1,
+
+        /**
+         * @dev Sync data every 5 minutes
+         */
+        repeat: {
+          startDate: new Date(),
+          every: Duration.fromObject({
+            minutes: 1,
+          }).toMillis(),
+        },
+      },
+    );
+
+    /** Publish repeatable job */
+    console.log(
+      `[${SYNC_EVM_POOL_ACTIVITIES}] Added sync pocket activities job ...`,
     );
   }
 }

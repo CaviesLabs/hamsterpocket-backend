@@ -259,6 +259,16 @@ export class EVMIndexer {
       address: pocket.targetTokenAddress,
     });
 
+    if (!baseToken || !targetToken) {
+      return {
+        roiValue: null,
+        realizedROI: null,
+        realizedROIValue: null,
+        roi: null,
+        avgPrice: null,
+      };
+    }
+
     const avgPrice =
       pocket.currentReceivedTargetToken /
       10 ** targetToken.decimals /
@@ -313,10 +323,14 @@ export class EVMIndexer {
       .getQuote(
         pocket.targetTokenAddress,
         pocket.baseTokenAddress,
-        BigNumber.from(pocket.currentReceivedTargetToken.toString()),
+        BigNumber.from(
+          `0x${(pocket.currentReceivedTargetToken || 0).toString(16)}`,
+        ),
       )
       .catch(() => ({
-        amountOut: BigNumber.from(pocket.currentSpentBaseToken.toString()),
+        amountOut: BigNumber.from(
+          `0x${(pocket.currentSpentBaseToken || 0).toString(16)}`,
+        ),
       }));
 
     return this.calculateROIAndAvgPrice(pocket.id, amountOut);
@@ -357,38 +371,153 @@ export class EVMIndexer {
     );
   }
 
+  private async aggregateEventData(
+    event: any,
+  ): Promise<Partial<PoolActivityEntity>> {
+    const memoMapping = {
+      USER_UPDATE_POCKET: ActivityType.UPDATED,
+      OPERATOR_UPDATED_TRADING_STATS: ActivityType.UPDATED,
+      USER_DEPOSITED_FUND: ActivityType.UPDATED,
+      USER_WITHDREW_FUND: ActivityType.UPDATED,
+      OPERATOR_TAKE_PROFIT: ActivityType.TAKE_PROFIT,
+      OPERATOR_STOP_LOSS: ActivityType.STOP_LOSS,
+      OPERATOR_CLOSED_POCKET_DUE_TO_STOP_CONDITIONS: ActivityType.CLOSED,
+      USER_CLOSED_POCKET: ActivityType.CLOSED,
+      USER_PAUSED_POCKET: ActivityType.PAUSED,
+      USER_RESTARTED_POCKET: ActivityType.RESTARTED,
+    };
+
+    const handler = {
+      PocketUpdated: (event) => {
+        return {
+          actor: event.args[0],
+          poolId: new mongoose.Types.ObjectId(event.args[1]),
+          type: memoMapping[event.args[3]],
+          memo: event.args[3],
+          createdAt: new Date(event.args[5].toNumber() * 1000),
+        };
+      },
+      PocketInitialized: (event) => {
+        return {
+          actor: event.args[0],
+          poolId: new mongoose.Types.ObjectId(event.args[1]),
+          type: ActivityType.CREATED,
+          memo: '',
+          createdAt: new Date(event.args[4].toNumber() * 1000),
+        };
+      },
+      Deposited: async (event) => {
+        const token = await this.whitelist.findOne({
+          address: event.args[2],
+        });
+
+        return {
+          actor: event.args[0],
+          poolId: new mongoose.Types.ObjectId(event.args[1]),
+          type: ActivityType.DEPOSITED,
+          baseTokenAmount:
+            parseFloat(event.args[3].toString()) / 10 ** token.decimals,
+          memo: '',
+          createdAt: new Date(event.args[4].toNumber() * 1000),
+        };
+      },
+      Withdrawn: async (event) => {
+        const baseToken = await this.whitelist.findOne({
+          address: event.args[2],
+        });
+        const targetToken = await this.whitelist.findOne({
+          address: event.args[4],
+        });
+
+        return {
+          actor: event.args[0],
+          poolId: new mongoose.Types.ObjectId(event.args[1]),
+          type: ActivityType.WITHDRAWN,
+          baseTokenAmount:
+            parseFloat(event.args[3].toString()) / 10 ** baseToken.decimals,
+          targetTokenAmount:
+            parseFloat(event.args[5].toString()) / 10 ** targetToken.decimals,
+          memo: '',
+          createdAt: new Date(event.args[6].toNumber() * 1000),
+        };
+      },
+      Swapped: async (event) => {
+        const baseToken = await this.whitelist.findOne({
+          address: event.args[2],
+        });
+        const targetToken = await this.whitelist.findOne({
+          address: event.args[4],
+        });
+
+        return {
+          actor: event.args[0],
+          poolId: new mongoose.Types.ObjectId(event.args[1]),
+          type: ActivityType.SWAPPED,
+          baseTokenAmount:
+            parseFloat(event.args[3].toString()) / 10 ** baseToken.decimals,
+          targetTokenAmount:
+            parseFloat(event.args[5].toString()) / 10 ** targetToken.decimals,
+          memo: '',
+          createdAt: new Date(event.args[6].toNumber() * 1000),
+        };
+      },
+      ClosedPosition: async (event) => {
+        const baseToken = await this.whitelist.findOne({
+          address: event.args[2],
+        });
+        const targetToken = await this.whitelist.findOne({
+          address: event.args[4],
+        });
+
+        return {
+          actor: event.args[0],
+          poolId: new mongoose.Types.ObjectId(event.args[1]),
+          type: ActivityType.CLOSED_POSITION,
+          baseTokenAmount:
+            parseFloat(event.args[3].toString()) / 10 ** baseToken.decimals,
+          targetTokenAmount:
+            parseFloat(event.args[5].toString()) / 10 ** targetToken.decimals,
+          memo: '',
+          createdAt: new Date(event.args[6].toNumber() * 1000),
+        };
+      },
+    };
+
+    return await handler[event.name](event);
+  }
+
   /**
    * @dev Fetch event entities
    * @param blockNumber
+   * @param blockDiff
    */
   public async fetchEventEntities(
     blockNumber: number,
-  ): Promise<PoolActivityEntity[]> {
-    const {
-      data,
-      //nextBlock
-    } = await this.provider.fetchEvents(blockNumber);
+    blockDiff: number,
+  ): Promise<{ data: PoolActivityEntity[]; syncedBlock: number }> {
+    const { data, syncedBlock } = await this.provider.fetchEvents(
+      blockNumber,
+      blockDiff,
+    );
 
-    return data.map((event) => {
-      // const eventLogData = event.args;
-      // const eventType = event.name;
+    return {
+      data: await Promise.all(
+        data.map(async (event) => {
+          return {
+            chainId: this.chainId,
+            status: PoolActivityStatus.SUCCESSFUL,
+            transactionId: event.transactionHash,
+            baseTokenAmount: null,
+            targetTokenAmount: null,
 
-      return {
-        poolId: new mongoose.Types.ObjectId(event.args.pocketId as string),
-        chainId: this.chainId,
-        actor: event.args.actor as string,
-        status: PoolActivityStatus.SUCCESSFUL,
-        createdAt: new Date(event.timestamp),
-        transactionId: event.transactionHash,
-
-        /**
-         * @dev To be feeded
-         */
-        type: ActivityType.SWAPPED,
-        baseTokenAmount: 0,
-        targetTokenAmount: 0,
-        memo: 'string',
-      } as PoolActivityEntity;
-    });
+            /**
+             * @dev To be feeded
+             */
+            ...(await this.aggregateEventData(event)),
+          } as PoolActivityEntity;
+        }),
+      ),
+      syncedBlock,
+    };
   }
 }

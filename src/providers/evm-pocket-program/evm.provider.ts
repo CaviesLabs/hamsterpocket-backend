@@ -248,9 +248,15 @@ export class EVMBasedPocketProvider {
   /**
    * @dev Fetch events
    * @param fromBlock
+   * @param blockDiff
    */
-  public async fetchEvents(fromBlock: number) {
+  public async fetchEvents(fromBlock: number, blockDiff: number) {
     const provider = this.rpcProvider;
+    const currentBlock = await provider.getBlockNumber();
+    const desiredMaxBlock =
+      currentBlock > fromBlock + blockDiff
+        ? fromBlock + blockDiff
+        : currentBlock;
 
     const expectedEvents = [
       'PocketUpdated',
@@ -260,12 +266,13 @@ export class EVMBasedPocketProvider {
       'Swapped',
       'ClosedPosition',
     ];
+
     const registryLogs = await Promise.all(
       (
         await provider.getLogs({
           address: this.pocketRegistry.address,
           fromBlock, // default is limited to 5000 block
-          toBlock: fromBlock + 5000,
+          toBlock: desiredMaxBlock,
         })
       ).map(async (log) => {
         let extraData;
@@ -286,7 +293,7 @@ export class EVMBasedPocketProvider {
         await provider.getLogs({
           address: this.pocketVault.address,
           fromBlock, // default is limited to 5000 block
-          toBlock: fromBlock + 5000,
+          toBlock: desiredMaxBlock,
         })
       ).map(async (log) => {
         let extraData;
@@ -306,7 +313,7 @@ export class EVMBasedPocketProvider {
       data: registryLogs
         .concat(vaultLogs)
         .filter((log) => expectedEvents.includes(log.name)),
-      nextBlock: fromBlock + 5001,
+      syncedBlock: desiredMaxBlock,
     };
   }
 }

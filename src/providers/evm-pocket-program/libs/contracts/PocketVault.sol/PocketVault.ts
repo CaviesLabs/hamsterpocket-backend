@@ -589,7 +589,7 @@ export interface PocketVault extends BaseContract {
   filters: {
     "ClosedPosition(address,string,address,uint256,address,uint256,uint256)"(
       actor?: PromiseOrValue<string> | null,
-      pocketId?: PromiseOrValue<string> | null,
+      pocketId?: null,
       baseTokenAddress?: null,
       baseTokenAmount?: null,
       targetTokenAddress?: null,
@@ -598,7 +598,7 @@ export interface PocketVault extends BaseContract {
     ): ClosedPositionEventFilter;
     ClosedPosition(
       actor?: PromiseOrValue<string> | null,
-      pocketId?: PromiseOrValue<string> | null,
+      pocketId?: null,
       baseTokenAddress?: null,
       baseTokenAmount?: null,
       targetTokenAddress?: null,
@@ -608,14 +608,14 @@ export interface PocketVault extends BaseContract {
 
     "Deposited(address,string,address,uint256,uint256)"(
       actor?: PromiseOrValue<string> | null,
-      pocketId?: PromiseOrValue<string> | null,
+      pocketId?: null,
       tokenAddress?: PromiseOrValue<string> | null,
       amount?: null,
       timestamp?: null
     ): DepositedEventFilter;
     Deposited(
       actor?: PromiseOrValue<string> | null,
-      pocketId?: PromiseOrValue<string> | null,
+      pocketId?: null,
       tokenAddress?: PromiseOrValue<string> | null,
       amount?: null,
       timestamp?: null
@@ -665,7 +665,7 @@ export interface PocketVault extends BaseContract {
 
     "Swapped(address,string,address,uint256,address,uint256,uint256)"(
       actor?: PromiseOrValue<string> | null,
-      pocketId?: PromiseOrValue<string> | null,
+      pocketId?: null,
       baseTokenAddress?: null,
       baseTokenAmount?: null,
       targetTokenAddress?: null,
@@ -674,7 +674,7 @@ export interface PocketVault extends BaseContract {
     ): SwappedEventFilter;
     Swapped(
       actor?: PromiseOrValue<string> | null,
-      pocketId?: PromiseOrValue<string> | null,
+      pocketId?: null,
       baseTokenAddress?: null,
       baseTokenAmount?: null,
       targetTokenAddress?: null,
@@ -687,7 +687,7 @@ export interface PocketVault extends BaseContract {
 
     "Withdrawn(address,string,address,uint256,address,uint256,uint256)"(
       actor?: PromiseOrValue<string> | null,
-      pocketId?: PromiseOrValue<string> | null,
+      pocketId?: null,
       baseTokenAddress?: null,
       baseTokenAmount?: null,
       targetTokenAddress?: null,
@@ -696,7 +696,7 @@ export interface PocketVault extends BaseContract {
     ): WithdrawnEventFilter;
     Withdrawn(
       actor?: PromiseOrValue<string> | null,
-      pocketId?: PromiseOrValue<string> | null,
+      pocketId?: null,
       baseTokenAddress?: null,
       baseTokenAmount?: null,
       targetTokenAddress?: null,
