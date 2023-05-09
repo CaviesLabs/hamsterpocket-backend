@@ -62,6 +62,11 @@ export class PoolController {
     return this.poolService.getPoolDetail(id);
   }
 
+  @Get('/:id/activities')
+  async getPocketActivities(@Param('id') id: string) {
+    return this.poolActivityService.getPoolActivities(id);
+  }
+
   @Post('/evm/:id/sync')
   async evmSyncSinglePocket(@Param('id') id: string) {
     await this.syncEVMPoolService.syncPoolById(id);

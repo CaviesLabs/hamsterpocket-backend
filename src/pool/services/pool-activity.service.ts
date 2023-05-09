@@ -87,4 +87,12 @@ export class PoolActivityService {
     stages.push({ $skip: offset }, { $limit: limit });
     return this.poolActivityRepo.aggregate(stages);
   }
+
+  /**
+   * @dev Get pool activities
+   * @param poolId
+   */
+  async getPoolActivities(poolId: string) {
+    return this.poolActivityRepo.find({ poolId });
+  }
 }
