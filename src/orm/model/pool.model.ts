@@ -23,6 +23,9 @@ export class PoolModel extends BaseModel implements PoolEntity {
   currentROI: number;
 
   @Prop({ type: Number })
+  currentROIValue: number;
+
+  @Prop({ type: Number })
   avgPrice: number;
 
   @Prop({ type: String, enum: ChainID, default: ChainID.Solana })

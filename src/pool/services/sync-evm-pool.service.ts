@@ -43,7 +43,6 @@ export class SyncEvmPoolService {
     if (!data) throw new NotFoundException('POCKET_NOT_INITIALIZED');
 
     const roiAndAvgPrice = await indexer.calculateSingleROIAndAvgPrice(poolId);
-    console.log({ roiAndAvgPrice });
 
     await this.poolRepo.updateOne(
       { _id: new Types.ObjectId(data.id) },
@@ -52,6 +51,7 @@ export class SyncEvmPoolService {
           ...data,
           avgPrice: roiAndAvgPrice.avgPrice,
           currentROI: roiAndAvgPrice.roi,
+          currentROIValue: roiAndAvgPrice.roiValue,
         },
       },
       {
@@ -100,6 +100,7 @@ export class SyncEvmPoolService {
                 ...pool,
                 avgPrice: quotes[index].avgPrice,
                 currentROI: quotes[index].roi,
+                currentROIValue: quotes[index].roiValue,
               },
             },
             upsert: true,

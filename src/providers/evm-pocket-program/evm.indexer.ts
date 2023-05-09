@@ -253,6 +253,7 @@ export class EVMIndexer {
   ): Promise<{
     roi: number;
     avgPrice: number;
+    roiValue: number;
   }> {
     const pocket = await this.poolRepo.findById(pocketId);
     const baseToken = await this.whitelist.findOne({
@@ -273,6 +274,10 @@ export class EVMIndexer {
       (pocket.currentSpentBaseToken / 10 ** baseToken.decimals);
 
     return {
+      roiValue:
+        (parseFloat(positionValue.toString()) -
+          parseFloat(pocket.currentSpentBaseToken.toString())) /
+        10 ** baseToken.decimals,
       roi: roi || null,
       avgPrice: avgPrice || null,
     };
@@ -283,7 +288,9 @@ export class EVMIndexer {
    * We will calculate and compare the balance based on the scenario that if we close position at market price, how much we get back in fund.
    * @param pocketId
    */
-  public async calculateSingleROIAndAvgPrice(pocketId: string) {
+  public async calculateSingleROIAndAvgPrice(
+    pocketId: string,
+  ): Promise<{ roi: number; avgPrice: number; roiValue: number }> {
     const pocket = await this.poolRepo.findById(pocketId);
 
     const { amountOut } = await this.provider
@@ -310,7 +317,7 @@ export class EVMIndexer {
       targetTokenAddress: string;
       amount: BigNumber;
     }[],
-  ): Promise<{ roi: number; avgPrice: number }[]> {
+  ): Promise<{ roi: number; avgPrice: number; roiValue: number }[]> {
     const aggregatedData = await this.provider.getMultipleQuotes(
       payload.map((elm) => ({
         baseTokenAddress: elm.targetTokenAddress,
