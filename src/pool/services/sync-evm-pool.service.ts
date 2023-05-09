@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
+import { BigNumber } from 'ethers';
 
 import { PoolDocument, PoolModel } from '../../orm/model/pool.model';
 import { Timer } from '../../providers/utils.provider';
@@ -10,7 +11,6 @@ import {
   WhitelistModel,
 } from '../../orm/model/whitelist.model';
 import { EVMIndexer } from '../../providers/evm-pocket-program/evm.indexer';
-import { BigNumber } from 'ethers';
 
 @Injectable()
 export class SyncEvmPoolService {
@@ -62,6 +62,52 @@ export class SyncEvmPoolService {
     timer.stop();
   }
 
+  private async syncMultiplePools(poolIds: string[], chainId: ChainID) {
+    console.log(
+      `Found ${poolIds.length} evm pocket(s) for syncing, on chain ${chainId} ...`,
+    );
+
+    const indexer = new EVMIndexer(chainId, this.poolRepo, this.whitelistRepo);
+
+    const pools = await indexer.fetchMultiplePockets(
+      poolIds.map((poolIds) => poolIds.toString()),
+    );
+    pools.filter((pool) => !!pool);
+
+    const poolData = await this.poolRepo.find({
+      _id: {
+        $in: pools.map((pool) => pool.id),
+      },
+    });
+    const quotes = await indexer.calculateMultipleROIAndAvg(
+      poolData.map((elm) => ({
+        pocketId: elm._id.toString(),
+        baseTokenAddress: elm.baseTokenAddress,
+        targetTokenAddress: elm.targetTokenAddress,
+        amount: BigNumber.from(
+          (elm.currentReceivedTargetToken || 0).toString(),
+        ),
+      })),
+    );
+
+    await this.poolRepo.bulkWrite(
+      pools.map((pool, index) => {
+        return {
+          updateOne: {
+            filter: { _id: new Types.ObjectId(pool.id) },
+            update: {
+              $set: {
+                ...pool,
+                avgPrice: quotes[index].avgPrice,
+                currentROI: quotes[index].roi,
+              },
+            },
+            upsert: true,
+          },
+        };
+      }),
+    );
+  }
   /**
    * @dev Sync all pools
    */
@@ -101,56 +147,9 @@ export class SyncEvmPoolService {
     ]);
 
     await Promise.all(
-      data.map(async ({ _id: chainId, idList: poolIds }) => {
-        console.log(
-          `Found ${poolIds.length} evm pocket(s) for syncing, on chain ${chainId} ...`,
-        );
-
-        const indexer = new EVMIndexer(
-          chainId,
-          this.poolRepo,
-          this.whitelistRepo,
-        );
-
-        const pools = await indexer.fetchMultiplePockets(
-          poolIds.map((poolIds) => poolIds.toString()),
-        );
-        pools.filter((pool) => !!pool);
-
-        const poolData = await this.poolRepo.find({
-          _id: {
-            $in: pools.map((pool) => pool.id),
-          },
-        });
-        const quotes = await indexer.calculateMultipleROIAndAvg(
-          poolData.map((elm) => ({
-            pocketId: elm._id.toString(),
-            baseTokenAddress: elm.baseTokenAddress,
-            targetTokenAddress: elm.targetTokenAddress,
-            amount: BigNumber.from(
-              (elm.currentReceivedTargetToken || 0).toString(),
-            ),
-          })),
-        );
-
-        await this.poolRepo.bulkWrite(
-          pools.map((pool, index) => {
-            return {
-              updateOne: {
-                filter: { _id: new Types.ObjectId(pool.id) },
-                update: {
-                  $set: {
-                    ...pool,
-                    avgPrice: quotes[index].avgPrice,
-                    currentROI: quotes[index].roi,
-                  },
-                },
-                upsert: true,
-              },
-            };
-          }),
-        );
-      }),
+      data.map(async ({ _id: chainId, idList: poolIds }) =>
+        this.syncMultiplePools(poolIds, chainId),
+      ),
     );
 
     timer.stop();
@@ -161,7 +160,7 @@ export class SyncEvmPoolService {
    * @param ownerAddress
    */
   async syncPoolsByOwnerAddress(ownerAddress: string) {
-    const timer = new Timer('Sync evm pools by owner address');
+    const timer = new Timer(`Sync evm pools by owner address ${ownerAddress}`);
     timer.start();
 
     /** Only pick _id and status */
@@ -185,55 +184,9 @@ export class SyncEvmPoolService {
     ]);
 
     await Promise.all(
-      data.map(async ({ _id: chainId, idList: poolIds }) => {
-        console.log(
-          `Found ${poolIds.length} evm pocket(s) for ${ownerAddress}`,
-        );
-        const indexer = new EVMIndexer(
-          chainId,
-          this.poolRepo,
-          this.whitelistRepo,
-        );
-
-        const pools = await indexer.fetchMultiplePockets(
-          poolIds.map((poolIds) => poolIds.toString()),
-        );
-        pools.filter((pool) => !!pool);
-
-        const poolData = await this.poolRepo.find({
-          _id: {
-            $in: pools.map((pool) => pool.id),
-          },
-        });
-        const quotes = await indexer.calculateMultipleROIAndAvg(
-          poolData.map((elm) => ({
-            pocketId: elm._id.toString(),
-            baseTokenAddress: elm.baseTokenAddress,
-            targetTokenAddress: elm.targetTokenAddress,
-            amount: BigNumber.from(
-              (elm.currentReceivedTargetToken || 0).toString(),
-            ),
-          })),
-        );
-
-        await this.poolRepo.bulkWrite(
-          pools.map((pool, index) => {
-            return {
-              updateOne: {
-                filter: { _id: new Types.ObjectId(pool.id) },
-                update: {
-                  $set: {
-                    ...pool,
-                    avgPrice: quotes[index].avgPrice,
-                    currentROI: quotes[index].roi,
-                  },
-                },
-                upsert: true,
-              },
-            };
-          }),
-        );
-      }),
+      data.map(async ({ _id: chainId, idList: poolIds }) =>
+        this.syncMultiplePools(poolIds, chainId),
+      ),
     );
 
     timer.stop();
