@@ -1,5 +1,7 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model, PipelineStage } from 'mongoose';
+import * as mongoose from 'mongoose';
+
 import { CommonQueryDto } from '../../api-docs/dto/common-query.dto';
 import {
   PoolActivityModel,
@@ -93,6 +95,8 @@ export class PoolActivityService {
    * @param poolId
    */
   async getPoolActivities(poolId: string) {
-    return this.poolActivityRepo.find({ poolId });
+    return this.poolActivityRepo.find({
+      poolId: new mongoose.Types.ObjectId(poolId),
+    });
   }
 }

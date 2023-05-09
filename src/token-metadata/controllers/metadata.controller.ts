@@ -1,7 +1,17 @@
+import { BigNumber } from 'ethers';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+
 import { TokenMetadataProvider } from '../../providers/token-metadata.provider';
 import { TokenMetadataService } from '../services/token-metadata.service';
+import { ChainID } from '../../pool/entities/pool.entity';
+import { EVMBasedPocketProvider } from '../../providers/evm-pocket-program/evm.provider';
+import {
+  WhitelistDocument,
+  WhitelistModel,
+} from '../../orm/model/whitelist.model';
 
 @Controller('metadata')
 @ApiTags('metadata')
@@ -9,6 +19,8 @@ export class MetadataController {
   constructor(
     private readonly tokenMetadataProvider: TokenMetadataProvider,
     private readonly tokenMetadataService: TokenMetadataService,
+    @InjectModel(WhitelistModel.name)
+    private readonly whitelistRepo: Model<WhitelistDocument>,
   ) {}
 
   @Get('/nft/portfolio')
@@ -48,5 +60,34 @@ export class MetadataController {
   @Get('/collection/:collectionId')
   getCollectionById(@Param('collectionId') collectionId: string) {
     return this.tokenMetadataProvider.getCollection(collectionId);
+  }
+  @Get('/market/quote/')
+  public async getQuotes(
+    @Query('chainId') chainId: ChainID,
+    @Query('baseTokenAddress') baseTokenAddress: string,
+    @Query('targetTokenAddress') targetTokenAddress: string,
+    @Query('amountIn') amountIn: string,
+  ) {
+    const baseToken = await this.whitelistRepo.findOne({
+      address: baseTokenAddress,
+    });
+    const targetToken = await this.whitelistRepo.findOne({
+      address: targetTokenAddress,
+    });
+
+    const quote = await new EVMBasedPocketProvider(chainId).getQuote(
+      baseTokenAddress,
+      targetTokenAddress,
+      BigNumber.from(
+        `0x${(parseFloat(amountIn) * 10 ** baseToken.decimals).toString(16)}`,
+      ),
+    );
+
+    return {
+      amountIn:
+        parseFloat(quote.amountIn.toString()) / 10 ** baseToken.decimals,
+      amountOut:
+        parseFloat(quote.amountOut.toString()) / 10 ** targetToken.decimals,
+    };
   }
 }
