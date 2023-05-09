@@ -96,6 +96,8 @@ export class PoolEntity {
   currentROI: number;
   currentROIValue: number;
   avgPrice: number;
+  realizedROI: number;
+  realizedROIValue: number;
 }
 
 /**

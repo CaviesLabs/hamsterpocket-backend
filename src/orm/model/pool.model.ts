@@ -20,6 +20,12 @@ export class PoolModel extends BaseModel implements PoolEntity {
   id: string;
 
   @Prop({ type: Number })
+  realizedROI: number;
+
+  @Prop({ type: Number })
+  realizedROIValue: number;
+
+  @Prop({ type: Number })
   currentROI: number;
 
   @Prop({ type: Number })

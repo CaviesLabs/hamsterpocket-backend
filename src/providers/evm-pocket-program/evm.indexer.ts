@@ -250,11 +250,7 @@ export class EVMIndexer {
   private async calculateROIAndAvgPrice(
     pocketId: string,
     positionValue: BigNumber,
-  ): Promise<{
-    roi: number;
-    avgPrice: number;
-    roiValue: number;
-  }> {
+  ) {
     const pocket = await this.poolRepo.findById(pocketId);
     const baseToken = await this.whitelist.findOne({
       address: pocket.baseTokenAddress,
@@ -263,23 +259,39 @@ export class EVMIndexer {
       address: pocket.targetTokenAddress,
     });
 
-    const roi =
-      ((parseFloat(positionValue.toString()) -
-        parseFloat(pocket.currentSpentBaseToken.toString())) *
-        100) /
-      parseFloat(pocket.currentSpentBaseToken.toString());
     const avgPrice =
       pocket.currentReceivedTargetToken /
       10 ** targetToken.decimals /
       (pocket.currentSpentBaseToken / 10 ** baseToken.decimals);
 
+    const roi =
+      ((parseFloat(positionValue.toString()) -
+        parseFloat(pocket.currentSpentBaseToken.toString())) *
+        100) /
+      parseFloat(pocket.currentSpentBaseToken.toString());
+
+    const roiValue =
+      (parseFloat(positionValue.toString()) -
+        parseFloat(pocket.currentSpentBaseToken.toString())) /
+      10 ** baseToken.decimals;
+
+    const realizedROI =
+      ((parseFloat(pocket.totalReceivedFundInBaseTokenAmount.toString()) -
+        parseFloat(pocket.currentSpentBaseToken.toString())) *
+        100) /
+      parseFloat(pocket.currentSpentBaseToken.toString());
+
+    const realizedROIValue =
+      (parseFloat(pocket.totalReceivedFundInBaseTokenAmount.toString()) -
+        parseFloat(pocket.currentSpentBaseToken.toString())) /
+      10 ** baseToken.decimals;
+
     return {
-      roiValue:
-        (parseFloat(positionValue.toString()) -
-          parseFloat(pocket.currentSpentBaseToken.toString())) /
-        10 ** baseToken.decimals,
-      roi: roi || null,
-      avgPrice: avgPrice || null,
+      roiValue: isNaN(roiValue) ? null : roiValue,
+      realizedROI: isNaN(realizedROI) ? null : roiValue,
+      realizedROIValue: isNaN(realizedROIValue) ? null : realizedROIValue,
+      roi: isNaN(roi) ? null : roi,
+      avgPrice: isNaN(avgPrice) ? null : avgPrice,
     };
   }
 
@@ -288,9 +300,13 @@ export class EVMIndexer {
    * We will calculate and compare the balance based on the scenario that if we close position at market price, how much we get back in fund.
    * @param pocketId
    */
-  public async calculateSingleROIAndAvgPrice(
-    pocketId: string,
-  ): Promise<{ roi: number; avgPrice: number; roiValue: number }> {
+  public async calculateSingleROIAndAvgPrice(pocketId: string): Promise<{
+    roi: number;
+    avgPrice: number;
+    roiValue: number;
+    realizedROI: number;
+    realizedROIValue: number;
+  }> {
     const pocket = await this.poolRepo.findById(pocketId);
 
     const { amountOut } = await this.provider
@@ -317,7 +333,15 @@ export class EVMIndexer {
       targetTokenAddress: string;
       amount: BigNumber;
     }[],
-  ): Promise<{ roi: number; avgPrice: number; roiValue: number }[]> {
+  ): Promise<
+    {
+      roi: number;
+      avgPrice: number;
+      roiValue: number;
+      realizedROI: number;
+      realizedROIValue: number;
+    }[]
+  > {
     const aggregatedData = await this.provider.getMultipleQuotes(
       payload.map((elm) => ({
         baseTokenAddress: elm.targetTokenAddress,

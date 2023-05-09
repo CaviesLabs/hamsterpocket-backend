@@ -52,6 +52,8 @@ export class SyncEvmPoolService {
           avgPrice: roiAndAvgPrice.avgPrice,
           currentROI: roiAndAvgPrice.roi,
           currentROIValue: roiAndAvgPrice.roiValue,
+          realizedROI: roiAndAvgPrice.realizedROI,
+          realizedROIValue: roiAndAvgPrice.realizedROIValue,
         },
       },
       {
@@ -101,6 +103,8 @@ export class SyncEvmPoolService {
                 avgPrice: quotes[index].avgPrice,
                 currentROI: quotes[index].roi,
                 currentROIValue: quotes[index].roiValue,
+                realizedROI: quotes[index].realizedROI,
+                realizedROIValue: quotes[index].realizedROIValue,
               },
             },
             upsert: true,
