@@ -14,6 +14,7 @@ import {
   PocketVault__factory,
 } from './libs';
 import { Types } from './libs/contracts/PocketRegistry';
+import { BigNumber } from 'ethers';
 
 export class EVMBasedPocketProvider {
   private readonly rpcProvider: ethers.providers.JsonRpcProvider;
@@ -82,6 +83,29 @@ export class EVMBasedPocketProvider {
    */
   public tryClosingPosition(pocketId: string) {
     return this.pocketChef.tryClosingPosition(pocketId);
+  }
+
+  /**
+   * @dev Get quote from blockchain directly
+   * @param baseTokenAddress
+   * @param targetTokenAddress
+   * @param amount
+   */
+  public async getQuote(
+    baseTokenAddress: string,
+    targetTokenAddress: string,
+    amount: BigNumber,
+  ): Promise<{ amountIn: BigNumber; amountOut: BigNumber }> {
+    const [amountIn, amountOut] =
+      await this.pocketVault.callStatic.getCurrentQuote(
+        baseTokenAddress,
+        targetTokenAddress,
+        amount,
+      );
+    return {
+      amountIn,
+      amountOut,
+    };
   }
 
   /**
@@ -170,6 +194,58 @@ export class EVMBasedPocketProvider {
   }
 
   /**
+   * @dev Get multiple quotes
+   * @param payload
+   */
+  public async getMultipleQuotes(
+    payload: {
+      baseTokenAddress: string;
+      targetTokenAddress: string;
+      amount: BigNumber;
+    }[],
+  ): Promise<{ amountIn: BigNumber; amountOut: BigNumber }[]> {
+    //  Promise<{amountIn: BigNumber, amountOut: BigNumber}[]>
+    const callData = payload.map(
+      ({ baseTokenAddress, targetTokenAddress, amount }) => ({
+        callData: this.pocketVault.interface.encodeFunctionData(
+          'getCurrentQuote',
+          [
+            baseTokenAddress || ethers.constants.AddressZero,
+            targetTokenAddress || ethers.constants.AddressZero,
+            amount,
+          ],
+        ),
+        target: this.pocketVault.address,
+        allowFailure: true,
+      }),
+    );
+
+    const callResults = await this.multicall3.callStatic.aggregate3(callData);
+
+    return callResults.map((result, index) => {
+      /**
+       * @dev In case any errors happened
+       */
+      if (result.success === false) {
+        return {
+          amountIn: payload[index].amount,
+          amountOut: BigNumber.from(0),
+        };
+      }
+
+      const [amountIn, amountOut] =
+        this.pocketVault.interface.decodeFunctionResult(
+          'getCurrentQuote',
+          result.returnData,
+        );
+      return {
+        amountIn,
+        amountOut,
+      };
+    });
+  }
+
+  /**
    * @dev Fetch events
    * @param fromBlock
    */
@@ -199,7 +275,6 @@ export class EVMBasedPocketProvider {
         } catch {}
 
         return {
-          timestamp: (await provider.getBlock(log.blockHash)).timestamp,
           transactionHash: log.transactionHash,
           ...extraData,
         };
@@ -221,7 +296,6 @@ export class EVMBasedPocketProvider {
         } catch {}
 
         return {
-          timestamp: (await provider.getBlock(log.blockHash)).timestamp,
           transactionHash: log.transactionHash,
           ...extraData,
         };

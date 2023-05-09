@@ -97,6 +97,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IWETH9__factory>;
     getContractFactory(
+      name: "IQuoter",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IQuoter__factory>;
+    getContractFactory(
       name: "MockedERC20",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.MockedERC20__factory>;
@@ -238,6 +242,11 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.IWETH9>;
+    getContractAt(
+      name: "IQuoter",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IQuoter>;
     getContractAt(
       name: "MockedERC20",
       address: string,

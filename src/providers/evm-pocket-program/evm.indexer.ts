@@ -1,3 +1,7 @@
+import * as mongoose from 'mongoose';
+import { Model } from 'mongoose';
+import { BigNumber } from 'ethers';
+
 import { EVMBasedPocketProvider } from './evm.provider';
 import {
   BuyCondition,
@@ -15,12 +19,17 @@ import {
   PoolActivityEntity,
   PoolActivityStatus,
 } from '../../pool/entities/pool-activity.entity';
-import * as mongoose from 'mongoose';
+import { PoolDocument } from '../../orm/model/pool.model';
+import { WhitelistDocument } from '../../orm/model/whitelist.model';
 
-export class EVMPocketConverter {
+export class EVMIndexer {
   public readonly provider: EVMBasedPocketProvider;
 
-  constructor(public readonly chainId: ChainID) {
+  constructor(
+    public readonly chainId: ChainID,
+    private readonly poolRepo: Model<PoolDocument>,
+    private readonly whitelist: Model<WhitelistDocument>,
+  ) {
     this.provider = new EVMBasedPocketProvider(this.chainId);
   }
 
@@ -237,11 +246,85 @@ export class EVMPocketConverter {
     const onChainData = await this.provider.fetchMultiplePockets(pocketIdList);
     return onChainData.map((data) => this.aggregateData(data));
   }
-  //
-  // private convertPocketActivityEntity(data: any) {
-  //   const eventName = data.name;
-  //   const eventData = data.args;
-  // }
+
+  private async calculateROIAndAvgPrice(
+    pocketId: string,
+    positionValue: BigNumber,
+  ): Promise<{
+    roi: number;
+    avgPrice: number;
+  }> {
+    const pocket = await this.poolRepo.findById(pocketId);
+    const baseToken = await this.whitelist.findOne({
+      address: pocket.baseTokenAddress,
+    });
+    const targetToken = await this.whitelist.findOne({
+      address: pocket.targetTokenAddress,
+    });
+
+    const roi =
+      ((parseFloat(positionValue.toString()) -
+        parseFloat(pocket.currentSpentBaseToken.toString())) *
+        100) /
+      parseFloat(pocket.currentSpentBaseToken.toString());
+    const avgPrice =
+      pocket.currentReceivedTargetToken /
+      10 ** targetToken.decimals /
+      (pocket.currentSpentBaseToken / 10 ** baseToken.decimals);
+
+    return {
+      roi: roi || null,
+      avgPrice: avgPrice || null,
+    };
+  }
+
+  /**
+   * @dev Calculate ROI and avg price with given pocket model.
+   * We will calculate and compare the balance based on the scenario that if we close position at market price, how much we get back in fund.
+   * @param pocketId
+   */
+  public async calculateSingleROIAndAvgPrice(pocketId: string) {
+    const pocket = await this.poolRepo.findById(pocketId);
+
+    const { amountOut } = await this.provider
+      .getQuote(
+        pocket.targetTokenAddress,
+        pocket.baseTokenAddress,
+        BigNumber.from(pocket.currentReceivedTargetToken.toString()),
+      )
+      .catch(() => ({
+        amountOut: BigNumber.from(pocket.currentSpentBaseToken.toString()),
+      }));
+
+    return this.calculateROIAndAvgPrice(pocket.id, amountOut);
+  }
+
+  /**
+   * @dev Calculate multiple roi and avg price
+   * @param payload
+   */
+  public async calculateMultipleROIAndAvg(
+    payload: {
+      pocketId: string;
+      baseTokenAddress: string;
+      targetTokenAddress: string;
+      amount: BigNumber;
+    }[],
+  ): Promise<{ roi: number; avgPrice: number }[]> {
+    const aggregatedData = await this.provider.getMultipleQuotes(
+      payload.map((elm) => ({
+        baseTokenAddress: elm.targetTokenAddress,
+        targetTokenAddress: elm.baseTokenAddress,
+        amount: elm.amount,
+      })),
+    );
+
+    return Promise.all(
+      aggregatedData.map((data, index) =>
+        this.calculateROIAndAvgPrice(payload[index].pocketId, data.amountOut),
+      ),
+    );
+  }
 
   /**
    * @dev Fetch event entities
@@ -255,7 +338,6 @@ export class EVMPocketConverter {
       //nextBlock
     } = await this.provider.fetchEvents(blockNumber);
 
-    console.log({ data });
     return data.map((event) => {
       // const eventLogData = event.args;
       // const eventType = event.name;

@@ -710,8 +710,8 @@ export interface PocketRegistryInterface extends utils.Interface {
     "Initialized(uint8)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
     "Paused(address)": EventFragment;
-    "PocketInitialized(address,string,address,tuple)": EventFragment;
-    "PocketUpdated(address,string,address,string,tuple)": EventFragment;
+    "PocketInitialized(address,string,address,tuple,uint256)": EventFragment;
+    "PocketUpdated(address,string,address,string,tuple,uint256)": EventFragment;
     "RoleAdminChanged(bytes32,bytes32,bytes32)": EventFragment;
     "RoleGranted(bytes32,address,address)": EventFragment;
     "RoleRevoked(bytes32,address,address)": EventFragment;
@@ -774,9 +774,10 @@ export interface PocketInitializedEventObject {
   pocketId: string;
   owner: string;
   pocketData: Types.PocketStructOutput;
+  timestamp: BigNumber;
 }
 export type PocketInitializedEvent = TypedEvent<
-  [string, string, string, Types.PocketStructOutput],
+  [string, string, string, Types.PocketStructOutput, BigNumber],
   PocketInitializedEventObject
 >;
 
@@ -789,9 +790,10 @@ export interface PocketUpdatedEventObject {
   owner: string;
   reason: string;
   pocketData: Types.PocketStructOutput;
+  timestamp: BigNumber;
 }
 export type PocketUpdatedEvent = TypedEvent<
-  [string, string, string, string, Types.PocketStructOutput],
+  [string, string, string, string, Types.PocketStructOutput, BigNumber],
   PocketUpdatedEventObject
 >;
 
@@ -1748,32 +1750,36 @@ export interface PocketRegistry extends BaseContract {
     "Paused(address)"(account?: null): PausedEventFilter;
     Paused(account?: null): PausedEventFilter;
 
-    "PocketInitialized(address,string,address,tuple)"(
+    "PocketInitialized(address,string,address,tuple,uint256)"(
       actor?: PromiseOrValue<string> | null,
       pocketId?: PromiseOrValue<string> | null,
       owner?: PromiseOrValue<string> | null,
-      pocketData?: null
+      pocketData?: null,
+      timestamp?: null
     ): PocketInitializedEventFilter;
     PocketInitialized(
       actor?: PromiseOrValue<string> | null,
       pocketId?: PromiseOrValue<string> | null,
       owner?: PromiseOrValue<string> | null,
-      pocketData?: null
+      pocketData?: null,
+      timestamp?: null
     ): PocketInitializedEventFilter;
 
-    "PocketUpdated(address,string,address,string,tuple)"(
+    "PocketUpdated(address,string,address,string,tuple,uint256)"(
       actor?: PromiseOrValue<string> | null,
       pocketId?: PromiseOrValue<string> | null,
       owner?: PromiseOrValue<string> | null,
       reason?: null,
-      pocketData?: null
+      pocketData?: null,
+      timestamp?: null
     ): PocketUpdatedEventFilter;
     PocketUpdated(
       actor?: PromiseOrValue<string> | null,
       pocketId?: PromiseOrValue<string> | null,
       owner?: PromiseOrValue<string> | null,
       reason?: null,
-      pocketData?: null
+      pocketData?: null,
+      timestamp?: null
     ): PocketUpdatedEventFilter;
 
     "RoleAdminChanged(bytes32,bytes32,bytes32)"(

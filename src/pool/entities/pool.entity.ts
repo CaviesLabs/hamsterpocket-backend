@@ -93,6 +93,8 @@ export class PoolEntity {
   currentReceivedTargetToken: number;
   totalClosedPositionInTargetTokenAmount: number;
   totalReceivedFundInBaseTokenAmount: number;
+  currentROI: number;
+  avgPrice: number;
 }
 
 /**

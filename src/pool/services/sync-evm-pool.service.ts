@@ -9,7 +9,8 @@ import {
   WhitelistDocument,
   WhitelistModel,
 } from '../../orm/model/whitelist.model';
-import { EVMPocketConverter } from '../../providers/evm-pocket-program/evm.converter';
+import { EVMIndexer } from '../../providers/evm-pocket-program/evm.indexer';
+import { BigNumber } from 'ethers';
 
 @Injectable()
 export class SyncEvmPoolService {
@@ -32,15 +33,26 @@ export class SyncEvmPoolService {
     const pool = await this.poolRepo.findById(poolId);
     if (!pool || pool.chainId === ChainID.Solana) return;
 
-    const data = await new EVMPocketConverter(pool.chainId).fetchPocketEntity(
-      poolId,
+    const indexer = new EVMIndexer(
+      pool.chainId,
+      this.poolRepo,
+      this.whitelistRepo,
     );
+
+    const data = await indexer.fetchPocketEntity(poolId);
     if (!data) throw new NotFoundException('POCKET_NOT_INITIALIZED');
+
+    const roiAndAvgPrice = await indexer.calculateSingleROIAndAvgPrice(poolId);
+    console.log({ roiAndAvgPrice });
 
     await this.poolRepo.updateOne(
       { _id: new Types.ObjectId(data.id) },
       {
-        ...data,
+        $set: {
+          ...data,
+          avgPrice: roiAndAvgPrice.avgPrice,
+          currentROI: roiAndAvgPrice.roi,
+        },
       },
       {
         upsert: true,
@@ -94,22 +106,49 @@ export class SyncEvmPoolService {
           `Found ${poolIds.length} evm pocket(s) for syncing, on chain ${chainId} ...`,
         );
 
-        const pools = await new EVMPocketConverter(
+        const indexer = new EVMIndexer(
           chainId,
-        ).fetchMultiplePockets(poolIds.map((poolIds) => poolIds.toString()));
+          this.poolRepo,
+          this.whitelistRepo,
+        );
+
+        const pools = await indexer.fetchMultiplePockets(
+          poolIds.map((poolIds) => poolIds.toString()),
+        );
+        pools.filter((pool) => !!pool);
+
+        const poolData = await this.poolRepo.find({
+          _id: {
+            $in: pools.map((pool) => pool.id),
+          },
+        });
+        const quotes = await indexer.calculateMultipleROIAndAvg(
+          poolData.map((elm) => ({
+            pocketId: elm._id.toString(),
+            baseTokenAddress: elm.baseTokenAddress,
+            targetTokenAddress: elm.targetTokenAddress,
+            amount: BigNumber.from(
+              (elm.currentReceivedTargetToken || 0).toString(),
+            ),
+          })),
+        );
 
         await this.poolRepo.bulkWrite(
-          pools
-            .filter((pool) => !!pool)
-            .map((pool) => {
-              return {
-                updateOne: {
-                  filter: { _id: new Types.ObjectId(pool.id) },
-                  update: pool,
-                  upsert: true,
+          pools.map((pool, index) => {
+            return {
+              updateOne: {
+                filter: { _id: new Types.ObjectId(pool.id) },
+                update: {
+                  $set: {
+                    ...pool,
+                    avgPrice: quotes[index].avgPrice,
+                    currentROI: quotes[index].roi,
+                  },
                 },
-              };
-            }),
+                upsert: true,
+              },
+            };
+          }),
         );
       }),
     );
@@ -150,23 +189,49 @@ export class SyncEvmPoolService {
         console.log(
           `Found ${poolIds.length} evm pocket(s) for ${ownerAddress}`,
         );
-
-        const pools = await new EVMPocketConverter(
+        const indexer = new EVMIndexer(
           chainId,
-        ).fetchMultiplePockets(poolIds.map((poolIds) => poolIds.toString()));
+          this.poolRepo,
+          this.whitelistRepo,
+        );
+
+        const pools = await indexer.fetchMultiplePockets(
+          poolIds.map((poolIds) => poolIds.toString()),
+        );
+        pools.filter((pool) => !!pool);
+
+        const poolData = await this.poolRepo.find({
+          _id: {
+            $in: pools.map((pool) => pool.id),
+          },
+        });
+        const quotes = await indexer.calculateMultipleROIAndAvg(
+          poolData.map((elm) => ({
+            pocketId: elm._id.toString(),
+            baseTokenAddress: elm.baseTokenAddress,
+            targetTokenAddress: elm.targetTokenAddress,
+            amount: BigNumber.from(
+              (elm.currentReceivedTargetToken || 0).toString(),
+            ),
+          })),
+        );
 
         await this.poolRepo.bulkWrite(
-          pools
-            .filter((pool) => !!pool)
-            .map((pool) => {
-              return {
-                updateOne: {
-                  filter: { _id: new Types.ObjectId(pool.id) },
-                  update: pool,
-                  upsert: true,
+          pools.map((pool, index) => {
+            return {
+              updateOne: {
+                filter: { _id: new Types.ObjectId(pool.id) },
+                update: {
+                  $set: {
+                    ...pool,
+                    avgPrice: quotes[index].avgPrice,
+                    currentROI: quotes[index].roi,
+                  },
                 },
-              };
-            }),
+                upsert: true,
+              },
+            };
+          }),
         );
       }),
     );

@@ -8,15 +8,23 @@ import {
 import { PoolDocument, PoolModel } from '../../orm/model/pool.model';
 import { Timer } from '../../providers/utils.provider';
 import { ChainID } from '../entities/pool.entity';
-import { EVMPocketConverter } from '../../providers/evm-pocket-program/evm.converter';
+import { EVMIndexer } from '../../providers/evm-pocket-program/evm.indexer';
+import {
+  WhitelistDocument,
+  WhitelistModel,
+} from '../../orm/model/whitelist.model';
 
 @Injectable()
 export class SyncEvmPoolActivityService {
   constructor(
     @InjectModel(PoolActivityModel.name)
     private readonly poolActivityRepo: Model<PoolActivityDocument>,
+
     @InjectModel(PoolModel.name)
     private readonly poolRepo: Model<PoolDocument>,
+
+    @InjectModel(WhitelistModel.name)
+    private readonly whitelistRepo: Model<WhitelistDocument>,
   ) {}
 
   async syncAllPoolActivities() {
@@ -43,9 +51,11 @@ export class SyncEvmPoolActivityService {
 
     await Promise.all(
       data.map(async ({ _id: chainId }) => {
-        const events = await new EVMPocketConverter(chainId).fetchEventEntities(
-          35329403,
-        );
+        const events = await new EVMIndexer(
+          chainId,
+          this.poolRepo,
+          this.whitelistRepo,
+        ).fetchEventEntities(35329403);
         console.log({ events });
       }),
     );

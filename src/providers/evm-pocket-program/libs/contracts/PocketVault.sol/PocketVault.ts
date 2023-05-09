@@ -57,15 +57,18 @@ export interface PocketVaultInterface extends utils.Interface {
   functions: {
     "closePosition(string)": FunctionFragment;
     "deposit((address,string,uint256,address))": FunctionFragment;
+    "getCurrentQuote(address,address,uint256)": FunctionFragment;
     "initialize()": FunctionFragment;
     "makeDCASwap(string)": FunctionFragment;
     "owner()": FunctionFragment;
     "pause()": FunctionFragment;
     "paused()": FunctionFragment;
     "permit2()": FunctionFragment;
+    "quoter()": FunctionFragment;
     "registry()": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
     "setPermit2(address)": FunctionFragment;
+    "setQuoter(address)": FunctionFragment;
     "setRegistry(address)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
     "unpause()": FunctionFragment;
@@ -76,15 +79,18 @@ export interface PocketVaultInterface extends utils.Interface {
     nameOrSignatureOrTopic:
       | "closePosition"
       | "deposit"
+      | "getCurrentQuote"
       | "initialize"
       | "makeDCASwap"
       | "owner"
       | "pause"
       | "paused"
       | "permit2"
+      | "quoter"
       | "registry"
       | "renounceOwnership"
       | "setPermit2"
+      | "setQuoter"
       | "setRegistry"
       | "transferOwnership"
       | "unpause"
@@ -100,6 +106,14 @@ export interface PocketVaultInterface extends utils.Interface {
     values: [Params.UpdatePocketDepositParamsStruct]
   ): string;
   encodeFunctionData(
+    functionFragment: "getCurrentQuote",
+    values: [
+      PromiseOrValue<string>,
+      PromiseOrValue<string>,
+      PromiseOrValue<BigNumberish>
+    ]
+  ): string;
+  encodeFunctionData(
     functionFragment: "initialize",
     values?: undefined
   ): string;
@@ -111,6 +125,7 @@ export interface PocketVaultInterface extends utils.Interface {
   encodeFunctionData(functionFragment: "pause", values?: undefined): string;
   encodeFunctionData(functionFragment: "paused", values?: undefined): string;
   encodeFunctionData(functionFragment: "permit2", values?: undefined): string;
+  encodeFunctionData(functionFragment: "quoter", values?: undefined): string;
   encodeFunctionData(functionFragment: "registry", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "renounceOwnership",
@@ -118,6 +133,10 @@ export interface PocketVaultInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "setPermit2",
+    values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setQuoter",
     values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
@@ -139,6 +158,10 @@ export interface PocketVaultInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "deposit", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "getCurrentQuote",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "makeDCASwap",
@@ -148,12 +171,14 @@ export interface PocketVaultInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "pause", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "paused", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "permit2", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "quoter", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "registry", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "renounceOwnership",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "setPermit2", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "setQuoter", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "setRegistry",
     data: BytesLike
@@ -166,16 +191,17 @@ export interface PocketVaultInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "withdraw", data: BytesLike): Result;
 
   events: {
-    "ClosedPosition(address,string,address,uint256,address,uint256)": EventFragment;
-    "Deposited(address,string,address,uint256)": EventFragment;
+    "ClosedPosition(address,string,address,uint256,address,uint256,uint256)": EventFragment;
+    "Deposited(address,string,address,uint256,uint256)": EventFragment;
     "Initialized(uint8)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
     "Paused(address)": EventFragment;
     "Permit2Updated(address,address)": EventFragment;
+    "QuoterUpdated(address,address)": EventFragment;
     "RegistryUpdated(address,address)": EventFragment;
-    "Swapped(address,string,address,uint256,address,uint256)": EventFragment;
+    "Swapped(address,string,address,uint256,address,uint256,uint256)": EventFragment;
     "Unpaused(address)": EventFragment;
-    "Withdrawn(address,string,address,uint256,address,uint256)": EventFragment;
+    "Withdrawn(address,string,address,uint256,address,uint256,uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "ClosedPosition"): EventFragment;
@@ -184,6 +210,7 @@ export interface PocketVaultInterface extends utils.Interface {
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Paused"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Permit2Updated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "QuoterUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RegistryUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Swapped"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Unpaused"): EventFragment;
@@ -197,9 +224,10 @@ export interface ClosedPositionEventObject {
   baseTokenAmount: BigNumber;
   targetTokenAddress: string;
   targetTokenAmount: BigNumber;
+  timestamp: BigNumber;
 }
 export type ClosedPositionEvent = TypedEvent<
-  [string, string, string, BigNumber, string, BigNumber],
+  [string, string, string, BigNumber, string, BigNumber, BigNumber],
   ClosedPositionEventObject
 >;
 
@@ -210,9 +238,10 @@ export interface DepositedEventObject {
   pocketId: string;
   tokenAddress: string;
   amount: BigNumber;
+  timestamp: BigNumber;
 }
 export type DepositedEvent = TypedEvent<
-  [string, string, string, BigNumber],
+  [string, string, string, BigNumber, BigNumber],
   DepositedEventObject
 >;
 
@@ -255,6 +284,17 @@ export type Permit2UpdatedEvent = TypedEvent<
 
 export type Permit2UpdatedEventFilter = TypedEventFilter<Permit2UpdatedEvent>;
 
+export interface QuoterUpdatedEventObject {
+  actor: string;
+  quoter: string;
+}
+export type QuoterUpdatedEvent = TypedEvent<
+  [string, string],
+  QuoterUpdatedEventObject
+>;
+
+export type QuoterUpdatedEventFilter = TypedEventFilter<QuoterUpdatedEvent>;
+
 export interface RegistryUpdatedEventObject {
   actor: string;
   registry: string;
@@ -273,9 +313,10 @@ export interface SwappedEventObject {
   baseTokenAmount: BigNumber;
   targetTokenAddress: string;
   targetTokenAmount: BigNumber;
+  timestamp: BigNumber;
 }
 export type SwappedEvent = TypedEvent<
-  [string, string, string, BigNumber, string, BigNumber],
+  [string, string, string, BigNumber, string, BigNumber, BigNumber],
   SwappedEventObject
 >;
 
@@ -295,9 +336,10 @@ export interface WithdrawnEventObject {
   baseTokenAmount: BigNumber;
   targetTokenAddress: string;
   targetTokenAmount: BigNumber;
+  timestamp: BigNumber;
 }
 export type WithdrawnEvent = TypedEvent<
-  [string, string, string, BigNumber, string, BigNumber],
+  [string, string, string, BigNumber, string, BigNumber, BigNumber],
   WithdrawnEventObject
 >;
 
@@ -340,6 +382,13 @@ export interface PocketVault extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    getCurrentQuote(
+      baseTokenAddress: PromiseOrValue<string>,
+      targetTokenAddress: PromiseOrValue<string>,
+      amountIn: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     initialize(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
@@ -359,6 +408,8 @@ export interface PocketVault extends BaseContract {
 
     permit2(overrides?: CallOverrides): Promise<[string]>;
 
+    quoter(overrides?: CallOverrides): Promise<[string]>;
+
     registry(overrides?: CallOverrides): Promise<[string]>;
 
     renounceOwnership(
@@ -367,6 +418,11 @@ export interface PocketVault extends BaseContract {
 
     setPermit2(
       permit2Address: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    setQuoter(
+      quoterAddress: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -400,6 +456,13 @@ export interface PocketVault extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  getCurrentQuote(
+    baseTokenAddress: PromiseOrValue<string>,
+    targetTokenAddress: PromiseOrValue<string>,
+    amountIn: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   initialize(
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
@@ -419,6 +482,8 @@ export interface PocketVault extends BaseContract {
 
   permit2(overrides?: CallOverrides): Promise<string>;
 
+  quoter(overrides?: CallOverrides): Promise<string>;
+
   registry(overrides?: CallOverrides): Promise<string>;
 
   renounceOwnership(
@@ -427,6 +492,11 @@ export interface PocketVault extends BaseContract {
 
   setPermit2(
     permit2Address: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  setQuoter(
+    quoterAddress: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -460,6 +530,13 @@ export interface PocketVault extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    getCurrentQuote(
+      baseTokenAddress: PromiseOrValue<string>,
+      targetTokenAddress: PromiseOrValue<string>,
+      amountIn: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber, BigNumber]>;
+
     initialize(overrides?: CallOverrides): Promise<void>;
 
     makeDCASwap(
@@ -475,12 +552,19 @@ export interface PocketVault extends BaseContract {
 
     permit2(overrides?: CallOverrides): Promise<string>;
 
+    quoter(overrides?: CallOverrides): Promise<string>;
+
     registry(overrides?: CallOverrides): Promise<string>;
 
     renounceOwnership(overrides?: CallOverrides): Promise<void>;
 
     setPermit2(
       permit2Address: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setQuoter(
+      quoterAddress: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -503,13 +587,14 @@ export interface PocketVault extends BaseContract {
   };
 
   filters: {
-    "ClosedPosition(address,string,address,uint256,address,uint256)"(
+    "ClosedPosition(address,string,address,uint256,address,uint256,uint256)"(
       actor?: PromiseOrValue<string> | null,
       pocketId?: PromiseOrValue<string> | null,
       baseTokenAddress?: null,
       baseTokenAmount?: null,
       targetTokenAddress?: null,
-      targetTokenAmount?: null
+      targetTokenAmount?: null,
+      timestamp?: null
     ): ClosedPositionEventFilter;
     ClosedPosition(
       actor?: PromiseOrValue<string> | null,
@@ -517,20 +602,23 @@ export interface PocketVault extends BaseContract {
       baseTokenAddress?: null,
       baseTokenAmount?: null,
       targetTokenAddress?: null,
-      targetTokenAmount?: null
+      targetTokenAmount?: null,
+      timestamp?: null
     ): ClosedPositionEventFilter;
 
-    "Deposited(address,string,address,uint256)"(
+    "Deposited(address,string,address,uint256,uint256)"(
       actor?: PromiseOrValue<string> | null,
       pocketId?: PromiseOrValue<string> | null,
       tokenAddress?: PromiseOrValue<string> | null,
-      amount?: null
+      amount?: null,
+      timestamp?: null
     ): DepositedEventFilter;
     Deposited(
       actor?: PromiseOrValue<string> | null,
       pocketId?: PromiseOrValue<string> | null,
       tokenAddress?: PromiseOrValue<string> | null,
-      amount?: null
+      amount?: null,
+      timestamp?: null
     ): DepositedEventFilter;
 
     "Initialized(uint8)"(version?: null): InitializedEventFilter;
@@ -557,6 +645,15 @@ export interface PocketVault extends BaseContract {
       permit2?: PromiseOrValue<string> | null
     ): Permit2UpdatedEventFilter;
 
+    "QuoterUpdated(address,address)"(
+      actor?: PromiseOrValue<string> | null,
+      quoter?: PromiseOrValue<string> | null
+    ): QuoterUpdatedEventFilter;
+    QuoterUpdated(
+      actor?: PromiseOrValue<string> | null,
+      quoter?: PromiseOrValue<string> | null
+    ): QuoterUpdatedEventFilter;
+
     "RegistryUpdated(address,address)"(
       actor?: PromiseOrValue<string> | null,
       registry?: PromiseOrValue<string> | null
@@ -566,13 +663,14 @@ export interface PocketVault extends BaseContract {
       registry?: PromiseOrValue<string> | null
     ): RegistryUpdatedEventFilter;
 
-    "Swapped(address,string,address,uint256,address,uint256)"(
+    "Swapped(address,string,address,uint256,address,uint256,uint256)"(
       actor?: PromiseOrValue<string> | null,
       pocketId?: PromiseOrValue<string> | null,
       baseTokenAddress?: null,
       baseTokenAmount?: null,
       targetTokenAddress?: null,
-      targetTokenAmount?: null
+      targetTokenAmount?: null,
+      timestamp?: null
     ): SwappedEventFilter;
     Swapped(
       actor?: PromiseOrValue<string> | null,
@@ -580,19 +678,21 @@ export interface PocketVault extends BaseContract {
       baseTokenAddress?: null,
       baseTokenAmount?: null,
       targetTokenAddress?: null,
-      targetTokenAmount?: null
+      targetTokenAmount?: null,
+      timestamp?: null
     ): SwappedEventFilter;
 
     "Unpaused(address)"(account?: null): UnpausedEventFilter;
     Unpaused(account?: null): UnpausedEventFilter;
 
-    "Withdrawn(address,string,address,uint256,address,uint256)"(
+    "Withdrawn(address,string,address,uint256,address,uint256,uint256)"(
       actor?: PromiseOrValue<string> | null,
       pocketId?: PromiseOrValue<string> | null,
       baseTokenAddress?: null,
       baseTokenAmount?: null,
       targetTokenAddress?: null,
-      targetTokenAmount?: null
+      targetTokenAmount?: null,
+      timestamp?: null
     ): WithdrawnEventFilter;
     Withdrawn(
       actor?: PromiseOrValue<string> | null,
@@ -600,7 +700,8 @@ export interface PocketVault extends BaseContract {
       baseTokenAddress?: null,
       baseTokenAmount?: null,
       targetTokenAddress?: null,
-      targetTokenAmount?: null
+      targetTokenAmount?: null,
+      timestamp?: null
     ): WithdrawnEventFilter;
   };
 
@@ -612,6 +713,13 @@ export interface PocketVault extends BaseContract {
 
     deposit(
       params: Params.UpdatePocketDepositParamsStruct,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    getCurrentQuote(
+      baseTokenAddress: PromiseOrValue<string>,
+      targetTokenAddress: PromiseOrValue<string>,
+      amountIn: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -634,6 +742,8 @@ export interface PocketVault extends BaseContract {
 
     permit2(overrides?: CallOverrides): Promise<BigNumber>;
 
+    quoter(overrides?: CallOverrides): Promise<BigNumber>;
+
     registry(overrides?: CallOverrides): Promise<BigNumber>;
 
     renounceOwnership(
@@ -642,6 +752,11 @@ export interface PocketVault extends BaseContract {
 
     setPermit2(
       permit2Address: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    setQuoter(
+      quoterAddress: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -676,6 +791,13 @@ export interface PocketVault extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
+    getCurrentQuote(
+      baseTokenAddress: PromiseOrValue<string>,
+      targetTokenAddress: PromiseOrValue<string>,
+      amountIn: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
     initialize(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
@@ -695,6 +817,8 @@ export interface PocketVault extends BaseContract {
 
     permit2(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    quoter(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     registry(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     renounceOwnership(
@@ -703,6 +827,11 @@ export interface PocketVault extends BaseContract {
 
     setPermit2(
       permit2Address: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setQuoter(
+      quoterAddress: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

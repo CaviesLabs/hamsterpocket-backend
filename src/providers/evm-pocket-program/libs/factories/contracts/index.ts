@@ -3,6 +3,7 @@
 /* eslint-disable */
 export * as pocketVaultSol from "./PocketVault.sol";
 export * as mock from "./mock";
+export { IQuoter__factory } from "./IQuoter__factory";
 export { Multicall3__factory } from "./Multicall3__factory";
 export { PocketChef__factory } from "./PocketChef__factory";
 export { PocketRegistry__factory } from "./PocketRegistry__factory";

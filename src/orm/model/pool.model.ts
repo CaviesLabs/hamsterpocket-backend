@@ -19,6 +19,12 @@ import { BaseModel } from '../base.model';
 export class PoolModel extends BaseModel implements PoolEntity {
   id: string;
 
+  @Prop({ type: Number })
+  currentROI: number;
+
+  @Prop({ type: Number })
+  avgPrice: number;
+
   @Prop({ type: String, enum: ChainID, default: ChainID.Solana })
   chainId: ChainID;
 
