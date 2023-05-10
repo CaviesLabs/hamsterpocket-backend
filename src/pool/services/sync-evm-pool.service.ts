@@ -71,10 +71,10 @@ export class SyncEvmPoolService {
 
     const indexer = new EVMIndexer(chainId, this.poolRepo, this.whitelistRepo);
 
-    const pools = await indexer.fetchMultiplePockets(
+    let pools = await indexer.fetchMultiplePockets(
       poolIds.map((poolIds) => poolIds.toString()),
     );
-    pools.filter((pool) => !!pool);
+    pools = pools.filter((pool) => !!pool);
 
     const poolData = await this.poolRepo.find({
       _id: {

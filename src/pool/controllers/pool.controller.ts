@@ -82,6 +82,11 @@ export class PoolController {
     await this.syncEvmPoolActivityService.syncAllPoolActivities();
   }
 
+  @Post('/evm/sync')
+  async syncAllEVMPools() {
+    await this.syncEVMPoolService.syncPools();
+  }
+
   @Post('/:id/sync')
   async syncOne(@Param('id') id: string) {
     await this.syncPoolService.syncPoolById(id);
