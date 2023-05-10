@@ -270,9 +270,9 @@ export class EVMIndexer {
     }
 
     const avgPrice =
-      pocket.currentReceivedTargetToken /
-      10 ** targetToken.decimals /
-      (pocket.currentSpentBaseToken / 10 ** baseToken.decimals);
+      pocket.currentSpentBaseToken /
+      10 ** baseToken.decimals /
+      (pocket.currentReceivedTargetToken / 10 ** targetToken.decimals);
 
     const roi =
       ((parseFloat(positionValue.toString()) -

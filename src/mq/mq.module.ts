@@ -24,6 +24,7 @@ import { NetworkProvider } from '../providers/network.provider';
 import { StatisticPublisher } from './statistic/statistic.publisher';
 import { SyncEvmPoolActivityService } from '../pool/services/sync-evm-pool-activity.service';
 import { SyncEvmPoolService } from '../pool/services/sync-evm-pool.service';
+import { StatisticsService } from '../statistics/services/statistics.service';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { SyncEvmPoolService } from '../pool/services/sync-evm-pool.service';
     SyncPriceService,
     SyncEvmPoolService,
     SyncEvmPoolActivityService,
+    StatisticsService,
     CoinGeckoClient,
     NetworkProvider,
 

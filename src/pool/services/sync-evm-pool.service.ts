@@ -47,14 +47,12 @@ export class SyncEvmPoolService {
     await this.poolRepo.updateOne(
       { _id: new Types.ObjectId(data.id) },
       {
-        $set: {
-          ...data,
-          avgPrice: roiAndAvgPrice.avgPrice,
-          currentROI: roiAndAvgPrice.roi,
-          currentROIValue: roiAndAvgPrice.roiValue,
-          realizedROI: roiAndAvgPrice.realizedROI,
-          realizedROIValue: roiAndAvgPrice.realizedROIValue,
-        },
+        ...data,
+        avgPrice: roiAndAvgPrice.avgPrice,
+        currentROI: roiAndAvgPrice.roi,
+        currentROIValue: roiAndAvgPrice.roiValue,
+        realizedROI: roiAndAvgPrice.realizedROI,
+        realizedROIValue: roiAndAvgPrice.realizedROIValue,
       },
       {
         upsert: true,
@@ -103,14 +101,12 @@ export class SyncEvmPoolService {
           updateOne: {
             filter: { _id: new Types.ObjectId(pool.id) },
             update: {
-              $set: {
-                ...pool,
-                avgPrice: quotes[index].avgPrice,
-                currentROI: quotes[index].roi,
-                currentROIValue: quotes[index].roiValue,
-                realizedROI: quotes[index].realizedROI,
-                realizedROIValue: quotes[index].realizedROIValue,
-              },
+              ...pool,
+              avgPrice: quotes[index].avgPrice,
+              currentROI: quotes[index].roi,
+              currentROIValue: quotes[index].roiValue,
+              realizedROI: quotes[index].realizedROI,
+              realizedROIValue: quotes[index].realizedROIValue,
             },
             upsert: true,
           },
