@@ -76,7 +76,10 @@ export class SyncEvmPoolService {
     );
     pools = pools.filter((pool) => !!pool);
 
-    if (!pools) return;
+    if (pools.length === 0) {
+      console.log('No valid pools, skipped ...');
+      return;
+    }
 
     const poolData = await this.poolRepo.find({
       _id: {
