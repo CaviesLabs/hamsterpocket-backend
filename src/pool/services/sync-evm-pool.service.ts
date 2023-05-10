@@ -76,6 +76,8 @@ export class SyncEvmPoolService {
     );
     pools = pools.filter((pool) => !!pool);
 
+    if (!pools) return;
+
     const poolData = await this.poolRepo.find({
       _id: {
         $in: pools.map((pool) => pool.id),
