@@ -300,7 +300,7 @@ export class EVMIndexer {
 
     const result = {
       roiValue: isNaN(roiValue) ? null : roiValue,
-      realizedROI: isNaN(realizedROI) ? null : roiValue,
+      realizedROI: isNaN(realizedROI) ? null : realizedROI,
       realizedROIValue: isNaN(realizedROIValue) ? null : realizedROIValue,
       roi: isNaN(roi) ? null : roi,
       avgPrice: isNaN(avgPrice) ? null : avgPrice,
