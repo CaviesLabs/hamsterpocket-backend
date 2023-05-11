@@ -129,6 +129,8 @@ export class EVMIndexer {
       }
     });
 
+    console.log(stopCondition);
+
     return stopCondition;
   }
 
@@ -259,12 +261,12 @@ export class EVMIndexer {
       address: pocket.targetTokenAddress,
     });
 
-    if (!baseToken || !targetToken || pocket.status === PoolStatus.ENDED) {
+    if (!baseToken || !targetToken) {
       return {
-        roiValue: 0,
-        realizedROI: 0,
-        realizedROIValue: 0,
-        roi: 0,
+        roiValue: null,
+        realizedROI: null,
+        realizedROIValue: null,
+        roi: null,
         avgPrice: null,
       };
     }
@@ -296,13 +298,20 @@ export class EVMIndexer {
         parseFloat(pocket.currentSpentBaseToken.toString())) /
       10 ** baseToken.decimals;
 
-    return {
+    const result = {
       roiValue: isNaN(roiValue) ? null : roiValue,
       realizedROI: isNaN(realizedROI) ? null : roiValue,
       realizedROIValue: isNaN(realizedROIValue) ? null : realizedROIValue,
       roi: isNaN(roi) ? null : roi,
       avgPrice: isNaN(avgPrice) ? null : avgPrice,
     };
+
+    if (pocket.status === PoolStatus.ENDED) {
+      result.roi = 0;
+      result.roiValue = 0;
+    }
+
+    return result;
   }
 
   /**
