@@ -25,6 +25,7 @@ import type {
 
 export interface IQuoterInterface extends utils.Interface {
   functions: {
+    "WETH9()": FunctionFragment;
     "quoteExactInput(bytes,uint256)": FunctionFragment;
     "quoteExactInputSingle(address,address,uint24,uint256,uint160)": FunctionFragment;
     "quoteExactOutput(bytes,uint256)": FunctionFragment;
@@ -33,12 +34,14 @@ export interface IQuoterInterface extends utils.Interface {
 
   getFunction(
     nameOrSignatureOrTopic:
+      | "WETH9"
       | "quoteExactInput"
       | "quoteExactInputSingle"
       | "quoteExactOutput"
       | "quoteExactOutputSingle"
   ): FunctionFragment;
 
+  encodeFunctionData(functionFragment: "WETH9", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "quoteExactInput",
     values: [PromiseOrValue<BytesLike>, PromiseOrValue<BigNumberish>]
@@ -68,6 +71,7 @@ export interface IQuoterInterface extends utils.Interface {
     ]
   ): string;
 
+  decodeFunctionResult(functionFragment: "WETH9", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "quoteExactInput",
     data: BytesLike
@@ -115,6 +119,10 @@ export interface IQuoter extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
+    WETH9(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     quoteExactInput(
       path: PromiseOrValue<BytesLike>,
       amountIn: PromiseOrValue<BigNumberish>,
@@ -145,6 +153,10 @@ export interface IQuoter extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
   };
+
+  WETH9(
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
 
   quoteExactInput(
     path: PromiseOrValue<BytesLike>,
@@ -177,6 +189,8 @@ export interface IQuoter extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
+    WETH9(overrides?: CallOverrides): Promise<string>;
+
     quoteExactInput(
       path: PromiseOrValue<BytesLike>,
       amountIn: PromiseOrValue<BigNumberish>,
@@ -211,6 +225,10 @@ export interface IQuoter extends BaseContract {
   filters: {};
 
   estimateGas: {
+    WETH9(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     quoteExactInput(
       path: PromiseOrValue<BytesLike>,
       amountIn: PromiseOrValue<BigNumberish>,
@@ -243,6 +261,10 @@ export interface IQuoter extends BaseContract {
   };
 
   populateTransaction: {
+    WETH9(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
     quoteExactInput(
       path: PromiseOrValue<BytesLike>,
       amountIn: PromiseOrValue<BigNumberish>,

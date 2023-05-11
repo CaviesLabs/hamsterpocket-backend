@@ -129,6 +129,8 @@ export class EVMIndexer {
       }
     });
 
+    console.log(stopCondition);
+
     return stopCondition;
   }
 
@@ -170,7 +172,7 @@ export class EVMIndexer {
     stopConditions: Types.StopConditionStructOutput[];
     pocketData: Types.PocketStructOutput;
   }): Partial<PoolEntity> | null {
-    const { pocketData } = payload;
+    const { pocketData, stopConditions: stopConditionData } = payload;
 
     if (pocketData.id === '') return null;
 
@@ -207,7 +209,7 @@ export class EVMIndexer {
       ownerAddress: pocketData.owner,
       startTime: new Date(pocketData.startAt.toNumber() * 1000),
       status: this.mapStatus(pocketData.status),
-      // stopConditions: this.mapStopCondition(stopConditionData),
+      stopConditions: this.mapStopCondition(stopConditionData),
       stopLossCondition: this.mapTradingStopCondition(
         pocketData.stopLossCondition,
       ),

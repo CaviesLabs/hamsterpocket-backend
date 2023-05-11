@@ -8,6 +8,19 @@ import type { IQuoter, IQuoterInterface } from "../../contracts/IQuoter";
 
 const _abi = [
   {
+    inputs: [],
+    name: "WETH9",
+    outputs: [
+      {
+        internalType: "address",
+        name: "wethAddress",
+        type: "address",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "bytes",

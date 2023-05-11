@@ -75,10 +75,14 @@ export class PocketProcessor {
         pools.map((pool) => {
           return this.poolService
             .executeSwapToken(pool._id.toString())
-            .catch((e) => console.log(`[${BUY_TOKEN_PROCESS}]`, e))
             .then(() =>
               console.log(
                 `[${BUY_TOKEN_PROCESS}] Executed swap for ${pool.id}`,
+              ),
+            )
+            .catch(() =>
+              console.log(
+                `[${BUY_TOKEN_PROCESS}] Failed to execute swap for ${pool.id}`,
               ),
             );
         }),
@@ -126,10 +130,14 @@ export class PocketProcessor {
            */
           return this.poolService
             .executeSwapTokenOnEVM(pool._id.toString(), pool.chainId)
-            .catch((e) => console.log(`[${BUY_EVM_TOKEN_PROCESS}]`, e))
             .then(() =>
               console.log(
                 `[${BUY_EVM_TOKEN_PROCESS}] Executed swap for ${pool.id}`,
+              ),
+            )
+            .catch(() =>
+              console.log(
+                `[${BUY_EVM_TOKEN_PROCESS}] Failed to execute swap for ${pool.id}`,
               ),
             );
         }),
@@ -179,10 +187,14 @@ export class PocketProcessor {
            */
           return this.poolService
             .executeClosingPositionOnEVM(pool._id.toString(), pool.chainId)
-            .catch((e) => console.log(`[${CLOSE_EVM_POSITION_PROCESS}]`, e))
             .then(() =>
               console.log(
                 `[${CLOSE_EVM_POSITION_PROCESS}] Executed swap for ${pool.id}`,
+              ),
+            )
+            .catch(() =>
+              console.log(
+                `[${CLOSE_EVM_POSITION_PROCESS}] Failed to execute swap for ${pool.id}`,
               ),
             );
         }),

@@ -141,6 +141,7 @@ export declare namespace Params {
 export interface PocketChefInterface extends utils.Interface {
   functions: {
     "closePocket(string)": FunctionFragment;
+    "closePosition(string)": FunctionFragment;
     "createPocket((string,address,address,address,address,uint256,uint256,(uint256,uint8)[],uint256,(uint256,uint256,uint8),(uint8,uint256),(uint8,uint256)))": FunctionFragment;
     "createPocketAndDepositEther((string,address,address,address,address,uint256,uint256,(uint256,uint8)[],uint256,(uint256,uint256,uint8),(uint8,uint256),(uint8,uint256)))": FunctionFragment;
     "createPocketAndDepositToken((string,address,address,address,address,uint256,uint256,(uint256,uint8)[],uint256,(uint256,uint256,uint8),(uint8,uint256),(uint8,uint256)),uint256)": FunctionFragment;
@@ -169,6 +170,7 @@ export interface PocketChefInterface extends utils.Interface {
   getFunction(
     nameOrSignatureOrTopic:
       | "closePocket"
+      | "closePosition"
       | "createPocket"
       | "createPocketAndDepositEther"
       | "createPocketAndDepositToken"
@@ -196,6 +198,10 @@ export interface PocketChefInterface extends utils.Interface {
 
   encodeFunctionData(
     functionFragment: "closePocket",
+    values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "closePosition",
     values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
@@ -275,6 +281,10 @@ export interface PocketChefInterface extends utils.Interface {
 
   decodeFunctionResult(
     functionFragment: "closePocket",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "closePosition",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -444,6 +454,11 @@ export interface PocketChef extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    closePosition(
+      pocketId: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     createPocket(
       params: Params.CreatePocketParamsStruct,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -551,6 +566,11 @@ export interface PocketChef extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  closePosition(
+    pocketId: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   createPocket(
     params: Params.CreatePocketParamsStruct,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -654,6 +674,11 @@ export interface PocketChef extends BaseContract {
 
   callStatic: {
     closePocket(
+      pocketId: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    closePosition(
       pocketId: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -796,6 +821,11 @@ export interface PocketChef extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    closePosition(
+      pocketId: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     createPocket(
       params: Params.CreatePocketParamsStruct,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -900,6 +930,11 @@ export interface PocketChef extends BaseContract {
 
   populateTransaction: {
     closePocket(
+      pocketId: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    closePosition(
       pocketId: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
