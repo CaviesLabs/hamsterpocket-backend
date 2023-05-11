@@ -69,6 +69,10 @@ export class SyncEvmPoolActivityService {
           this.whitelistRepo,
         ).fetchEventEntities(syncStatus.syncedBlock + 1, syncStatus.blockDiff);
 
+        console.log(
+          `Found ${events.length} event(s) from syncing chain ${chainId} ...`,
+        );
+
         // @dev Bulk update data
         await this.poolActivityRepo.insertMany(events);
 

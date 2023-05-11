@@ -19,8 +19,6 @@ import { PoolService } from '../services/pool.service';
 import { SyncPoolActivityService } from '../services/sync-pool-activity.service';
 import { SyncPoolService } from '../services/sync-pool.service';
 import { CreateEmptyPoolDto } from '../dtos/create-empty-pool.dto';
-import { SyncEvmPoolService } from '../services/sync-evm-pool.service';
-import { SyncEvmPoolActivityService } from '../services/sync-evm-pool-activity.service';
 
 @Controller('pool')
 @ApiTags('pool')
@@ -32,8 +30,6 @@ export class PoolController {
     private readonly poolMockService: PoolMockService,
     private readonly poolActivityService: PoolActivityService,
     private readonly syncPoolActivityService: SyncPoolActivityService,
-    private readonly syncEVMPoolService: SyncEvmPoolService,
-    private readonly syncEvmPoolActivityService: SyncEvmPoolActivityService,
   ) {}
 
   @Get()
@@ -65,26 +61,6 @@ export class PoolController {
   @Get('/:id/activities')
   async getPocketActivities(@Param('id') id: string) {
     return this.poolActivityService.getPoolActivities(id);
-  }
-
-  @Post('/evm/:id/sync')
-  async evmSyncSinglePocket(@Param('id') id: string) {
-    await this.syncEVMPoolService.syncPoolById(id);
-  }
-
-  @Post('/user/evm/:ownerAddress/sync')
-  evmSyncByOwnerAddress(@Param('ownerAddress') ownerAddress: string) {
-    return this.syncEVMPoolService.syncPoolsByOwnerAddress(ownerAddress);
-  }
-
-  @Post('/evm/activity/sync')
-  async evmSyncPoolActivities() {
-    await this.syncEvmPoolActivityService.syncAllPoolActivities();
-  }
-
-  @Post('/evm/sync')
-  async syncAllEVMPools() {
-    await this.syncEVMPoolService.syncPools();
   }
 
   @Post('/:id/sync')

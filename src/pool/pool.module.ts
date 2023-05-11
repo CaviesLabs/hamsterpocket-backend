@@ -12,6 +12,7 @@ import { PoolActivityService } from './services/pool-activity.service';
 import { MigrateChainIdCommand } from './commands/migrate-chain-id';
 import { SyncEvmPoolActivityService } from './services/sync-evm-pool-activity.service';
 import { SyncEvmPoolService } from './services/sync-evm-pool.service';
+import { EVMPoolController } from './controllers/evm-pool.controller';
 
 @Module({
   imports: [OrmModule],
@@ -33,6 +34,6 @@ import { SyncEvmPoolService } from './services/sync-evm-pool.service';
      */
     MigrateChainIdCommand,
   ],
-  controllers: [PoolController],
+  controllers: [PoolController, EVMPoolController],
 })
 export class PoolModule {}

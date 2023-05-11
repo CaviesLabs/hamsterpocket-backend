@@ -12,7 +12,11 @@ import {
   ActivityType,
   PoolActivityStatus,
 } from '../entities/pool-activity.entity';
-import { calculateProgressPercent, PoolStatus } from '../entities/pool.entity';
+import {
+  calculateProgressPercent,
+  ChainID,
+  PoolStatus,
+} from '../entities/pool.entity';
 import { convertToPoolActivityEntity } from '../../providers/solana-pocket-program/pocket-activity.oc-dto';
 
 @Injectable()
@@ -32,6 +36,7 @@ export class SyncPoolActivityService {
     /** Only pick _id and status */
     const poolIds = await this.poolRepo.find(
       {
+        chainId: ChainID.Solana,
         status: {
           $in: [
             PoolStatus.ACTIVE,
