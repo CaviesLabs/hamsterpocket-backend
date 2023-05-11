@@ -18,8 +18,10 @@ export class StatisticsService {
   constructor(
     @InjectModel(StatisticsModel.name)
     private readonly statisticsRepo: Model<StatisticsDocument>,
+
     @InjectModel(PoolModel.name)
     private readonly poolRepo: Model<PoolDocument>,
+
     @InjectModel(PoolActivityModel.name)
     private readonly poolActivityRepo: Model<PoolActivityDocument>,
   ) {}
@@ -149,6 +151,4 @@ export class StatisticsService {
     });
     timer.stop();
   }
-
-  // public async calculatePNL() {}
 }

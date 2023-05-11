@@ -129,8 +129,6 @@ export class EVMIndexer {
       }
     });
 
-    console.log(stopCondition);
-
     return stopCondition;
   }
 
@@ -261,12 +259,12 @@ export class EVMIndexer {
       address: pocket.targetTokenAddress,
     });
 
-    if (!baseToken || !targetToken) {
+    if (!baseToken || !targetToken || pocket.status === PoolStatus.ENDED) {
       return {
-        roiValue: null,
-        realizedROI: null,
-        realizedROIValue: null,
-        roi: null,
+        roiValue: 0,
+        realizedROI: 0,
+        realizedROIValue: 0,
+        roi: 0,
         avgPrice: null,
       };
     }

@@ -1,7 +1,7 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, PipelineStage } from 'mongoose';
 
-import { PoolModel, PoolDocument } from '../../orm/model/pool.model';
+import { PoolDocument, PoolModel } from '../../orm/model/pool.model';
 import {
   UserTokenDocument,
   UserTokenModel,
@@ -210,5 +210,92 @@ export class PortfolioService {
     /** Offset + limit */
     stages.push({ $skip: offset }, { $limit: limit });
     return this.userTokenRepo.aggregate<UserTokenWithAdditionView>(stages);
+  }
+
+  /**
+   * @dev calculate ROI now only applies with evm pools
+   */
+  // public async calculateAndSnapshotPNL() {}
+
+  async getPortfolioPNL(
+    ownerAddresses: string[],
+  ): Promise<{ ownerAddress: string; totalROIValueInUSD: number }[]> {
+    const stages: PipelineStage[] = [];
+
+    // @dev Find the docs that have `currentROIValue`
+    stages.push({
+      $match: {
+        currentROIValue: {
+          $exists: true,
+        },
+        ownerAddress:
+          ownerAddresses.length > 0 ? { $in: ownerAddresses } : undefined,
+      },
+    });
+
+    // @dev Join whitelist docs
+    stages.push({
+      $lookup: {
+        from: 'whitelists',
+        as: 'targetToken_docs',
+        localField: 'targetTokenAddress',
+        foreignField: 'address',
+      },
+    });
+    stages.push({
+      $lookup: {
+        from: 'whitelists',
+        as: 'baseToken_docs',
+        localField: 'baseTokenAddress',
+        foreignField: 'address',
+      },
+    });
+
+    // @dev Filter valid records only
+    stages.push({
+      $match: {
+        targetToken_docs: {
+          $size: 1,
+        },
+        baseToken_docs: {
+          $size: 1,
+        },
+      },
+    });
+
+    stages.push({
+      $addFields: {
+        roiValueInUSD: {
+          $multiply: [
+            '$currentROIValue',
+            {
+              $arrayElemAt: ['$baseToken_docs.estimatedValue', 0],
+            },
+          ],
+        },
+      },
+    });
+
+    stages.push({
+      $group: {
+        _id: '$ownerAddress',
+        totalROIValueInUSD: {
+          $sum: '$roiValueInUSD',
+        },
+        ownerAddress: {
+          $first: '$ownerAddress',
+        },
+      },
+    });
+
+    stages.push({
+      $project: {
+        _id: 0,
+        totalROIValueInUSD: 1,
+        ownerAddress: 1,
+      },
+    });
+
+    return this.poolRepo.aggregate(stages);
   }
 }
