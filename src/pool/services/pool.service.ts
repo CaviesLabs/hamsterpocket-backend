@@ -9,11 +9,13 @@ import { FindPoolDto, FindPoolSortOption } from '../dtos/find-pool.dto';
 import { ChainID, PoolEntity } from '../entities/pool.entity';
 import { MarketModel } from '../../orm/model/market.model';
 import { EVMBasedPocketProvider } from '../../providers/evm-pocket-program/evm.provider';
+import { SyncEvmPoolService } from './sync-evm-pool.service';
 
 @Injectable()
 export class PoolService {
   constructor(
     private readonly onChainPoolProvider: SolanaPoolProvider,
+    private readonly syncEVMService: SyncEvmPoolService,
     @InjectModel(PoolModel.name)
     private readonly poolRepo: Model<PoolDocument>,
     @InjectModel(MarketModel.name)
@@ -230,16 +232,7 @@ export class PoolService {
       /**
        * @dev Sync pool after execute pocket
        */
-      const syncedPool = await new EVMBasedPocketProvider(chainId).fetchPocket(
-        poolId,
-      );
-      await this.poolRepo.updateOne(
-        { _id: new Types.ObjectId(poolId) },
-        syncedPool,
-        {
-          upsert: true,
-        },
-      );
+      await this.syncEVMService.syncPoolById(poolId);
     }
   }
 
@@ -285,16 +278,7 @@ export class PoolService {
       /**
        * @dev Sync pool after execute pocket
        */
-      const syncedPool = await this.onChainPoolProvider.fetchFromContract(
-        poolId,
-      );
-      await this.poolRepo.updateOne(
-        { _id: new Types.ObjectId(poolId) },
-        syncedPool,
-        {
-          upsert: true,
-        },
-      );
+      await this.syncEVMService.syncPoolById(poolId);
     }
   }
 }
