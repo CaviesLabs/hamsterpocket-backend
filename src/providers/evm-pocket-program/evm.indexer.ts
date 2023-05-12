@@ -226,7 +226,7 @@ export class EVMIndexer {
      * @dev Compute status
      */
     if (
-      data.status !== PoolStatus.CLOSED &&
+      data.status === PoolStatus.ACTIVE &&
       data.stopConditions.endTime &&
       new Date(data.stopConditions.endTime).getTime() <= new Date().getTime()
     ) {
