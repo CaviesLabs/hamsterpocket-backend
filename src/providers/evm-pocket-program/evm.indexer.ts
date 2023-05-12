@@ -85,8 +85,8 @@ export class EVMIndexer {
    * @param status
    * @private
    */
-  private mapStatus(status: number): PoolStatus {
-    switch (status) {
+  private mapStatus(pocketData: Types.PocketStructOutput): PoolStatus {
+    switch (pocketData.status) {
       case 1:
         return PoolStatus.ACTIVE;
       case 2:
@@ -128,8 +128,6 @@ export class EVMIndexer {
           break;
       }
     });
-
-    console.log(stopCondition);
 
     return stopCondition;
   }
@@ -176,7 +174,7 @@ export class EVMIndexer {
 
     if (pocketData.id === '') return null;
 
-    return {
+    const data = {
       id: pocketData.id,
       chainId: this.chainId,
       address: pocketData.id,
@@ -208,7 +206,7 @@ export class EVMIndexer {
       ),
       ownerAddress: pocketData.owner,
       startTime: new Date(pocketData.startAt.toNumber() * 1000),
-      status: this.mapStatus(pocketData.status),
+      status: this.mapStatus(pocketData),
       stopConditions: this.mapStopCondition(stopConditionData),
       stopLossCondition: this.mapTradingStopCondition(
         pocketData.stopLossCondition,
@@ -223,6 +221,19 @@ export class EVMIndexer {
         pocketData.totalReceivedFundInBaseTokenAmount.toString(),
       ),
     };
+
+    /**
+     * @dev Compute status
+     */
+    if (
+      data.status !== PoolStatus.CLOSED &&
+      data.stopConditions.endTime &&
+      new Date(data.stopConditions.endTime).getTime() <= new Date().getTime()
+    ) {
+      data.status = PoolStatus.CLOSED;
+    }
+
+    return data;
   }
 
   /**
