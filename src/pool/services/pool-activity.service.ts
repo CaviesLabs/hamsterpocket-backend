@@ -86,7 +86,11 @@ export class PoolActivityService {
     stages.push({ $match: filter });
 
     /** Pagination stages */
-    stages.push({ $skip: offset }, { $limit: limit });
+    stages.push(
+      { $skip: offset },
+      { $limit: limit },
+      { $sort: { createdAt: -1 } },
+    );
     return this.poolActivityRepo.aggregate(stages);
   }
 
@@ -95,8 +99,16 @@ export class PoolActivityService {
    * @param poolId
    */
   async getPoolActivities(poolId: string) {
-    return this.poolActivityRepo.find({
-      poolId: new mongoose.Types.ObjectId(poolId),
-    });
+    return this.poolActivityRepo.find(
+      {
+        poolId: new mongoose.Types.ObjectId(poolId),
+      },
+      {},
+      {
+        sort: {
+          createdAt: -1,
+        },
+      },
+    );
   }
 }
