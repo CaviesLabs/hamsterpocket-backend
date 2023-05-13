@@ -95,7 +95,7 @@ export class SyncEvmPoolActivityService {
           }
 
           return accum;
-        }, {} as Record<string, { endedAt: Date; closedAt: Date; closedPositionAt: Date }>);
+        }, {} as Record<string, { endedAt?: Date; closedAt?: Date; closedPositionAt?: Date }>);
 
         /**
          * @dev Update pool dates
