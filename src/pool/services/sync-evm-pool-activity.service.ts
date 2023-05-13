@@ -78,6 +78,10 @@ export class SyncEvmPoolActivityService {
          * @dev Compute activities dates
          */
         const aggregatedSpecificDates = events.reduce((accum, event) => {
+          if (Object.keys(accum[event.poolId.toString()]).length === 0) {
+            accum[event.poolId.toString()] = {};
+          }
+
           if (event.type === ActivityType.CLOSED) {
             accum[event.poolId.toString()].closedAt = event.createdAt;
           }
