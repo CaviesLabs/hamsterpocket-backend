@@ -114,14 +114,17 @@ export class PoolModel extends BaseModel implements PoolEntity {
   @Prop({ type: Number, default: 0 })
   progressPercent: number;
 
+  @Prop({ type: Number, default: 0 })
+  currentTargetTokenBalance: number;
+
   @Prop({ type: Date })
   endedAt: Date;
 
   @Prop({ type: Date })
   closedAt: Date;
 
-  @Prop({ type: Number, default: 0 })
-  currentTargetTokenBalance: number;
+  @Prop({ type: Date })
+  closedPositionAt: Date;
 }
 
 /**

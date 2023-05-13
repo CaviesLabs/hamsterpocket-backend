@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import {
   PoolActivityDocument,
   PoolActivityModel,
@@ -17,19 +17,17 @@ import {
   SyncStatusDocument,
   SyncStatusModel,
 } from '../../orm/model/sync-status.model';
+import { ActivityType } from '../entities/pool-activity.entity';
 
 @Injectable()
 export class SyncEvmPoolActivityService {
   constructor(
     @InjectModel(PoolActivityModel.name)
     private readonly poolActivityRepo: Model<PoolActivityDocument>,
-
     @InjectModel(PoolModel.name)
     private readonly poolRepo: Model<PoolDocument>,
-
     @InjectModel(WhitelistModel.name)
     private readonly whitelistRepo: Model<WhitelistDocument>,
-
     @InjectModel(SyncStatusModel.name)
     private readonly syncStatusRepo: Model<SyncStatusDocument>,
   ) {}
@@ -75,6 +73,42 @@ export class SyncEvmPoolActivityService {
 
         // @dev Bulk update data
         await this.poolActivityRepo.insertMany(events);
+
+        /**
+         * @dev Compute activities dates
+         */
+        const aggregatedSpecificDates = events.reduce((accum, event) => {
+          if (event.type === ActivityType.CLOSED) {
+            accum[event.poolId.toString()].closedAt = event.createdAt;
+          }
+
+          if (event.type === ActivityType.WITHDRAWN) {
+            accum[event.poolId.toString()].endedAt = event.createdAt;
+          }
+
+          if (event.type === ActivityType.CLOSED_POSITION) {
+            accum[event.poolId.toString()].closedPositionAt = event.createdAt;
+          }
+
+          return accum;
+        }, {} as Record<string, { endedAt: Date; closedAt: Date; closedPositionAt: Date }>);
+
+        /**
+         * @dev Update pool dates
+         */
+        await this.poolRepo.bulkWrite(
+          Object.keys(aggregatedSpecificDates).map((poolId) => {
+            return {
+              updateOne: {
+                filter: { _id: new Types.ObjectId(poolId) },
+                update: {
+                  $set: aggregatedSpecificDates[poolId],
+                },
+                upsert: true,
+              },
+            };
+          }),
+        );
 
         // @dev Update synced block
         await this.syncStatusRepo
