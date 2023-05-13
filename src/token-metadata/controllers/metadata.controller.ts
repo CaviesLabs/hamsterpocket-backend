@@ -67,6 +67,7 @@ export class MetadataController {
     @Query('baseTokenAddress') baseTokenAddress: string,
     @Query('targetTokenAddress') targetTokenAddress: string,
     @Query('amountIn') amountIn: string,
+    @Query('fee') fee: string,
   ) {
     const baseToken = await this.whitelistRepo.findOne({
       address: baseTokenAddress,
@@ -81,6 +82,7 @@ export class MetadataController {
       BigNumber.from(
         `0x${(parseFloat(amountIn) * 10 ** baseToken.decimals).toString(16)}`,
       ),
+      BigNumber.from(fee),
     );
 
     return {

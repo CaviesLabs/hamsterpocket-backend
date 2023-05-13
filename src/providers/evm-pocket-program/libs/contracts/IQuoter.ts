@@ -119,9 +119,7 @@ export interface IQuoter extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
-    WETH9(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
+    WETH9(overrides?: CallOverrides): Promise<[string]>;
 
     quoteExactInput(
       path: PromiseOrValue<BytesLike>,
@@ -154,9 +152,7 @@ export interface IQuoter extends BaseContract {
     ): Promise<ContractTransaction>;
   };
 
-  WETH9(
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
+  WETH9(overrides?: CallOverrides): Promise<string>;
 
   quoteExactInput(
     path: PromiseOrValue<BytesLike>,
@@ -225,9 +221,7 @@ export interface IQuoter extends BaseContract {
   filters: {};
 
   estimateGas: {
-    WETH9(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
+    WETH9(overrides?: CallOverrides): Promise<BigNumber>;
 
     quoteExactInput(
       path: PromiseOrValue<BytesLike>,
@@ -261,9 +255,7 @@ export interface IQuoter extends BaseContract {
   };
 
   populateTransaction: {
-    WETH9(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
+    WETH9(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     quoteExactInput(
       path: PromiseOrValue<BytesLike>,

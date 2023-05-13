@@ -5,6 +5,7 @@ import type * as pocketVaultSol from "./PocketVault.sol";
 export type { pocketVaultSol };
 import type * as mock from "./mock";
 export type { mock };
+export type { Etherman } from "./Etherman";
 export type { IQuoter } from "./IQuoter";
 export type { Multicall3 } from "./Multicall3";
 export type { PocketChef } from "./PocketChef";

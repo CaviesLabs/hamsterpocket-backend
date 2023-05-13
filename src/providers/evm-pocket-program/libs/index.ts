@@ -50,6 +50,8 @@ export type { IERC165 } from "./@openzeppelin/contracts/utils/introspection/IERC
 export { IERC165__factory } from "./factories/@openzeppelin/contracts/utils/introspection/IERC165__factory";
 export type { IWETH9 } from "./@uniswap/universal-router/contracts/interfaces/external/IWETH9";
 export { IWETH9__factory } from "./factories/@uniswap/universal-router/contracts/interfaces/external/IWETH9__factory";
+export type { Etherman } from "./contracts/Etherman";
+export { Etherman__factory } from "./factories/contracts/Etherman__factory";
 export type { IQuoter } from "./contracts/IQuoter";
 export { IQuoter__factory } from "./factories/contracts/IQuoter__factory";
 export type { MockedERC20 } from "./contracts/mock/MockedERC20";

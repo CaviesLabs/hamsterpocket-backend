@@ -90,17 +90,20 @@ export class EVMBasedPocketProvider {
    * @param baseTokenAddress
    * @param targetTokenAddress
    * @param amount
+   * @param fee
    */
   public async getQuote(
     baseTokenAddress: string,
     targetTokenAddress: string,
     amount: BigNumber,
+    fee: BigNumber,
   ): Promise<{ amountIn: BigNumber; amountOut: BigNumber }> {
     const [amountIn, amountOut] =
       await this.pocketVault.callStatic.getCurrentQuote(
         baseTokenAddress,
         targetTokenAddress,
         amount,
+        fee,
       );
     return {
       amountIn,
@@ -202,17 +205,19 @@ export class EVMBasedPocketProvider {
       baseTokenAddress: string;
       targetTokenAddress: string;
       amount: BigNumber;
+      fee: BigNumber;
     }[],
   ): Promise<{ amountIn: BigNumber; amountOut: BigNumber }[]> {
     //  Promise<{amountIn: BigNumber, amountOut: BigNumber}[]>
     const callData = payload.map(
-      ({ baseTokenAddress, targetTokenAddress, amount }) => ({
+      ({ fee, baseTokenAddress, targetTokenAddress, amount }) => ({
         callData: this.pocketVault.interface.encodeFunctionData(
           'getCurrentQuote',
           [
             baseTokenAddress || ethers.constants.AddressZero,
             targetTokenAddress || ethers.constants.AddressZero,
             amount,
+            fee,
           ],
         ),
         target: this.pocketVault.address,

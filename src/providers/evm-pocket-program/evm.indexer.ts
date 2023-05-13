@@ -346,6 +346,7 @@ export class EVMIndexer {
         BigNumber.from(
           `0x${(pocket.currentReceivedTargetToken || 0).toString(16)}`,
         ),
+        BigNumber.from('3000'),
       )
       .catch(() => ({
         amountOut: BigNumber.from(
@@ -381,6 +382,7 @@ export class EVMIndexer {
         baseTokenAddress: elm.targetTokenAddress,
         targetTokenAddress: elm.baseTokenAddress,
         amount: elm.amount,
+        fee: BigNumber.from('3000'),
       })),
     );
 

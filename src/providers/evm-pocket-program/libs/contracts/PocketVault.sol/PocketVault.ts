@@ -57,7 +57,9 @@ export interface PocketVaultInterface extends utils.Interface {
   functions: {
     "closePosition(string)": FunctionFragment;
     "deposit((address,string,uint256,address))": FunctionFragment;
-    "getCurrentQuote(address,address,uint256)": FunctionFragment;
+    "etherman()": FunctionFragment;
+    "getCurrentQuote(address,address,uint256,uint256)": FunctionFragment;
+    "initEtherman()": FunctionFragment;
     "initialize()": FunctionFragment;
     "makeDCASwap(string)": FunctionFragment;
     "owner()": FunctionFragment;
@@ -67,9 +69,12 @@ export interface PocketVaultInterface extends utils.Interface {
     "quoter()": FunctionFragment;
     "registry()": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
+    "setEtherman(address)": FunctionFragment;
     "setPermit2(address)": FunctionFragment;
     "setQuoter(address)": FunctionFragment;
     "setRegistry(address)": FunctionFragment;
+    "setSwapFee(uint256)": FunctionFragment;
+    "swapFee()": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
     "unpause()": FunctionFragment;
     "withdraw((address,string))": FunctionFragment;
@@ -79,7 +84,9 @@ export interface PocketVaultInterface extends utils.Interface {
     nameOrSignatureOrTopic:
       | "closePosition"
       | "deposit"
+      | "etherman"
       | "getCurrentQuote"
+      | "initEtherman"
       | "initialize"
       | "makeDCASwap"
       | "owner"
@@ -89,9 +96,12 @@ export interface PocketVaultInterface extends utils.Interface {
       | "quoter"
       | "registry"
       | "renounceOwnership"
+      | "setEtherman"
       | "setPermit2"
       | "setQuoter"
       | "setRegistry"
+      | "setSwapFee"
+      | "swapFee"
       | "transferOwnership"
       | "unpause"
       | "withdraw"
@@ -105,13 +115,19 @@ export interface PocketVaultInterface extends utils.Interface {
     functionFragment: "deposit",
     values: [Params.UpdatePocketDepositParamsStruct]
   ): string;
+  encodeFunctionData(functionFragment: "etherman", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "getCurrentQuote",
     values: [
       PromiseOrValue<string>,
       PromiseOrValue<string>,
+      PromiseOrValue<BigNumberish>,
       PromiseOrValue<BigNumberish>
     ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "initEtherman",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "initialize",
@@ -132,6 +148,10 @@ export interface PocketVaultInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "setEtherman",
+    values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "setPermit2",
     values: [PromiseOrValue<string>]
   ): string;
@@ -143,6 +163,11 @@ export interface PocketVaultInterface extends utils.Interface {
     functionFragment: "setRegistry",
     values: [PromiseOrValue<string>]
   ): string;
+  encodeFunctionData(
+    functionFragment: "setSwapFee",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(functionFragment: "swapFee", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "transferOwnership",
     values: [PromiseOrValue<string>]
@@ -158,8 +183,13 @@ export interface PocketVaultInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "deposit", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "etherman", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getCurrentQuote",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "initEtherman",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
@@ -177,12 +207,18 @@ export interface PocketVaultInterface extends utils.Interface {
     functionFragment: "renounceOwnership",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "setEtherman",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "setPermit2", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "setQuoter", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "setRegistry",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "setSwapFee", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "swapFee", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "transferOwnership",
     data: BytesLike
@@ -193,12 +229,14 @@ export interface PocketVaultInterface extends utils.Interface {
   events: {
     "ClosedPosition(address,string,address,uint256,address,uint256,uint256)": EventFragment;
     "Deposited(address,string,address,uint256,uint256)": EventFragment;
+    "EthermanUpdated(address,address)": EventFragment;
     "Initialized(uint8)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
     "Paused(address)": EventFragment;
     "Permit2Updated(address,address)": EventFragment;
     "QuoterUpdated(address,address)": EventFragment;
     "RegistryUpdated(address,address)": EventFragment;
+    "SwapFeeUpdated(address,uint256)": EventFragment;
     "Swapped(address,string,address,uint256,address,uint256,uint256)": EventFragment;
     "Unpaused(address)": EventFragment;
     "Withdrawn(address,string,address,uint256,address,uint256,uint256)": EventFragment;
@@ -206,12 +244,14 @@ export interface PocketVaultInterface extends utils.Interface {
 
   getEvent(nameOrSignatureOrTopic: "ClosedPosition"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Deposited"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "EthermanUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Paused"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Permit2Updated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "QuoterUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RegistryUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "SwapFeeUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Swapped"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Unpaused"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Withdrawn"): EventFragment;
@@ -246,6 +286,17 @@ export type DepositedEvent = TypedEvent<
 >;
 
 export type DepositedEventFilter = TypedEventFilter<DepositedEvent>;
+
+export interface EthermanUpdatedEventObject {
+  actor: string;
+  ethermanAddress: string;
+}
+export type EthermanUpdatedEvent = TypedEvent<
+  [string, string],
+  EthermanUpdatedEventObject
+>;
+
+export type EthermanUpdatedEventFilter = TypedEventFilter<EthermanUpdatedEvent>;
 
 export interface InitializedEventObject {
   version: number;
@@ -305,6 +356,17 @@ export type RegistryUpdatedEvent = TypedEvent<
 >;
 
 export type RegistryUpdatedEventFilter = TypedEventFilter<RegistryUpdatedEvent>;
+
+export interface SwapFeeUpdatedEventObject {
+  actor: string;
+  value: BigNumber;
+}
+export type SwapFeeUpdatedEvent = TypedEvent<
+  [string, BigNumber],
+  SwapFeeUpdatedEventObject
+>;
+
+export type SwapFeeUpdatedEventFilter = TypedEventFilter<SwapFeeUpdatedEvent>;
 
 export interface SwappedEventObject {
   actor: string;
@@ -382,10 +444,17 @@ export interface PocketVault extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    etherman(overrides?: CallOverrides): Promise<[string]>;
+
     getCurrentQuote(
       baseTokenAddress: PromiseOrValue<string>,
       targetTokenAddress: PromiseOrValue<string>,
       amountIn: PromiseOrValue<BigNumberish>,
+      fee: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    initEtherman(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -416,6 +485,11 @@ export interface PocketVault extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    setEtherman(
+      ethermanAddress: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     setPermit2(
       permit2Address: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -430,6 +504,13 @@ export interface PocketVault extends BaseContract {
       registryAddress: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
+
+    setSwapFee(
+      fee: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    swapFee(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     transferOwnership(
       newOwner: PromiseOrValue<string>,
@@ -456,10 +537,17 @@ export interface PocketVault extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  etherman(overrides?: CallOverrides): Promise<string>;
+
   getCurrentQuote(
     baseTokenAddress: PromiseOrValue<string>,
     targetTokenAddress: PromiseOrValue<string>,
     amountIn: PromiseOrValue<BigNumberish>,
+    fee: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  initEtherman(
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -490,6 +578,11 @@ export interface PocketVault extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  setEtherman(
+    ethermanAddress: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   setPermit2(
     permit2Address: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -504,6 +597,13 @@ export interface PocketVault extends BaseContract {
     registryAddress: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
+
+  setSwapFee(
+    fee: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  swapFee(overrides?: CallOverrides): Promise<BigNumber>;
 
   transferOwnership(
     newOwner: PromiseOrValue<string>,
@@ -530,12 +630,17 @@ export interface PocketVault extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    etherman(overrides?: CallOverrides): Promise<string>;
+
     getCurrentQuote(
       baseTokenAddress: PromiseOrValue<string>,
       targetTokenAddress: PromiseOrValue<string>,
       amountIn: PromiseOrValue<BigNumberish>,
+      fee: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<[BigNumber, BigNumber]>;
+
+    initEtherman(overrides?: CallOverrides): Promise<void>;
 
     initialize(overrides?: CallOverrides): Promise<void>;
 
@@ -558,6 +663,11 @@ export interface PocketVault extends BaseContract {
 
     renounceOwnership(overrides?: CallOverrides): Promise<void>;
 
+    setEtherman(
+      ethermanAddress: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     setPermit2(
       permit2Address: PromiseOrValue<string>,
       overrides?: CallOverrides
@@ -572,6 +682,13 @@ export interface PocketVault extends BaseContract {
       registryAddress: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    setSwapFee(
+      fee: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    swapFee(overrides?: CallOverrides): Promise<BigNumber>;
 
     transferOwnership(
       newOwner: PromiseOrValue<string>,
@@ -621,6 +738,15 @@ export interface PocketVault extends BaseContract {
       timestamp?: null
     ): DepositedEventFilter;
 
+    "EthermanUpdated(address,address)"(
+      actor?: PromiseOrValue<string> | null,
+      ethermanAddress?: PromiseOrValue<string> | null
+    ): EthermanUpdatedEventFilter;
+    EthermanUpdated(
+      actor?: PromiseOrValue<string> | null,
+      ethermanAddress?: PromiseOrValue<string> | null
+    ): EthermanUpdatedEventFilter;
+
     "Initialized(uint8)"(version?: null): InitializedEventFilter;
     Initialized(version?: null): InitializedEventFilter;
 
@@ -662,6 +788,15 @@ export interface PocketVault extends BaseContract {
       actor?: PromiseOrValue<string> | null,
       registry?: PromiseOrValue<string> | null
     ): RegistryUpdatedEventFilter;
+
+    "SwapFeeUpdated(address,uint256)"(
+      actor?: PromiseOrValue<string> | null,
+      value?: null
+    ): SwapFeeUpdatedEventFilter;
+    SwapFeeUpdated(
+      actor?: PromiseOrValue<string> | null,
+      value?: null
+    ): SwapFeeUpdatedEventFilter;
 
     "Swapped(address,string,address,uint256,address,uint256,uint256)"(
       actor?: PromiseOrValue<string> | null,
@@ -716,10 +851,17 @@ export interface PocketVault extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    etherman(overrides?: CallOverrides): Promise<BigNumber>;
+
     getCurrentQuote(
       baseTokenAddress: PromiseOrValue<string>,
       targetTokenAddress: PromiseOrValue<string>,
       amountIn: PromiseOrValue<BigNumberish>,
+      fee: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    initEtherman(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -750,6 +892,11 @@ export interface PocketVault extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    setEtherman(
+      ethermanAddress: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     setPermit2(
       permit2Address: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -764,6 +911,13 @@ export interface PocketVault extends BaseContract {
       registryAddress: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
+
+    setSwapFee(
+      fee: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    swapFee(overrides?: CallOverrides): Promise<BigNumber>;
 
     transferOwnership(
       newOwner: PromiseOrValue<string>,
@@ -791,10 +945,17 @@ export interface PocketVault extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
+    etherman(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     getCurrentQuote(
       baseTokenAddress: PromiseOrValue<string>,
       targetTokenAddress: PromiseOrValue<string>,
       amountIn: PromiseOrValue<BigNumberish>,
+      fee: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    initEtherman(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -825,6 +986,11 @@ export interface PocketVault extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
+    setEtherman(
+      ethermanAddress: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
     setPermit2(
       permit2Address: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -839,6 +1005,13 @@ export interface PocketVault extends BaseContract {
       registryAddress: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
+
+    setSwapFee(
+      fee: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    swapFee(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     transferOwnership(
       newOwner: PromiseOrValue<string>,

@@ -13,11 +13,11 @@ const _abi = [
     outputs: [
       {
         internalType: "address",
-        name: "wethAddress",
+        name: "",
         type: "address",
       },
     ],
-    stateMutability: "nonpayable",
+    stateMutability: "view",
     type: "function",
   },
   {
