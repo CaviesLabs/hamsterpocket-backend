@@ -78,7 +78,7 @@ export class SyncEvmPoolActivityService {
          * @dev Compute activities dates
          */
         const aggregatedSpecificDates = events.reduce((accum, event) => {
-          if (Object.keys(accum[event.poolId.toString()]).length === 0) {
+          if (!accum[event.poolId.toString()]) {
             accum[event.poolId.toString()] = {};
           }
 
