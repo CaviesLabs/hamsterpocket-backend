@@ -141,7 +141,7 @@ export declare namespace Params {
 export interface PocketChefInterface extends utils.Interface {
   functions: {
     "closePocket(string)": FunctionFragment;
-    "closePosition(string)": FunctionFragment;
+    "closePosition(string,uint256)": FunctionFragment;
     "createPocket((string,address,address,address,address,uint256,uint256,(uint256,uint8)[],uint256,(uint256,uint256,uint8),(uint8,uint256),(uint8,uint256)))": FunctionFragment;
     "createPocketAndDepositEther((string,address,address,address,address,uint256,uint256,(uint256,uint8)[],uint256,(uint256,uint256,uint8),(uint8,uint256),(uint8,uint256)))": FunctionFragment;
     "createPocketAndDepositToken((string,address,address,address,address,uint256,uint256,(uint256,uint8)[],uint256,(uint256,uint256,uint8),(uint8,uint256),(uint8,uint256)),uint256)": FunctionFragment;
@@ -159,8 +159,8 @@ export interface PocketChefInterface extends utils.Interface {
     "setRegistry(address)": FunctionFragment;
     "setVault(address)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
-    "tryClosingPosition(string)": FunctionFragment;
-    "tryMakingDCASwap(string)": FunctionFragment;
+    "tryClosingPosition(string,uint256)": FunctionFragment;
+    "tryMakingDCASwap(string,uint256)": FunctionFragment;
     "unpause()": FunctionFragment;
     "updatePocket((string,uint256,uint256,(uint256,uint8)[],uint256,(uint256,uint256,uint8),(uint8,uint256),(uint8,uint256)))": FunctionFragment;
     "vault()": FunctionFragment;
@@ -202,7 +202,7 @@ export interface PocketChefInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "closePosition",
-    values: [PromiseOrValue<string>]
+    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "createPocket",
@@ -262,11 +262,11 @@ export interface PocketChefInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "tryClosingPosition",
-    values: [PromiseOrValue<string>]
+    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "tryMakingDCASwap",
-    values: [PromiseOrValue<string>]
+    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(functionFragment: "unpause", values?: undefined): string;
   encodeFunctionData(
@@ -456,6 +456,7 @@ export interface PocketChef extends BaseContract {
 
     closePosition(
       pocketId: PromiseOrValue<string>,
+      fee: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -536,11 +537,13 @@ export interface PocketChef extends BaseContract {
 
     tryClosingPosition(
       pocketId: PromiseOrValue<string>,
+      fee: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
     tryMakingDCASwap(
       pocketId: PromiseOrValue<string>,
+      fee: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -568,6 +571,7 @@ export interface PocketChef extends BaseContract {
 
   closePosition(
     pocketId: PromiseOrValue<string>,
+    fee: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -648,11 +652,13 @@ export interface PocketChef extends BaseContract {
 
   tryClosingPosition(
     pocketId: PromiseOrValue<string>,
+    fee: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
   tryMakingDCASwap(
     pocketId: PromiseOrValue<string>,
+    fee: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -680,6 +686,7 @@ export interface PocketChef extends BaseContract {
 
     closePosition(
       pocketId: PromiseOrValue<string>,
+      fee: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -754,11 +761,13 @@ export interface PocketChef extends BaseContract {
 
     tryClosingPosition(
       pocketId: PromiseOrValue<string>,
+      fee: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<void>;
 
     tryMakingDCASwap(
       pocketId: PromiseOrValue<string>,
+      fee: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -823,6 +832,7 @@ export interface PocketChef extends BaseContract {
 
     closePosition(
       pocketId: PromiseOrValue<string>,
+      fee: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -903,11 +913,13 @@ export interface PocketChef extends BaseContract {
 
     tryClosingPosition(
       pocketId: PromiseOrValue<string>,
+      fee: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
     tryMakingDCASwap(
       pocketId: PromiseOrValue<string>,
+      fee: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -936,6 +948,7 @@ export interface PocketChef extends BaseContract {
 
     closePosition(
       pocketId: PromiseOrValue<string>,
+      fee: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1016,11 +1029,13 @@ export interface PocketChef extends BaseContract {
 
     tryClosingPosition(
       pocketId: PromiseOrValue<string>,
+      fee: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     tryMakingDCASwap(
       pocketId: PromiseOrValue<string>,
+      fee: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

@@ -15,6 +15,7 @@ import {
 } from './libs';
 import { Types } from './libs/contracts/PocketRegistry';
 import { BigNumber } from 'ethers';
+import { CacheStorage } from '../cache.provider';
 
 export class EVMBasedPocketProvider {
   private readonly rpcProvider: ethers.providers.JsonRpcProvider;
@@ -70,19 +71,106 @@ export class EVMBasedPocketProvider {
   }
 
   /**
+   * @dev Get best fee
+   * @param baseTokenAddress
+   * @param targetTokenAddress
+   * @param amount
+   */
+  public async getBestFee(
+    baseTokenAddress: string,
+    targetTokenAddress: string,
+    amount: BigNumber,
+  ) {
+    const feeTiers = [100, 500, 3000, 1000];
+
+    /**
+     * @dev Get current quotes for fee tiers
+     */
+    const data = await this.multicall3.callStatic.aggregate3(
+      feeTiers.map((fee) => ({
+        callData: this.pocketVault.interface.encodeFunctionData(
+          'getCurrentQuote',
+          [
+            baseTokenAddress,
+            targetTokenAddress,
+            amount,
+            BigNumber.from(fee.toString()),
+          ],
+        ),
+        target: this.pocketVault.address,
+        allowFailure: true,
+      })),
+    );
+
+    /**
+     * @dev Get best fee
+     */
+    return data
+      .map((elm, index) => ({
+        data: elm.success
+          ? this.pocketVault.interface.decodeFunctionResult(
+              'getCurrentQuote',
+              elm.returnData,
+            )
+          : null,
+        fee: feeTiers[index],
+      }))
+      .reduce((accum, value) => {
+        if (value.data && accum.lt(value.data[1])) {
+          return value.fee;
+        }
+
+        return accum;
+      }, BigNumber.from(0));
+  }
+  /**
    * @dev Try making DCA swap
    * @param pocketId
    */
-  public tryMakingDCASwap(pocketId: string) {
-    return this.pocketChef.tryMakingDCASwap(pocketId);
+  public async tryMakingDCASwap(pocketId: string) {
+    let bestFee = CacheStorage.get(`tryMakingDCASwap-${pocketId}`);
+
+    if (!bestFee) {
+      const pocketData = await this.pocketRegistry.pockets(pocketId);
+
+      /**
+       * @dev Get Best fee
+       */
+      bestFee = await this.getBestFee(
+        pocketData.baseTokenAddress,
+        pocketData.targetTokenAddress,
+        pocketData.batchVolume,
+      );
+
+      CacheStorage.set(`tryMakingDCASwap-${pocketId}`, bestFee);
+    }
+
+    return this.pocketChef.tryMakingDCASwap(pocketId, bestFee);
   }
 
   /**
    * @dev Try closing position
    * @param pocketId
    */
-  public tryClosingPosition(pocketId: string) {
-    return this.pocketChef.tryClosingPosition(pocketId);
+  public async tryClosingPosition(pocketId: string) {
+    let bestFee = CacheStorage.get(`tryClosingPosition-${pocketId}`);
+
+    if (!bestFee) {
+      const pocketData = await this.pocketRegistry.pockets(pocketId);
+
+      /**
+       * @dev Get Best fee
+       */
+      bestFee = await this.getBestFee(
+        pocketData.targetTokenAddress,
+        pocketData.baseTokenAddress,
+        pocketData.targetTokenBalance,
+      );
+
+      CacheStorage.set(`tryMakingDCASwap-${pocketId}`, bestFee);
+    }
+
+    return this.pocketChef.tryClosingPosition(pocketId, bestFee);
   }
 
   /**

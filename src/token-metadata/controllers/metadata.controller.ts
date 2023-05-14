@@ -12,6 +12,7 @@ import {
   WhitelistDocument,
   WhitelistModel,
 } from '../../orm/model/whitelist.model';
+import { CacheStorage } from '../../providers/cache.provider';
 
 @Controller('metadata')
 @ApiTags('metadata')
@@ -66,8 +67,7 @@ export class MetadataController {
     @Query('chainId') chainId: ChainID,
     @Query('baseTokenAddress') baseTokenAddress: string,
     @Query('targetTokenAddress') targetTokenAddress: string,
-    @Query('amountIn') amountIn: string,
-    @Query('fee') fee: string,
+    @Query('amountIn') amount: string,
   ) {
     const baseToken = await this.whitelistRepo.findOne({
       address: baseTokenAddress,
@@ -76,13 +76,32 @@ export class MetadataController {
       address: targetTokenAddress,
     });
 
+    const evmProvider = new EVMBasedPocketProvider(chainId);
+    const amountIn = BigNumber.from(
+      `0x${(parseFloat(amount) * 10 ** baseToken.decimals).toString(16)}`,
+    );
+
+    let bestFee = CacheStorage.get(
+      `getQuotes-${baseToken}-${targetTokenAddress}`,
+    );
+    if (!bestFee) {
+      /**
+       * @dev Get Best fee
+       */
+      bestFee = await evmProvider.getBestFee(
+        baseTokenAddress,
+        targetTokenAddress,
+        BigNumber.from(amountIn),
+      );
+
+      CacheStorage.set(`getQuotes-${baseToken}-${targetTokenAddress}`, bestFee);
+    }
+
     const quote = await new EVMBasedPocketProvider(chainId).getQuote(
       baseTokenAddress,
       targetTokenAddress,
-      BigNumber.from(
-        `0x${(parseFloat(amountIn) * 10 ** baseToken.decimals).toString(16)}`,
-      ),
-      BigNumber.from(fee),
+      amountIn,
+      bestFee,
     );
 
     return {
@@ -90,6 +109,7 @@ export class MetadataController {
         parseFloat(quote.amountIn.toString()) / 10 ** baseToken.decimals,
       amountOut:
         parseFloat(quote.amountOut.toString()) / 10 ** targetToken.decimals,
+      fee: bestFee.toString(),
     };
   }
 }
