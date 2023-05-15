@@ -40,3 +40,4 @@ publickey.crt
 tsconfig.build.tsbuildinfo
 config.json
 market.json
+config-*.json

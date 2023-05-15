@@ -6,8 +6,23 @@ export interface TokenMetadata {
   decimals?: number;
 }
 
+export class SolanaConfig {
+  rpcUrl: string;
+  programAddress: string;
+  mainDex: string;
+}
+
+export class EVMChainConfig {
+  rpcUrl: string;
+  chainId: number;
+  programAddress: string;
+  vaultAddress: string;
+  registryAddress: string;
+  mainDex: string;
+}
+
 export class PlatformConfigEntity {
-  maxAllowedOptions: number;
-  maxAllowedItems: number;
-  allowCurrencies: TokenMetadata[];
+  solana: SolanaConfig;
+  polygon_mumbai: EVMChainConfig;
+  bnb: EVMChainConfig;
 }
