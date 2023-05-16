@@ -15,6 +15,7 @@ export class SolanaConfig {
 export class WhitelistedRouter {
   address: string;
   isV3: boolean;
+  ammTag: string;
 }
 
 export class EVMChainConfig {
