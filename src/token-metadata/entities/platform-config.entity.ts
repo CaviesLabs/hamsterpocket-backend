@@ -19,6 +19,7 @@ export class EVMChainConfig {
   vaultAddress: string;
   registryAddress: string;
   mainDex: string;
+  whitelistedRouters: { address: string; isV3: boolean }[];
 }
 
 export class PlatformConfigEntity {
