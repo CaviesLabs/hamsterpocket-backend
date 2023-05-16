@@ -32,8 +32,8 @@ export enum MainProgressBy {
 }
 export enum ChainID {
   Solana = 'solana',
-  BSC = 'bsc_mainnet',
-  Mumbai = 'mumbai',
+  BSC = 'bnb',
+  Mumbai = 'polygon_mumbai',
 }
 export class BuyCondition {
   type: PriceConditionType;
