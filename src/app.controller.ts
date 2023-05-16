@@ -15,7 +15,6 @@ export class AppController {
         chainId: registry.getConfig().NETWORKS['bnb'].CHAIN_ID,
         programAddress:
           registry.getConfig().NETWORKS['bnb'].POCKET_PROGRAM_ADDRESS,
-        mainDex: 'https://app.uniswap.org/#/swap/',
         vaultAddress:
           registry.getConfig().NETWORKS['bnb'].POCKET_VAULT_PROGRAM_ADDRESS,
         registryAddress:
@@ -25,11 +24,13 @@ export class AppController {
             address: '0x5Dc88340E1c5c6366864Ee415d6034cadd1A9897',
             isV3: true,
             ammTag: 'uniswap',
+            dexUrl: 'https://app.uniswap.org/#/swap/',
           },
           {
             address: '0x10ED43C718714eb63d5aA57B78B54704E256024E',
             isV3: false,
             ammTag: 'pancakeswap',
+            dexUrl: 'https://pancakeswap.finance/swap/',
           },
         ],
       },
@@ -39,7 +40,6 @@ export class AppController {
         programAddress:
           registry.getConfig().NETWORKS['polygon_mumbai']
             .POCKET_PROGRAM_ADDRESS,
-        mainDex: 'https://app.uniswap.org/#/swap/',
         vaultAddress:
           registry.getConfig().NETWORKS['polygon_mumbai']
             .POCKET_VAULT_PROGRAM_ADDRESS,
@@ -51,6 +51,7 @@ export class AppController {
             address: '0x4648a43B2C14Da09FdF82B161150d3F634f40491',
             isV3: true,
             ammTag: 'uniswap',
+            dexUrl: 'https://app.uniswap.org/#/swap/',
           },
         ],
       },

@@ -16,6 +16,7 @@ export class WhitelistedRouter {
   address: string;
   isV3: boolean;
   ammTag: string;
+  dexUrl: string;
 }
 
 export class EVMChainConfig {
@@ -24,7 +25,6 @@ export class EVMChainConfig {
   programAddress: string;
   vaultAddress: string;
   registryAddress: string;
-  mainDex: string;
   whitelistedRouters: WhitelistedRouter[];
 }
 
