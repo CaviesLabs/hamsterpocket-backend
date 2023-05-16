@@ -1,4 +1,5 @@
 import * as ethers from 'ethers';
+import { BigNumber } from 'ethers';
 
 import { RegistryProvider } from '../registry.provider';
 import { ChainID } from '../../pool/entities/pool.entity';
@@ -14,8 +15,7 @@ import {
   PocketVault__factory,
 } from './libs';
 import { Types } from './libs/contracts/PocketRegistry';
-import { BigNumber } from 'ethers';
-import { CacheStorage } from '../cache.provider';
+import { CacheLevel, CacheStorage } from '../cache.provider';
 
 export class EVMBasedPocketProvider {
   private readonly rpcProvider: ethers.providers.JsonRpcProvider;
@@ -74,14 +74,23 @@ export class EVMBasedPocketProvider {
    * @dev Get best fee
    * @param baseTokenAddress
    * @param targetTokenAddress
+   * @param ammRouterAddress
    * @param amount
    */
   public async getBestFee(
     baseTokenAddress: string,
     targetTokenAddress: string,
+    ammRouterAddress: string,
     amount: BigNumber,
-  ) {
-    const feeTiers = [100, 500, 3000, 1000];
+  ): Promise<BigNumber> {
+    const cacheKey = `${baseTokenAddress}-${targetTokenAddress}-${ammRouterAddress}-${amount.toString()}`;
+    let bestFee = CacheStorage.get(cacheKey, null);
+
+    if (bestFee) {
+      return BigNumber.from(bestFee);
+    }
+
+    const feeTiers = [100, 500, 3000, 10000];
 
     /**
      * @dev Get current quotes for fee tiers
@@ -93,6 +102,7 @@ export class EVMBasedPocketProvider {
           [
             baseTokenAddress,
             targetTokenAddress,
+            ammRouterAddress,
             amount,
             BigNumber.from(fee.toString()),
           ],
@@ -105,47 +115,55 @@ export class EVMBasedPocketProvider {
     /**
      * @dev Get best fee
      */
-    return data
+    bestFee = data
       .map((elm, index) => ({
-        data: elm.success
-          ? this.pocketVault.interface.decodeFunctionResult(
-              'getCurrentQuote',
-              elm.returnData,
-            )
-          : null,
+        data:
+          elm.success === true
+            ? this.pocketVault.interface.decodeFunctionResult(
+                'getCurrentQuote',
+                elm.returnData,
+              )
+            : null,
         fee: feeTiers[index],
       }))
-      .reduce((accum, value) => {
-        if (value.data && accum.lt(value.data[1])) {
-          return value.fee;
-        }
+      .reduce(
+        (accum, value) => {
+          console.log(value);
 
-        return accum;
-      }, BigNumber.from(0));
+          if (value.data && accum.value.lt(value.data[1])) {
+            accum.currentFee = BigNumber.from(value.fee.toString());
+            accum.value = value.data[1];
+          }
+
+          return accum;
+        },
+        {
+          currentFee: BigNumber.from(0),
+          value: BigNumber.from(0),
+        },
+      );
+
+    CacheStorage.set(cacheKey, bestFee.toString(), CacheLevel.HARD);
+
+    return bestFee.currentFee;
   }
+
   /**
    * @dev Try making DCA swap
    * @param pocketId
    */
   public async tryMakingDCASwap(pocketId: string) {
-    let bestFee = CacheStorage.get(`tryMakingDCASwap-${pocketId}`);
+    const pocketData = await this.pocketRegistry.pockets(pocketId);
 
-    if (!bestFee) {
-      const pocketData = await this.pocketRegistry.pockets(pocketId);
-
-      /**
-       * @dev Get Best fee
-       */
-      bestFee = await this.getBestFee(
+    return this.pocketChef.tryMakingDCASwap(
+      pocketId,
+      await this.getBestFee(
         pocketData.baseTokenAddress,
         pocketData.targetTokenAddress,
+        pocketData.ammRouterAddress,
         pocketData.batchVolume,
-      );
-
-      CacheStorage.set(`tryMakingDCASwap-${pocketId}`, bestFee);
-    }
-
-    return this.pocketChef.tryMakingDCASwap(pocketId, bestFee);
+      ),
+    );
   }
 
   /**
@@ -153,36 +171,31 @@ export class EVMBasedPocketProvider {
    * @param pocketId
    */
   public async tryClosingPosition(pocketId: string) {
-    let bestFee = CacheStorage.get(`tryClosingPosition-${pocketId}`);
+    const pocketData = await this.pocketRegistry.pockets(pocketId);
 
-    if (!bestFee) {
-      const pocketData = await this.pocketRegistry.pockets(pocketId);
-
-      /**
-       * @dev Get Best fee
-       */
-      bestFee = await this.getBestFee(
+    return this.pocketChef.tryClosingPosition(
+      pocketId,
+      await this.getBestFee(
         pocketData.targetTokenAddress,
         pocketData.baseTokenAddress,
+        pocketData.ammRouterAddress,
         pocketData.targetTokenBalance,
-      );
-
-      CacheStorage.set(`tryMakingDCASwap-${pocketId}`, bestFee);
-    }
-
-    return this.pocketChef.tryClosingPosition(pocketId, bestFee);
+      ),
+    );
   }
 
   /**
    * @dev Get quote from blockchain directly
    * @param baseTokenAddress
    * @param targetTokenAddress
+   * @param ammRouterAddress
    * @param amount
    * @param fee
    */
   public async getQuote(
     baseTokenAddress: string,
     targetTokenAddress: string,
+    ammRouterAddress: string,
     amount: BigNumber,
     fee: BigNumber,
   ): Promise<{ amountIn: BigNumber; amountOut: BigNumber }> {
@@ -190,6 +203,7 @@ export class EVMBasedPocketProvider {
       await this.pocketVault.callStatic.getCurrentQuote(
         baseTokenAddress,
         targetTokenAddress,
+        ammRouterAddress,
         amount,
         fee,
       );
@@ -292,18 +306,26 @@ export class EVMBasedPocketProvider {
     payload: {
       baseTokenAddress: string;
       targetTokenAddress: string;
+      ammRouterAddress: string;
       amount: BigNumber;
       fee: BigNumber;
     }[],
   ): Promise<{ amountIn: BigNumber; amountOut: BigNumber }[]> {
     //  Promise<{amountIn: BigNumber, amountOut: BigNumber}[]>
     const callData = payload.map(
-      ({ fee, baseTokenAddress, targetTokenAddress, amount }) => ({
+      ({
+        fee,
+        ammRouterAddress,
+        baseTokenAddress,
+        targetTokenAddress,
+        amount,
+      }) => ({
         callData: this.pocketVault.interface.encodeFunctionData(
           'getCurrentQuote',
           [
             baseTokenAddress || ethers.constants.AddressZero,
             targetTokenAddress || ethers.constants.AddressZero,
+            ammRouterAddress,
             amount,
             fee,
           ],

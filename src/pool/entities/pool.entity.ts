@@ -64,6 +64,7 @@ export class PoolEntity {
   status: PoolStatus;
   baseTokenAddress: string;
   targetTokenAddress: string;
+  ammRouterAddress: string;
   marketKey: string;
   startTime: Date;
   nextExecutionAt: Date;

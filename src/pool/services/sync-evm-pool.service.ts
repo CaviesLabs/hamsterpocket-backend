@@ -91,6 +91,7 @@ export class SyncEvmPoolService {
         pocketId: elm._id.toString(),
         baseTokenAddress: elm.baseTokenAddress,
         targetTokenAddress: elm.targetTokenAddress,
+        ammRouterAddress: elm.ammRouterAddress,
         amount: BigNumber.from(
           `0x${(elm.currentReceivedTargetToken || 0).toString(16)}`,
         ),

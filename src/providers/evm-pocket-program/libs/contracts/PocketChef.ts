@@ -69,6 +69,7 @@ export declare namespace Params {
     ammRouterAddress: PromiseOrValue<string>;
     baseTokenAddress: PromiseOrValue<string>;
     targetTokenAddress: PromiseOrValue<string>;
+    ammRouterVersion: PromiseOrValue<BigNumberish>;
     startAt: PromiseOrValue<BigNumberish>;
     batchVolume: PromiseOrValue<BigNumberish>;
     stopConditions: Types.StopConditionStruct[];
@@ -84,6 +85,7 @@ export declare namespace Params {
     string,
     string,
     string,
+    number,
     BigNumber,
     BigNumber,
     Types.StopConditionStructOutput[],
@@ -97,6 +99,7 @@ export declare namespace Params {
     ammRouterAddress: string;
     baseTokenAddress: string;
     targetTokenAddress: string;
+    ammRouterVersion: number;
     startAt: BigNumber;
     batchVolume: BigNumber;
     stopConditions: Types.StopConditionStructOutput[];
@@ -142,9 +145,9 @@ export interface PocketChefInterface extends utils.Interface {
   functions: {
     "closePocket(string)": FunctionFragment;
     "closePosition(string,uint256)": FunctionFragment;
-    "createPocket((string,address,address,address,address,uint256,uint256,(uint256,uint8)[],uint256,(uint256,uint256,uint8),(uint8,uint256),(uint8,uint256)))": FunctionFragment;
-    "createPocketAndDepositEther((string,address,address,address,address,uint256,uint256,(uint256,uint8)[],uint256,(uint256,uint256,uint8),(uint8,uint256),(uint8,uint256)))": FunctionFragment;
-    "createPocketAndDepositToken((string,address,address,address,address,uint256,uint256,(uint256,uint8)[],uint256,(uint256,uint256,uint8),(uint8,uint256),(uint8,uint256)),uint256)": FunctionFragment;
+    "createPocket((string,address,address,address,address,uint8,uint256,uint256,(uint256,uint8)[],uint256,(uint256,uint256,uint8),(uint8,uint256),(uint8,uint256)))": FunctionFragment;
+    "createPocketAndDepositEther((string,address,address,address,address,uint8,uint256,uint256,(uint256,uint8)[],uint256,(uint256,uint256,uint8),(uint8,uint256),(uint8,uint256)))": FunctionFragment;
+    "createPocketAndDepositToken((string,address,address,address,address,uint8,uint256,uint256,(uint256,uint8)[],uint256,(uint256,uint256,uint8),(uint8,uint256),(uint8,uint256)),uint256)": FunctionFragment;
     "depositEther(string)": FunctionFragment;
     "depositToken(string,uint256)": FunctionFragment;
     "initialize()": FunctionFragment;

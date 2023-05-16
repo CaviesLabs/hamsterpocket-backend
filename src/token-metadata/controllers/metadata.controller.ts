@@ -12,7 +12,6 @@ import {
   WhitelistDocument,
   WhitelistModel,
 } from '../../orm/model/whitelist.model';
-import { CacheStorage } from '../../providers/cache.provider';
 
 @Controller('metadata')
 @ApiTags('metadata')
@@ -67,7 +66,9 @@ export class MetadataController {
     @Query('chainId') chainId: ChainID,
     @Query('baseTokenAddress') baseTokenAddress: string,
     @Query('targetTokenAddress') targetTokenAddress: string,
+    @Query('ammRouterAddress') ammRouterAddress: string,
     @Query('amountIn') amount: string,
+    @Query('useV3') useV3: boolean,
   ) {
     const baseToken = await this.whitelistRepo.findOne({
       address: baseTokenAddress,
@@ -81,25 +82,20 @@ export class MetadataController {
       `0x${(parseFloat(amount) * 10 ** baseToken.decimals).toString(16)}`,
     );
 
-    let bestFee = CacheStorage.get(
-      `getQuotes-${baseToken}-${targetTokenAddress}`,
-    );
-    if (!bestFee) {
-      /**
-       * @dev Get Best fee
-       */
+    let bestFee = BigNumber.from(0);
+    if (useV3) {
       bestFee = await evmProvider.getBestFee(
         baseTokenAddress,
         targetTokenAddress,
+        ammRouterAddress,
         BigNumber.from(amountIn),
       );
-
-      CacheStorage.set(`getQuotes-${baseToken}-${targetTokenAddress}`, bestFee);
     }
 
     const quote = await new EVMBasedPocketProvider(chainId).getQuote(
       baseTokenAddress,
       targetTokenAddress,
+      ammRouterAddress,
       amountIn,
       bestFee,
     );

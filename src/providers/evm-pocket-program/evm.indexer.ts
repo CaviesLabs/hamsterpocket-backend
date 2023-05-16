@@ -82,8 +82,8 @@ export class EVMIndexer {
 
   /**
    * @dev Mapping status
-   * @param status
    * @private
+   * @param pocketData
    */
   private mapStatus(pocketData: Types.PocketStructOutput): PoolStatus {
     switch (pocketData.status) {
@@ -220,6 +220,8 @@ export class EVMIndexer {
       totalReceivedFundInBaseTokenAmount: parseFloat(
         pocketData.totalReceivedFundInBaseTokenAmount.toString(),
       ),
+      ammRouterAddress: pocketData.ammRouterAddress,
+      ammRouterVersion: ['V3', 'V2'].at(pocketData.ammRouterVersion),
     };
 
     /**
@@ -338,15 +340,23 @@ export class EVMIndexer {
     realizedROIValue: number;
   }> {
     const pocket = await this.poolRepo.findById(pocketId);
+    const amount = BigNumber.from(
+      `0x${(pocket.currentReceivedTargetToken || 0).toString(16)}`,
+    );
+    const bestFee = await this.provider.getBestFee(
+      pocket.baseTokenAddress,
+      pocket.targetTokenAddress,
+      pocket.ammRouterAddress,
+      amount,
+    );
 
     const { amountOut } = await this.provider
       .getQuote(
         pocket.targetTokenAddress,
         pocket.baseTokenAddress,
-        BigNumber.from(
-          `0x${(pocket.currentReceivedTargetToken || 0).toString(16)}`,
-        ),
-        BigNumber.from('3000'),
+        pocket.ammRouterAddress,
+        amount,
+        BigNumber.from(bestFee),
       )
       .catch(() => ({
         amountOut: BigNumber.from(
@@ -367,6 +377,7 @@ export class EVMIndexer {
       baseTokenAddress: string;
       targetTokenAddress: string;
       amount: BigNumber;
+      ammRouterAddress: string;
     }[],
   ): Promise<
     {
@@ -378,12 +389,22 @@ export class EVMIndexer {
     }[]
   > {
     const aggregatedData = await this.provider.getMultipleQuotes(
-      payload.map((elm) => ({
-        baseTokenAddress: elm.targetTokenAddress,
-        targetTokenAddress: elm.baseTokenAddress,
-        amount: elm.amount,
-        fee: BigNumber.from('3000'),
-      })),
+      await Promise.all(
+        payload.map(async (elm) => {
+          return {
+            baseTokenAddress: elm.targetTokenAddress,
+            targetTokenAddress: elm.baseTokenAddress,
+            amount: elm.amount,
+            ammRouterAddress: elm.ammRouterAddress,
+            fee: await this.provider.getBestFee(
+              elm.baseTokenAddress,
+              elm.targetTokenAddress,
+              elm.ammRouterAddress,
+              elm.amount,
+            ),
+          };
+        }),
+      ),
     );
 
     return Promise.all(

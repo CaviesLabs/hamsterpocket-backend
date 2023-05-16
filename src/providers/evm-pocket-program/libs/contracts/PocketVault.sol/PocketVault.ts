@@ -58,7 +58,9 @@ export interface PocketVaultInterface extends utils.Interface {
     "closePosition(string,uint256)": FunctionFragment;
     "deposit((address,string,uint256,address))": FunctionFragment;
     "etherman()": FunctionFragment;
-    "getCurrentQuote(address,address,uint256,uint256)": FunctionFragment;
+    "getCurrentQuote(address,address,address,uint256,uint256)": FunctionFragment;
+    "getCurrentQuoteV2(address,address,address,uint256)": FunctionFragment;
+    "getCurrentQuoteV3(address,address,address,uint256,uint256)": FunctionFragment;
     "initEtherman()": FunctionFragment;
     "initialize()": FunctionFragment;
     "makeDCASwap(string,uint256)": FunctionFragment;
@@ -84,6 +86,8 @@ export interface PocketVaultInterface extends utils.Interface {
       | "deposit"
       | "etherman"
       | "getCurrentQuote"
+      | "getCurrentQuoteV2"
+      | "getCurrentQuoteV3"
       | "initEtherman"
       | "initialize"
       | "makeDCASwap"
@@ -115,6 +119,26 @@ export interface PocketVaultInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "getCurrentQuote",
     values: [
+      PromiseOrValue<string>,
+      PromiseOrValue<string>,
+      PromiseOrValue<string>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getCurrentQuoteV2",
+    values: [
+      PromiseOrValue<string>,
+      PromiseOrValue<string>,
+      PromiseOrValue<string>,
+      PromiseOrValue<BigNumberish>
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getCurrentQuoteV3",
+    values: [
+      PromiseOrValue<string>,
       PromiseOrValue<string>,
       PromiseOrValue<string>,
       PromiseOrValue<BigNumberish>,
@@ -177,6 +201,14 @@ export interface PocketVaultInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "etherman", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getCurrentQuote",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getCurrentQuoteV2",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getCurrentQuoteV3",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -439,6 +471,24 @@ export interface PocketVault extends BaseContract {
     getCurrentQuote(
       baseTokenAddress: PromiseOrValue<string>,
       targetTokenAddress: PromiseOrValue<string>,
+      ammRouterAddress: PromiseOrValue<string>,
+      amountIn: PromiseOrValue<BigNumberish>,
+      fee: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    getCurrentQuoteV2(
+      baseTokenAddress: PromiseOrValue<string>,
+      targetTokenAddress: PromiseOrValue<string>,
+      ammRouterV2Address: PromiseOrValue<string>,
+      amountIn: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber, BigNumber]>;
+
+    getCurrentQuoteV3(
+      baseTokenAddress: PromiseOrValue<string>,
+      targetTokenAddress: PromiseOrValue<string>,
+      ammRouterV3Address: PromiseOrValue<string>,
       amountIn: PromiseOrValue<BigNumberish>,
       fee: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -527,6 +577,24 @@ export interface PocketVault extends BaseContract {
   getCurrentQuote(
     baseTokenAddress: PromiseOrValue<string>,
     targetTokenAddress: PromiseOrValue<string>,
+    ammRouterAddress: PromiseOrValue<string>,
+    amountIn: PromiseOrValue<BigNumberish>,
+    fee: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  getCurrentQuoteV2(
+    baseTokenAddress: PromiseOrValue<string>,
+    targetTokenAddress: PromiseOrValue<string>,
+    ammRouterV2Address: PromiseOrValue<string>,
+    amountIn: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<[BigNumber, BigNumber]>;
+
+  getCurrentQuoteV3(
+    baseTokenAddress: PromiseOrValue<string>,
+    targetTokenAddress: PromiseOrValue<string>,
+    ammRouterV3Address: PromiseOrValue<string>,
     amountIn: PromiseOrValue<BigNumberish>,
     fee: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -615,6 +683,24 @@ export interface PocketVault extends BaseContract {
     getCurrentQuote(
       baseTokenAddress: PromiseOrValue<string>,
       targetTokenAddress: PromiseOrValue<string>,
+      ammRouterAddress: PromiseOrValue<string>,
+      amountIn: PromiseOrValue<BigNumberish>,
+      fee: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber, BigNumber]>;
+
+    getCurrentQuoteV2(
+      baseTokenAddress: PromiseOrValue<string>,
+      targetTokenAddress: PromiseOrValue<string>,
+      ammRouterV2Address: PromiseOrValue<string>,
+      amountIn: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber, BigNumber]>;
+
+    getCurrentQuoteV3(
+      baseTokenAddress: PromiseOrValue<string>,
+      targetTokenAddress: PromiseOrValue<string>,
+      ammRouterV3Address: PromiseOrValue<string>,
       amountIn: PromiseOrValue<BigNumberish>,
       fee: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
@@ -831,6 +917,24 @@ export interface PocketVault extends BaseContract {
     getCurrentQuote(
       baseTokenAddress: PromiseOrValue<string>,
       targetTokenAddress: PromiseOrValue<string>,
+      ammRouterAddress: PromiseOrValue<string>,
+      amountIn: PromiseOrValue<BigNumberish>,
+      fee: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    getCurrentQuoteV2(
+      baseTokenAddress: PromiseOrValue<string>,
+      targetTokenAddress: PromiseOrValue<string>,
+      ammRouterV2Address: PromiseOrValue<string>,
+      amountIn: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getCurrentQuoteV3(
+      baseTokenAddress: PromiseOrValue<string>,
+      targetTokenAddress: PromiseOrValue<string>,
+      ammRouterV3Address: PromiseOrValue<string>,
       amountIn: PromiseOrValue<BigNumberish>,
       fee: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -920,6 +1024,24 @@ export interface PocketVault extends BaseContract {
     getCurrentQuote(
       baseTokenAddress: PromiseOrValue<string>,
       targetTokenAddress: PromiseOrValue<string>,
+      ammRouterAddress: PromiseOrValue<string>,
+      amountIn: PromiseOrValue<BigNumberish>,
+      fee: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    getCurrentQuoteV2(
+      baseTokenAddress: PromiseOrValue<string>,
+      targetTokenAddress: PromiseOrValue<string>,
+      ammRouterV2Address: PromiseOrValue<string>,
+      amountIn: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getCurrentQuoteV3(
+      baseTokenAddress: PromiseOrValue<string>,
+      targetTokenAddress: PromiseOrValue<string>,
+      ammRouterV3Address: PromiseOrValue<string>,
       amountIn: PromiseOrValue<BigNumberish>,
       fee: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }

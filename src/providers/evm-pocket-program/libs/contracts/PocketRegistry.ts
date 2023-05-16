@@ -83,6 +83,7 @@ export declare namespace Types {
     stopConditions: Types.StopConditionStruct[];
     takeProfitCondition: Types.TradingStopConditionStruct;
     stopLossCondition: Types.TradingStopConditionStruct;
+    ammRouterVersion: PromiseOrValue<BigNumberish>;
   };
 
   export type PocketStructOutput = [
@@ -107,7 +108,8 @@ export declare namespace Types {
     Types.ValueComparisonStructOutput,
     Types.StopConditionStructOutput[],
     Types.TradingStopConditionStructOutput,
-    Types.TradingStopConditionStructOutput
+    Types.TradingStopConditionStructOutput,
+    number
   ] & {
     id: string;
     totalDepositedBaseAmount: BigNumber;
@@ -131,6 +133,7 @@ export declare namespace Types {
     stopConditions: Types.StopConditionStructOutput[];
     takeProfitCondition: Types.TradingStopConditionStructOutput;
     stopLossCondition: Types.TradingStopConditionStructOutput;
+    ammRouterVersion: number;
   };
 }
 
@@ -141,6 +144,7 @@ export declare namespace Params {
     ammRouterAddress: PromiseOrValue<string>;
     baseTokenAddress: PromiseOrValue<string>;
     targetTokenAddress: PromiseOrValue<string>;
+    ammRouterVersion: PromiseOrValue<BigNumberish>;
     startAt: PromiseOrValue<BigNumberish>;
     batchVolume: PromiseOrValue<BigNumberish>;
     stopConditions: Types.StopConditionStruct[];
@@ -156,6 +160,7 @@ export declare namespace Params {
     string,
     string,
     string,
+    number,
     BigNumber,
     BigNumber,
     Types.StopConditionStructOutput[],
@@ -169,6 +174,7 @@ export declare namespace Params {
     ammRouterAddress: string;
     baseTokenAddress: string;
     targetTokenAddress: string;
+    ammRouterVersion: number;
     startAt: BigNumber;
     batchVolume: BigNumber;
     stopConditions: Types.StopConditionStructOutput[];
@@ -300,7 +306,7 @@ export interface PocketRegistryInterface extends utils.Interface {
     "grantRole(bytes32,address)": FunctionFragment;
     "hasRole(bytes32,address)": FunctionFragment;
     "initialize()": FunctionFragment;
-    "initializeUserPocket((string,address,address,address,address,uint256,uint256,(uint256,uint8)[],uint256,(uint256,uint256,uint8),(uint8,uint256),(uint8,uint256)))": FunctionFragment;
+    "initializeUserPocket((string,address,address,address,address,uint8,uint256,uint256,(uint256,uint8)[],uint256,(uint256,uint256,uint8),(uint8,uint256),(uint8,uint256)))": FunctionFragment;
     "isAbleToClose(string,address)": FunctionFragment;
     "isAbleToDeposit(string,address)": FunctionFragment;
     "isAbleToPause(string,address)": FunctionFragment;
@@ -916,6 +922,7 @@ export interface PocketRegistry extends BaseContract {
         string,
         string,
         string,
+        number,
         BigNumber,
         BigNumber,
         BigNumber,
@@ -1032,7 +1039,8 @@ export interface PocketRegistry extends BaseContract {
         BigNumber,
         Types.ValueComparisonStructOutput,
         Types.TradingStopConditionStructOutput,
-        Types.TradingStopConditionStructOutput
+        Types.TradingStopConditionStructOutput,
+        number
       ] & {
         id: string;
         totalDepositedBaseAmount: BigNumber;
@@ -1055,6 +1063,7 @@ export interface PocketRegistry extends BaseContract {
         openingPositionCondition: Types.ValueComparisonStructOutput;
         takeProfitCondition: Types.TradingStopConditionStructOutput;
         stopLossCondition: Types.TradingStopConditionStructOutput;
+        ammRouterVersion: number;
       }
     >;
 
@@ -1203,6 +1212,7 @@ export interface PocketRegistry extends BaseContract {
       string,
       string,
       string,
+      number,
       BigNumber,
       BigNumber,
       BigNumber,
@@ -1319,7 +1329,8 @@ export interface PocketRegistry extends BaseContract {
       BigNumber,
       Types.ValueComparisonStructOutput,
       Types.TradingStopConditionStructOutput,
-      Types.TradingStopConditionStructOutput
+      Types.TradingStopConditionStructOutput,
+      number
     ] & {
       id: string;
       totalDepositedBaseAmount: BigNumber;
@@ -1342,6 +1353,7 @@ export interface PocketRegistry extends BaseContract {
       openingPositionCondition: Types.ValueComparisonStructOutput;
       takeProfitCondition: Types.TradingStopConditionStructOutput;
       stopLossCondition: Types.TradingStopConditionStructOutput;
+      ammRouterVersion: number;
     }
   >;
 
@@ -1490,6 +1502,7 @@ export interface PocketRegistry extends BaseContract {
         string,
         string,
         string,
+        number,
         BigNumber,
         BigNumber,
         BigNumber,
@@ -1602,7 +1615,8 @@ export interface PocketRegistry extends BaseContract {
         BigNumber,
         Types.ValueComparisonStructOutput,
         Types.TradingStopConditionStructOutput,
-        Types.TradingStopConditionStructOutput
+        Types.TradingStopConditionStructOutput,
+        number
       ] & {
         id: string;
         totalDepositedBaseAmount: BigNumber;
@@ -1625,6 +1639,7 @@ export interface PocketRegistry extends BaseContract {
         openingPositionCondition: Types.ValueComparisonStructOutput;
         takeProfitCondition: Types.TradingStopConditionStructOutput;
         stopLossCondition: Types.TradingStopConditionStructOutput;
+        ammRouterVersion: number;
       }
     >;
 

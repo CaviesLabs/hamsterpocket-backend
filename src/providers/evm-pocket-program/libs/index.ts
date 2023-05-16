@@ -54,6 +54,8 @@ export type { Etherman } from "./contracts/Etherman";
 export { Etherman__factory } from "./factories/contracts/Etherman__factory";
 export type { IQuoter } from "./contracts/IQuoter";
 export { IQuoter__factory } from "./factories/contracts/IQuoter__factory";
+export type { IUniswapV2Router } from "./contracts/IRouterV2.sol/IUniswapV2Router";
+export { IUniswapV2Router__factory } from "./factories/contracts/IRouterV2.sol/IUniswapV2Router__factory";
 export type { MockedERC20 } from "./contracts/mock/MockedERC20";
 export { MockedERC20__factory } from "./factories/contracts/mock/MockedERC20__factory";
 export type { MockedERC721 } from "./contracts/mock/MockedERC721";
