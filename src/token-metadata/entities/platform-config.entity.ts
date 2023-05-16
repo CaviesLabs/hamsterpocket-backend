@@ -32,4 +32,6 @@ export class PlatformConfigEntity {
   solana: SolanaConfig;
   polygon_mumbai: EVMChainConfig;
   bnb: EVMChainConfig;
+  xdc: EVMChainConfig;
+  okt: EVMChainConfig;
 }
