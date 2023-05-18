@@ -28,4 +28,14 @@ export class CoinGeckoClient {
       { method: 'GET' },
     );
   }
+  async getPriceInUSD(ids: string[]) {
+    const query = Qs.stringify({
+      ids: ids.join(','),
+      vs_currencies: 'usd',
+    });
+    return this.networkProvider.request<SimplePrice>(
+      `${this.host}/v3/simple/price?${query}`,
+      { method: 'GET' },
+    );
+  }
 }

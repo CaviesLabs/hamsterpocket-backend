@@ -34,6 +34,8 @@ export enum ChainID {
   Solana = 'solana',
   BSC = 'bnb',
   Mumbai = 'polygon_mumbai',
+  XDC = 'xdc',
+  OKT = 'okt',
 }
 export class BuyCondition {
   type: PriceConditionType;

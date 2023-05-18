@@ -10,6 +10,8 @@ export class WhitelistEntity {
 
   chainId: ChainID;
 
+  isNativeCoin: boolean;
+
   address: string;
 
   entityType: EntityType;
@@ -19,6 +21,8 @@ export class WhitelistEntity {
   symbol: string;
 
   image: string;
+
+  coingeckoId: string;
 
   decimals?: number;
 

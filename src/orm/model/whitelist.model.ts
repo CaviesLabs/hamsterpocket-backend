@@ -23,6 +23,9 @@ export class WhitelistModel extends BaseModel implements WhitelistEntity {
   name: string;
 
   @Prop({ type: String })
+  coingeckoId: string;
+
+  @Prop({ type: String })
   symbol: string;
 
   @Prop({ type: String })
@@ -33,6 +36,9 @@ export class WhitelistModel extends BaseModel implements WhitelistEntity {
 
   @Prop({ type: Number })
   estimatedValue: number;
+
+  @Prop({ type: Boolean })
+  isNativeCoin: boolean;
 }
 
 /**

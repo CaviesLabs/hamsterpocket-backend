@@ -22,6 +22,8 @@ async function generateWhitelist() {
       data: { name, symbol, decimals, icon },
     } = await metadataProvider.getCurrencyDetail(address);
     whitelist.push({
+      coingeckoId: null,
+      isNativeCoin: false,
       chainId: ChainID.Solana,
       entityType: EntityType.TOKEN,
       address,
