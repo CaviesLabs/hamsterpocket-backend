@@ -10,6 +10,7 @@ export class SolanaConfig {
   rpcUrl: string;
   programAddress: string;
   mainDex: string;
+  explorerUrl: string;
 }
 
 export class WhitelistedRouter {
@@ -22,6 +23,7 @@ export class WhitelistedRouter {
 export class EVMChainConfig {
   rpcUrl: string;
   chainId: number;
+  explorerUrl: string;
   programAddress: string;
   vaultAddress: string;
   registryAddress: string;

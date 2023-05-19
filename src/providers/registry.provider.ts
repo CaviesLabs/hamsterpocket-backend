@@ -175,6 +175,7 @@ export class RegistryProvider {
           this.getConfig().NETWORKS['bnb'].POCKET_VAULT_PROGRAM_ADDRESS,
         registryAddress:
           this.getConfig().NETWORKS['bnb'].POCKET_REGISTRY_PROGRAM_ADDRESS,
+        explorerUrl: 'https://bscscan.com/',
         whitelistedRouters: [
           {
             address: '0x5Dc88340E1c5c6366864Ee415d6034cadd1A9897',
@@ -195,6 +196,7 @@ export class RegistryProvider {
         chainId: this.getConfig().NETWORKS['polygon_mumbai'].CHAIN_ID,
         programAddress:
           this.getConfig().NETWORKS['polygon_mumbai'].POCKET_PROGRAM_ADDRESS,
+        explorerUrl: 'https://mumbai.polygonscan.com/',
         vaultAddress:
           this.getConfig().NETWORKS['polygon_mumbai']
             .POCKET_VAULT_PROGRAM_ADDRESS,
@@ -218,6 +220,7 @@ export class RegistryProvider {
           this.getConfig().NETWORKS['xdc'].POCKET_VAULT_PROGRAM_ADDRESS,
         registryAddress:
           this.getConfig().NETWORKS['xdc'].POCKET_REGISTRY_PROGRAM_ADDRESS,
+        explorerUrl: 'https://xdcscan.io/',
         whitelistedRouters: [
           {
             address: '0xf9c5E4f6E627201aB2d6FB6391239738Cf4bDcf9',
@@ -235,6 +238,7 @@ export class RegistryProvider {
           this.getConfig().NETWORKS['okt'].POCKET_VAULT_PROGRAM_ADDRESS,
         registryAddress:
           this.getConfig().NETWORKS['okt'].POCKET_REGISTRY_PROGRAM_ADDRESS,
+        explorerUrl: 'https://oklink.com/oktc/',
         whitelistedRouters: [
           {
             address: '0xc97b81B8a38b9146010Df85f1Ac714aFE1554343',
@@ -246,6 +250,7 @@ export class RegistryProvider {
       },
       solana: {
         rpcUrl: this.getConfig().NETWORKS['solana'].RPC_URL,
+        explorerUrl: 'https://solscan.com/',
         programAddress:
           this.getConfig().NETWORKS['solana'].POCKET_PROGRAM_ADDRESS,
         mainDex: 'https://raydium.io/swap/',
