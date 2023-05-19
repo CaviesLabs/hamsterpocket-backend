@@ -116,7 +116,13 @@ export class PortfolioService {
 
   async listUserToken(
     ownerAddress: string,
-    { limit, offset, search, sortBy }: ListUserTokenDto & CommonQueryDto,
+    {
+      limit,
+      offset,
+      search,
+      sortBy,
+      chainId,
+    }: ListUserTokenDto & CommonQueryDto,
   ): Promise<UserTokenWithAdditionView[]> {
     const stages: PipelineStage[] = [];
 
@@ -160,6 +166,9 @@ export class PortfolioService {
           tokenImage: {
             $arrayElemAt: ['$whitelist_docs.image', 0],
           },
+          chainId: {
+            $arrayElemAt: ['$whitelist_docs.chainId', 0],
+          },
           usdValue: {
             $divide: [
               {
@@ -180,7 +189,11 @@ export class PortfolioService {
           },
         },
       },
-
+      {
+        $match: {
+          chainId: chainId,
+        },
+      },
       {
         $project: {
           whitelist_docs: 0,

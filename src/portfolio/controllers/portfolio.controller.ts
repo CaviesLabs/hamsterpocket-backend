@@ -23,11 +23,12 @@ export class PortfolioController {
   @Get('/:ownerAddress/user-tokens')
   async listUserTokens(
     @Param('ownerAddress') ownerAddress: string,
-    @Optional() @Query() { sortBy }: ListUserTokenDto,
+    @Optional() @Query() { sortBy, chainId }: ListUserTokenDto,
     @Query() { limit, offset, search }: CommonQueryDto,
   ): Promise<UserTokenWithAdditionView[]> {
     return this.portfolioService.listUserToken(ownerAddress, {
       sortBy,
+      chainId,
       limit,
       offset,
       search,
