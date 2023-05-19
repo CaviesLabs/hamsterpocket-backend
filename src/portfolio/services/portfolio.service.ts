@@ -157,11 +157,8 @@ export class PortfolioService {
           tokenSymbol: {
             $arrayElemAt: ['$whitelist_docs.symbol', 0],
           },
-          value: {
-            $multiply: [
-              '$total',
-              { $arrayElemAt: ['$whitelist_docs.estimatedValue', 0] },
-            ],
+          tokenImage: {
+            $arrayElemAt: ['$whitelist_docs.image', 0],
           },
           usdValue: {
             $divide: [
