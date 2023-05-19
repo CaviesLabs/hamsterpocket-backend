@@ -141,7 +141,7 @@ export class EVMBasedPocketProvider {
         },
       );
 
-    CacheStorage.set(cacheKey, bestFee.toString(), CacheLevel.HARD);
+    CacheStorage.set(cacheKey, bestFee.currentFee.toString(), CacheLevel.HARD);
 
     return bestFee.currentFee;
   }
