@@ -81,14 +81,9 @@ export class SyncEvmPoolService {
       return;
     }
 
-    const poolData = await this.poolRepo.find({
-      _id: {
-        $in: pools.map((pool) => pool.id),
-      },
-    });
     const quotes = await indexer.calculateMultipleROIAndAvg(
-      poolData.map((elm) => ({
-        pocketId: elm._id.toString(),
+      pools.map((elm) => ({
+        pocketId: elm.id.toString(),
         baseTokenAddress: elm.baseTokenAddress,
         targetTokenAddress: elm.targetTokenAddress,
         ammRouterAddress: elm.ammRouterAddress,

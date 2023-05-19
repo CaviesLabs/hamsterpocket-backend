@@ -128,8 +128,6 @@ export class EVMBasedPocketProvider {
       }))
       .reduce(
         (accum, value) => {
-          console.log(value);
-
           if (value.data && accum.value.lt(value.data[1])) {
             accum.currentFee = BigNumber.from(value.fee.toString());
             accum.value = value.data[1];
