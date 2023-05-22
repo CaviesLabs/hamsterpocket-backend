@@ -18,6 +18,10 @@ import {
   PoolStatus,
 } from '../entities/pool.entity';
 import { convertToPoolActivityEntity } from '../../providers/solana-pocket-program/pocket-activity.oc-dto';
+import {
+  WhitelistDocument,
+  WhitelistModel,
+} from '../../orm/model/whitelist.model';
 
 @Injectable()
 export class SyncPoolActivityService {
@@ -25,8 +29,12 @@ export class SyncPoolActivityService {
     private readonly onChainPoolProvider: SolanaPoolProvider,
     @InjectModel(PoolActivityModel.name)
     private readonly poolActivityRepo: Model<PoolActivityDocument>,
+
     @InjectModel(PoolModel.name)
     private readonly poolRepo: Model<PoolDocument>,
+
+    @InjectModel(WhitelistModel.name)
+    private readonly whitelistRepo: Model<WhitelistDocument>,
   ) {}
 
   async syncAllPoolActivities() {
@@ -130,6 +138,25 @@ export class SyncPoolActivityService {
             ),
             poolId: new Types.ObjectId(poolId),
           };
+
+          const baseToken = await this.whitelistRepo.findOne({
+            address: pool.baseTokenAddress,
+          });
+          const targetToken = await this.whitelistRepo.findOne({
+            address: pool.targetTokenAddress,
+          });
+
+          if (baseToken) {
+            activity.baseTokenAmount = activity.baseTokenAmount
+              ? activity.baseTokenAmount * 10 ** baseToken.decimals
+              : activity.baseTokenAmount;
+          }
+
+          if (targetToken) {
+            activity.targetTokenAmount = activity.targetTokenAmount
+              ? activity.targetTokenAmount * 10 ** targetToken.decimals
+              : activity.targetTokenAmount;
+          }
 
           try {
             /**
