@@ -169,6 +169,19 @@ export class PortfolioService {
           chainId: {
             $arrayElemAt: ['$whitelist_docs.chainId', 0],
           },
+          decimalValue: {
+            $divide: [
+              '$total',
+              {
+                $pow: [
+                  10,
+                  {
+                    $arrayElemAt: ['$whitelist_docs.decimals', 0],
+                  },
+                ],
+              },
+            ],
+          },
           usdValue: {
             $divide: [
               {
