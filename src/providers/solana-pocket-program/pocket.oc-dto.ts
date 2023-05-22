@@ -191,5 +191,6 @@ export function convertToPoolEntity(
     // Below fields will be updated once the events data is computed
     currentSpentBaseToken: 0,
     currentReceivedTargetToken: 0,
+    ammRouterAddress: '',
   } as Partial<PoolEntity>);
 }
