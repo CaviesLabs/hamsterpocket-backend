@@ -146,18 +146,6 @@ export class SyncPoolActivityService {
             address: pool.targetTokenAddress,
           });
 
-          if (baseToken) {
-            activity.baseTokenAmount = activity.baseTokenAmount
-              ? activity.baseTokenAmount * 10 ** baseToken.decimals
-              : activity.baseTokenAmount;
-          }
-
-          if (targetToken) {
-            activity.targetTokenAmount = activity.targetTokenAmount
-              ? activity.targetTokenAmount * 10 ** targetToken.decimals
-              : activity.targetTokenAmount;
-          }
-
           try {
             /**
              * @dev Save the pool
@@ -203,6 +191,18 @@ export class SyncPoolActivityService {
             }
           } catch (e) {
             console.log(e);
+          }
+
+          if (baseToken) {
+            activity.baseTokenAmount = activity.baseTokenAmount
+              ? activity.baseTokenAmount * 10 ** baseToken.decimals
+              : activity.baseTokenAmount;
+          }
+
+          if (targetToken) {
+            activity.targetTokenAmount = activity.targetTokenAmount
+              ? activity.targetTokenAmount * 10 ** targetToken.decimals
+              : activity.targetTokenAmount;
           }
 
           return activity;
