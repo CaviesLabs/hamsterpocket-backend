@@ -195,13 +195,13 @@ export class SyncPoolActivityService {
 
           if (baseToken) {
             activity.baseTokenAmount = activity.baseTokenAmount
-              ? activity.baseTokenAmount * 10 ** baseToken.decimals
+              ? activity.baseTokenAmount / 10 ** baseToken.decimals
               : activity.baseTokenAmount;
           }
 
           if (targetToken) {
             activity.targetTokenAmount = activity.targetTokenAmount
-              ? activity.targetTokenAmount * 10 ** targetToken.decimals
+              ? activity.targetTokenAmount / 10 ** targetToken.decimals
               : activity.targetTokenAmount;
           }
 
