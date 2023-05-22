@@ -13,6 +13,7 @@ import { MigrateChainIdCommand } from './commands/migrate-chain-id';
 import { SyncEvmPoolActivityService } from './services/sync-evm-pool-activity.service';
 import { SyncEvmPoolService } from './services/sync-evm-pool.service';
 import { EVMPoolController } from './controllers/evm-pool.controller';
+import { FixDecimalsEventData } from './commands/fix-decimals-event-data';
 
 @Module({
   imports: [OrmModule],
@@ -33,6 +34,7 @@ import { EVMPoolController } from './controllers/evm-pool.controller';
      * @dev Commands
      */
     MigrateChainIdCommand,
+    FixDecimalsEventData,
   ],
   controllers: [PoolController, EVMPoolController],
 })
