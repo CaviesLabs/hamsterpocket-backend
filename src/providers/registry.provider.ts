@@ -250,10 +250,17 @@ export class RegistryProvider {
       },
       solana: {
         rpcUrl: this.getConfig().NETWORKS['solana'].RPC_URL,
-        explorerUrl: 'https://solscan.com/',
+        explorerUrl: 'https://solscan.io/',
         programAddress:
           this.getConfig().NETWORKS['solana'].POCKET_PROGRAM_ADDRESS,
-        mainDex: 'https://raydium.io/swap/',
+        whitelistedRouters: [
+          {
+            address: '',
+            isV3: false,
+            ammTag: 'raydium',
+            dexUrl: 'https://raydium.io/swap/',
+          },
+        ],
       },
     };
   }
