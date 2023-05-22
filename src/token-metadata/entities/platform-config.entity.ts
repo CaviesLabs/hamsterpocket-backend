@@ -9,7 +9,7 @@ export interface TokenMetadata {
 export class SolanaConfig {
   rpcUrl: string;
   programAddress: string;
-  mainDex: string;
+  whitelistedRouters: WhitelistedRouter[];
   explorerUrl: string;
 }
 
