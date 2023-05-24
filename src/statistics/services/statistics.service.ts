@@ -90,48 +90,7 @@ export class StatisticsService {
         {
           $project: {
             eventVolume: {
-              $add: [
-                {
-                  $divide: [
-                    {
-                      $multiply: [
-                        '$baseTokenAmount',
-                        {
-                          $arrayElemAt: ['$baseToken_docs.estimatedValue', 0],
-                        },
-                      ],
-                    },
-                    {
-                      $pow: [
-                        10,
-                        {
-                          $arrayElemAt: ['$baseToken_docs.decimals', 0],
-                        },
-                      ],
-                    },
-                  ],
-                },
-                {
-                  $divide: [
-                    {
-                      $multiply: [
-                        '$targetTokenAmount',
-                        {
-                          $arrayElemAt: ['$targetToken_docs.estimatedValue', 0],
-                        },
-                      ],
-                    },
-                    {
-                      $pow: [
-                        10,
-                        {
-                          $arrayElemAt: ['$targetToken_docs.decimals', 0],
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
+              $add: ['$baseTokenAmount', '$targetTokenAmount'],
             },
           },
         },

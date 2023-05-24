@@ -177,7 +177,8 @@ export function convertToPoolEntity(
     status: mapPocketStatus(pocketData),
     startTime: new Date(pocketData.startAt.toNumber() * 1000),
     nextExecutionAt: new Date(
-      pocketData.nextScheduledExecutionAt.toNumber() * 1000,
+      (pocketData.nextScheduledExecutionAt || pocketData.startAt).toNumber() *
+        1000,
     ),
     batchVolume: pocketData.batchVolume.toNumber(),
     frequency: {
