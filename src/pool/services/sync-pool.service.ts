@@ -32,11 +32,6 @@ export class SyncPoolService {
 
     const data = await this.onChainPoolProvider.fetchFromContract(poolId);
 
-    if (pool.status === PoolStatus.CREATED) {
-      data.currentSpentBaseToken = 0;
-      data.currentReceivedTargetToken = 0;
-    }
-
     await this.poolRepo.updateOne(
       { _id: new Types.ObjectId(data.id) },
       {
@@ -84,11 +79,6 @@ export class SyncPoolService {
           const syncedPool = await this.onChainPoolProvider.fetchFromContract(
             pool.id,
           );
-
-          if (pool.status === PoolStatus.CREATED) {
-            syncedPool.currentSpentBaseToken = 0;
-            syncedPool.currentReceivedTargetToken = 0;
-          }
 
           /**
            * @dev Convert to instance
@@ -142,17 +132,12 @@ export class SyncPoolService {
     console.log(`Found ${poolIds.length} pocket(s) for ${ownerAddress}`);
 
     const syncedPools = await Promise.all(
-      poolIds.map(async ({ id, status }) => {
+      poolIds.map(async ({ id }) => {
         try {
           /** Fetch pool latest update */
           const syncedPool = await this.onChainPoolProvider.fetchFromContract(
             id,
           );
-
-          if (status === PoolStatus.CREATED) {
-            syncedPool.currentSpentBaseToken = 0;
-            syncedPool.currentReceivedTargetToken = 0;
-          }
 
           /**
            * @dev Convert to instance

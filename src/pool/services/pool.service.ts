@@ -161,6 +161,8 @@ export class PoolService {
         {
           ownerAddress,
           chainId,
+          currentReceivedTargetToken: 0,
+          currentSpentBaseToken: 0,
         },
       ],
       {
