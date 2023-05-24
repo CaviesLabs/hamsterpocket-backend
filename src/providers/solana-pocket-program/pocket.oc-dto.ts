@@ -177,8 +177,10 @@ export function convertToPoolEntity(
     status: mapPocketStatus(pocketData),
     startTime: new Date(pocketData.startAt.toNumber() * 1000),
     nextExecutionAt: new Date(
-      (pocketData.nextScheduledExecutionAt || pocketData.startAt).toNumber() *
-        1000,
+      (pocketData.nextScheduledExecutionAt.toNumber() !== 0
+        ? pocketData.nextScheduledExecutionAt
+        : pocketData.startAt
+      ).toNumber() * 1000,
     ),
     batchVolume: pocketData.batchVolume.toNumber(),
     frequency: {
@@ -190,8 +192,6 @@ export function convertToPoolEntity(
     currentBatchAmount: pocketData.executedBatchAmount.toNumber(),
     marketKey: pocketData.marketKey.toBase58(),
     // Below fields will be updated once the events data is computed
-    currentSpentBaseToken: 0,
-    currentReceivedTargetToken: 0,
     ammRouterAddress: pocketData.marketKey.toString(),
   } as Partial<PoolEntity>);
 }
