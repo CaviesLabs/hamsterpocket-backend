@@ -61,7 +61,7 @@ export class PoolModel extends BaseModel implements PoolEntity {
   @Prop({ type: String, required: true })
   targetTokenAddress: string;
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String, required: false })
   ammRouterAddress: string;
 
   /** Enforce unique of docs with address field presented */
