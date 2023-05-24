@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { StatisticsService } from '../services/statistics.service';
 
@@ -9,5 +9,10 @@ export class StatisticsController {
   @Get('/latest')
   getLatest() {
     return this.statisticsService.getLatest();
+  }
+
+  @Post('/calculate-volume')
+  snapShotPNL() {
+    return this.statisticsService.calculateNewStatistics();
   }
 }

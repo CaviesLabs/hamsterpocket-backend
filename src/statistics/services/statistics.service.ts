@@ -6,7 +6,7 @@ import {
   StatisticsModel,
 } from '../../orm/model/statistic.model';
 import { Timer } from '../../providers/utils.provider';
-import { PoolStatus } from '../../pool/entities/pool.entity';
+import { ChainID, PoolStatus } from '../../pool/entities/pool.entity';
 import { ActivityType } from '../../pool/entities/pool-activity.entity';
 import { PoolDocument, PoolModel } from '../../orm/model/pool.model';
 import {
@@ -62,7 +62,14 @@ export class StatisticsService {
     let totalVolume = 0;
     try {
       [{ totalVolume }] = await this.poolActivityRepo.aggregate([
-        { $match: { type: ActivityType.SWAPPED } },
+        {
+          $match: {
+            type: {
+              $in: [ActivityType.SWAPPED, ActivityType.CLOSED_POSITION],
+            },
+            chainId: { $ne: ChainID.Mumbai },
+          },
+        },
         {
           $lookup: {
             from: 'pools',
@@ -90,7 +97,24 @@ export class StatisticsService {
         {
           $project: {
             eventVolume: {
-              $add: ['$baseTokenAmount', '$targetTokenAmount'],
+              $add: [
+                {
+                  $multiply: [
+                    '$baseTokenAmount',
+                    {
+                      $arrayElemAt: ['$baseToken_docs.estimatedValue', 0],
+                    },
+                  ],
+                },
+                {
+                  $multiply: [
+                    '$targetTokenAmount',
+                    {
+                      $arrayElemAt: ['$targetToken_docs.estimatedValue', 0],
+                    },
+                  ],
+                },
+              ],
             },
           },
         },

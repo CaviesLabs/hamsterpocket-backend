@@ -52,9 +52,4 @@ export class PortfolioController {
 
     return result;
   }
-  //
-  // @Post("/snapshot-pnl")
-  // snapShotPNL(){
-  //   return this.portfolioService.calculateAndSnapshotPNL();
-  // }
 }
