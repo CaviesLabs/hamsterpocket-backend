@@ -171,7 +171,7 @@ export class RegistryProvider {
       bnb: {
         chainName: 'BNB',
         chainLogo:
-          'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png',
+          'https://s3.coinmarketcap.com/static/img/portraits/62876e92bedeb632050eb4ae.png',
         rpcUrl: this.getConfig().NETWORKS['bnb'].RPC_URL,
         chainId: this.getConfig().NETWORKS['bnb'].CHAIN_ID,
         programAddress: this.getConfig().NETWORKS['bnb'].POCKET_PROGRAM_ADDRESS,
@@ -245,7 +245,7 @@ export class RegistryProvider {
       solana: {
         chainName: 'Solana',
         chainLogo:
-          'https://s2.coinmarketcap.com/static/img/coins/64x64/2634.png',
+          'https://assets.coingecko.com/coins/images/4128/small/solana.png?1640133422',
         rpcUrl: this.getConfig().NETWORKS['solana'].RPC_URL,
         explorerUrl: 'https://solscan.io/',
         programAddress:
