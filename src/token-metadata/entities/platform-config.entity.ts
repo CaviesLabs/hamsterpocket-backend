@@ -11,16 +11,21 @@ export class SolanaConfig {
   programAddress: string;
   whitelistedRouters: WhitelistedRouter[];
   explorerUrl: string;
+  chainName: string;
+  chainLogo: string;
 }
 
 export class WhitelistedRouter {
   address: string;
   isV3: boolean;
   ammTag: string;
+  ammName: string;
   dexUrl: string;
 }
 
 export class EVMChainConfig {
+  chainName: string;
+  chainLogo: string;
   rpcUrl: string;
   chainId: number;
   explorerUrl: string;
@@ -36,4 +41,5 @@ export class PlatformConfigEntity {
   bnb: EVMChainConfig;
   xdc: EVMChainConfig;
   okt: EVMChainConfig;
+  gnosis: EVMChainConfig;
 }

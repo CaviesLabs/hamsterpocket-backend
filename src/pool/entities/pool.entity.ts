@@ -36,6 +36,7 @@ export enum ChainID {
   Mumbai = 'polygon_mumbai',
   XDC = 'xdc',
   OKT = 'okt',
+  Gnosis = 'gnosis',
 }
 export class BuyCondition {
   type: PriceConditionType;
