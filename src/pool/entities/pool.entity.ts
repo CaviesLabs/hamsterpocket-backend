@@ -37,6 +37,7 @@ export enum ChainID {
   XDC = 'xdc',
   OKT = 'okt',
   Gnosis = 'gnosis',
+  AvaxC = 'avaxc',
 }
 export class BuyCondition {
   type: PriceConditionType;
