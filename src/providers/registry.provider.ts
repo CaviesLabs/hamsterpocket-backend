@@ -197,6 +197,29 @@ export class RegistryProvider {
           },
         ],
       },
+      avaxc: {
+        chainName: 'AVAX-C',
+        chainLogo:
+          'https://assets.coingecko.com/coins/images/12559/small/Avalanche_Circle_RedWhite_Trans.png?1670992574',
+        rpcUrl: this.getConfig().NETWORKS['avaxc'].RPC_URL,
+        chainId: this.getConfig().NETWORKS['avaxc'].CHAIN_ID,
+        programAddress:
+          this.getConfig().NETWORKS['avaxc'].POCKET_PROGRAM_ADDRESS,
+        vaultAddress:
+          this.getConfig().NETWORKS['avaxc'].POCKET_VAULT_PROGRAM_ADDRESS,
+        registryAddress:
+          this.getConfig().NETWORKS['avaxc'].POCKET_REGISTRY_PROGRAM_ADDRESS,
+        explorerUrl: 'https://snowtrace.io/',
+        whitelistedRouters: [
+          {
+            address: '0x60aE616a2155Ee3d9A68541Ba4544862310933d4',
+            isV3: false,
+            ammTag: 'traderjoe',
+            ammName: 'TraderJoe',
+            dexUrl: 'https://traderjoexyz.com/avalanche/trade',
+          },
+        ],
+      },
       okt: {
         chainName: 'OKT',
         chainLogo:
