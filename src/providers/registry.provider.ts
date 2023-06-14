@@ -169,6 +169,7 @@ export class RegistryProvider {
   public getChains(): PlatformConfigEntity {
     return {
       bnb: {
+        wagmiKey: 'bsc',
         chainName: 'BNB',
         chainLogo:
           'https://s3.coinmarketcap.com/static/img/portraits/62876e92bedeb632050eb4ae.png',
@@ -198,6 +199,7 @@ export class RegistryProvider {
         ],
       },
       avaxc: {
+        wagmiKey: 'avalanche',
         chainName: 'AVAX-C',
         chainLogo:
           'https://assets.coingecko.com/coins/images/12559/small/Avalanche_Circle_RedWhite_Trans.png?1670992574',
@@ -221,6 +223,7 @@ export class RegistryProvider {
         ],
       },
       okt: {
+        wagmiKey: 'okc',
         chainName: 'OKT',
         chainLogo:
           'https://s2.coinmarketcap.com/static/img/coins/64x64/8267.png',
@@ -243,6 +246,7 @@ export class RegistryProvider {
         ],
       },
       gnosis: {
+        wagmiKey: 'gnosis',
         chainName: 'Gnosis',
         chainLogo:
           'https://gnosisscan.io/images/svg/brands/main.svg?v=23.5.3.0',
@@ -284,6 +288,7 @@ export class RegistryProvider {
         ],
       },
       xdc: {
+        wagmiKey: 'xdc',
         chainName: 'XDC',
         chainLogo:
           'https://s2.coinmarketcap.com/static/img/coins/64x64/2634.png',
@@ -306,6 +311,7 @@ export class RegistryProvider {
         ],
       },
       polygon_mumbai: {
+        wagmiKey: 'polygonMumbai',
         chainName: 'Mumbai',
         chainLogo:
           'https://s2.coinmarketcap.com/static/img/coins/64x64/3890.png',

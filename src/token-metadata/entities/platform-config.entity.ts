@@ -24,6 +24,7 @@ export class WhitelistedRouter {
 }
 
 export class EVMChainConfig {
+  wagmiKey: string;
   chainName: string;
   chainLogo: string;
   rpcUrl: string;
