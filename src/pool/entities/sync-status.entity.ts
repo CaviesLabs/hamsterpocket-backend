@@ -4,4 +4,5 @@ export class SyncStatusEntity {
   chainId: ChainID;
   syncedBlock: number;
   blockDiff: number;
+  startingBlock: number;
 }

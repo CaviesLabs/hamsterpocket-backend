@@ -79,6 +79,7 @@ export function convertToPoolActivityEntity(
     type: eventNameTypeMap[eventName],
     transactionId,
     createdAt,
+    eventHash: `${transactionId}-${eventName}`,
   };
 
   switch (eventName) {

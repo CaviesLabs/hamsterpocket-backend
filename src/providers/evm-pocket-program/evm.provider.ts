@@ -16,7 +16,6 @@ import {
 } from './libs';
 import { Types } from './libs/contracts/PocketRegistry';
 import { CacheLevel, CacheStorage } from '../cache.provider';
-import { LogDescription } from '@ethersproject/abi/src.ts/interface';
 
 export class EVMBasedPocketProvider {
   private readonly rpcProvider: ethers.providers.JsonRpcProvider;
@@ -389,15 +388,18 @@ export class EVMBasedPocketProvider {
           toBlock: desiredMaxBlock,
         })
       ).map(async (log) => {
-        let extraData: LogDescription | undefined;
+        let extraData;
 
         try {
           extraData = this.pocketRegistry.interface.parseLog(log);
+          extraData = {
+            ...extraData,
+            eventHash: `${log.blockHash}-${log.transactionHash}-${log.transactionIndex}-${log.logIndex}-${extraData.name}`,
+          };
         } catch {}
 
         return {
           transactionHash: log.transactionHash,
-          eventHash: `${log.blockHash}-${log.transactionIndex}-${log.transactionHash}-${log.logIndex}-${extraData?.name}`,
           ...extraData,
         };
       }),
@@ -411,15 +413,18 @@ export class EVMBasedPocketProvider {
           toBlock: desiredMaxBlock,
         })
       ).map(async (log) => {
-        let extraData: LogDescription | undefined;
+        let extraData;
 
         try {
           extraData = this.pocketVault.interface.parseLog(log);
+          extraData = {
+            ...extraData,
+            eventHash: `${log.blockHash}-${log.transactionHash}-${log.transactionIndex}-${log.logIndex}-${extraData.name}`,
+          };
         } catch {}
 
         return {
           transactionHash: log.transactionHash,
-          eventHash: `${log.blockHash}-${log.transactionIndex}-${log.transactionHash}-${log.logIndex}-${extraData?.name}`,
           ...extraData,
         };
       }),

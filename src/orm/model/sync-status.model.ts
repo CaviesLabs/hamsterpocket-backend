@@ -10,7 +10,7 @@ import { SyncStatusEntity } from '../../pool/entities/sync-status.entity';
 export class SyncStatusModel extends BaseModel implements SyncStatusEntity {
   id: string;
 
-  @Prop({ type: String, enum: ChainID, default: ChainID.Solana })
+  @Prop({ type: String, enum: ChainID, default: ChainID.BSC })
   chainId: ChainID;
 
   @Prop({ type: Number })
@@ -18,6 +18,9 @@ export class SyncStatusModel extends BaseModel implements SyncStatusEntity {
 
   @Prop({ type: Number })
   blockDiff: number;
+
+  @Prop({ type: Number })
+  startingBlock: number;
 }
 
 /**
