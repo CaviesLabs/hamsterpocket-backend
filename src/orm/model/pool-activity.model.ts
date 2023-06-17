@@ -40,6 +40,9 @@ export class PoolActivityModel extends BaseModel implements PoolActivityEntity {
   @Prop({ type: String })
   memo: string;
 
+  @Prop({ type: String })
+  eventHash: string;
+
   @Prop({ type: Date })
   createdAt: Date;
 }
@@ -51,6 +54,7 @@ export const PoolActivitySchema =
   SchemaFactory.createForClass(PoolActivityModel);
 
 PoolActivitySchema.index({ actor: 'text', poolId: 'text' });
+PoolActivitySchema.index({ eventHash: 'desc' }, { unique: true });
 
 /**
  * @dev Define generic type for typescript reference.

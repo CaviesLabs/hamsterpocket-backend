@@ -27,6 +27,7 @@ export enum ActivityType {
 export class PoolActivityEntity {
   poolId: Types.ObjectId;
   chainId: string;
+  eventHash: string;
   actor?: string;
   status: PoolActivityStatus;
   type: ActivityType;

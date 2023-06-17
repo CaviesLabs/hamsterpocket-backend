@@ -554,6 +554,7 @@ export class EVMIndexer {
             transactionId: event.transactionHash,
             baseTokenAmount: null,
             targetTokenAmount: null,
+            eventHash: event.eventHash,
 
             /**
              * @dev To be feeded

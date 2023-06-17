@@ -32,6 +32,23 @@ export class SyncEvmPoolActivityService {
     private readonly syncStatusRepo: Model<SyncStatusDocument>,
   ) {}
 
+  private async updateEvent(events) {
+    const updates = events.map((event) => {
+      return {
+        updateOne: {
+          filter: { eventHash: event.eventHash },
+          update: {
+            $set: {
+              eventHash: event.eventHash,
+              ...event,
+            },
+          },
+          upsert: true,
+        },
+      };
+    });
+    await this.poolActivityRepo.bulkWrite(updates);
+  }
   async syncAllPoolActivities() {
     const timer = new Timer('Sync All EVM Pools activities');
     timer.start();
@@ -72,7 +89,7 @@ export class SyncEvmPoolActivityService {
         );
 
         // @dev Bulk update data
-        await this.poolActivityRepo.insertMany(events);
+        await this.updateEvent(events);
 
         /**
          * @dev Compute activities dates
