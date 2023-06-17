@@ -54,7 +54,7 @@ export const PoolActivitySchema =
   SchemaFactory.createForClass(PoolActivityModel);
 
 PoolActivitySchema.index({ actor: 'text', poolId: 'text' });
-PoolActivitySchema.index({ eventHash: 'desc' }, { unique: true });
+PoolActivitySchema.index({ eventHash: 'desc' }, { unique: true, sparse: true });
 
 /**
  * @dev Define generic type for typescript reference.
