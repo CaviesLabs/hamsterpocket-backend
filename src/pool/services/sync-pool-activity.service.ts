@@ -29,10 +29,8 @@ export class SyncPoolActivityService {
     private readonly onChainPoolProvider: SolanaPoolProvider,
     @InjectModel(PoolActivityModel.name)
     private readonly poolActivityRepo: Model<PoolActivityDocument>,
-
     @InjectModel(PoolModel.name)
     private readonly poolRepo: Model<PoolDocument>,
-
     @InjectModel(WhitelistModel.name)
     private readonly whitelistRepo: Model<WhitelistDocument>,
   ) {}
@@ -210,11 +208,29 @@ export class SyncPoolActivityService {
       ),
     );
 
-    await this.poolActivityRepo.create(mappedActivities);
+    await this.updateEvent(mappedActivities);
 
     // re-calcualte progress percent
     const latestPool = await this.poolRepo.findById(poolId);
     await calculateProgressPercent(latestPool);
     await latestPool.save();
+  }
+
+  private async updateEvent(events) {
+    const updates = events.map((event) => {
+      return {
+        updateOne: {
+          filter: { eventHash: event.eventHash },
+          update: {
+            $set: {
+              eventHash: event.eventHash,
+              ...event,
+            },
+          },
+          upsert: true,
+        },
+      };
+    });
+    await this.poolActivityRepo.bulkWrite(updates);
   }
 }
