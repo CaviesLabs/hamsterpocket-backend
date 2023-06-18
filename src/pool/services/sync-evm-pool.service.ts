@@ -17,7 +17,6 @@ export class SyncEvmPoolService {
   constructor(
     @InjectModel(PoolModel.name)
     private readonly poolRepo: Model<PoolDocument>,
-
     @InjectModel(WhitelistModel.name)
     private readonly whitelistRepo: Model<WhitelistDocument>,
   ) {}
@@ -77,8 +76,12 @@ export class SyncEvmPoolService {
     pools = pools.filter((pool) => !!pool);
 
     if (pools.length === 0) {
-      console.log('No valid pools, skipped ...');
+      console.log(`No valid pools for ${chainId}, skipped ...`);
       return;
+    } else {
+      console.log(
+        `Found ${pools.length} valid pool(s) for ${chainId}, processing ...`,
+      );
     }
 
     const quotes = await indexer.calculateMultipleROIAndAvg(
@@ -114,6 +117,7 @@ export class SyncEvmPoolService {
       }),
     );
   }
+
   /**
    * @dev Sync all pools
    */
@@ -164,8 +168,9 @@ export class SyncEvmPoolService {
   /**
    * @dev Sync all pools for an owner
    * @param ownerAddress
+   * @param chainId
    */
-  async syncPoolsByOwnerAddress(ownerAddress: string) {
+  async syncPoolsByOwnerAddress(ownerAddress: string, chainId: ChainID) {
     const timer = new Timer(`Sync evm pools by owner address ${ownerAddress}`);
     timer.start();
 
@@ -174,9 +179,14 @@ export class SyncEvmPoolService {
       {
         $match: {
           ownerAddress,
-          chainId: {
-            $ne: ChainID.Solana,
-          },
+          $and: [
+            { chainId },
+            {
+              chainId: {
+                $ne: ChainID.Solana,
+              },
+            },
+          ],
         },
       },
       {
