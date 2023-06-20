@@ -18,10 +18,8 @@ export class StatisticsService {
   constructor(
     @InjectModel(StatisticsModel.name)
     private readonly statisticsRepo: Model<StatisticsDocument>,
-
     @InjectModel(PoolModel.name)
     private readonly poolRepo: Model<PoolDocument>,
-
     @InjectModel(PoolActivityModel.name)
     private readonly poolActivityRepo: Model<PoolActivityDocument>,
   ) {}
@@ -57,7 +55,14 @@ export class StatisticsService {
       ]);
     } catch {}
 
-    const poolsCount = await this.poolRepo.count();
+    const poolsCount = await this.poolRepo
+      .find({
+        status: {
+          $ne: PoolStatus.CREATED,
+          $exists: true,
+        },
+      })
+      .count();
 
     let totalVolume = 0;
     try {
