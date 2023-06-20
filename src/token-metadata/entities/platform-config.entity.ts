@@ -6,7 +6,7 @@ export interface TokenMetadata {
   decimals?: number;
 }
 
-export class SolanaConfig {
+export class NonEvmConfig {
   rpcUrl: string;
   programAddress: string;
   whitelistedRouters: WhitelistedRouter[];
@@ -37,7 +37,8 @@ export class EVMChainConfig {
 }
 
 export class PlatformConfigEntity {
-  solana: SolanaConfig;
+  solana: NonEvmConfig;
+  ['aptos-testnet']: NonEvmConfig;
   polygon_mumbai: EVMChainConfig;
   bnb: EVMChainConfig;
   avaxc: EVMChainConfig;

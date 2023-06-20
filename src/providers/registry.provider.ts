@@ -269,6 +269,24 @@ export class RegistryProvider {
           },
         ],
       },
+      ['aptos-testnet']: {
+        chainName: 'Aptos',
+        chainLogo:
+          'https://assets.coingecko.com/coins/images/4128/small/solana.png?1640133422',
+        rpcUrl: this.getConfig().NETWORKS['solana'].RPC_URL,
+        explorerUrl: 'https://solscan.io/',
+        programAddress:
+          this.getConfig().NETWORKS['solana'].POCKET_PROGRAM_ADDRESS,
+        whitelistedRouters: [
+          {
+            address: '',
+            isV3: false,
+            ammTag: 'raydium',
+            ammName: 'Raydium Swap',
+            dexUrl: 'https://raydium.io/swap/',
+          },
+        ],
+      },
       solana: {
         chainName: 'Solana',
         chainLogo:
