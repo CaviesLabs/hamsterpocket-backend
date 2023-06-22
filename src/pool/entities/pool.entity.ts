@@ -24,6 +24,16 @@ export enum PriceConditionType {
   NBW = 'NBW',
 }
 
+export const PriceConditionDisplay = {
+  [PriceConditionType.GT]: '>',
+  [PriceConditionType.GTE]: '>=',
+  [PriceConditionType.LT]: '<',
+  [PriceConditionType.LTE]: '<=',
+  [PriceConditionType.EQ]: '=',
+  [PriceConditionType.NEQ]: '<>',
+  [PriceConditionType.BW]: '<>',
+};
+
 export enum MainProgressBy {
   END_TIME = 'MAIN_PROGRESS_BY::END_TIME',
   SPENT_BASE_TOKEN = 'MAIN_PROGRESS_BY::SPENT_BASE_TOKEN',

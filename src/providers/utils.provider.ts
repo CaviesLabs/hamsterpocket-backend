@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DateTime } from 'luxon';
+import Decimal from 'decimal.js';
 
 @Injectable()
 export class UtilsProvider {
@@ -24,6 +25,7 @@ export class UtilsProvider {
       );
     });
   }
+
   /**
    * The function to provide interval operation with setTimeout behind the scene.
    * @param handler
@@ -142,14 +144,93 @@ export class UtilsProvider {
    * @dev Remote whitespace and new line
    * @param targetString
    */
-  public removeWhitespaceAndNewline = (targetString: string) => {
+  public removeWhitespaceAndNewline(targetString: string) {
     return targetString.split(' ').join('').split('\n').join('');
-  };
+  }
+
+  public getDisplayedDecimals(veryComplexDecimalsValue: number) {
+    if (isNaN(veryComplexDecimalsValue)) return null;
+
+    const valueStr = new Decimal(veryComplexDecimalsValue).toFixed();
+    const newStr = valueStr.replace(/(0)+$/, '');
+    const zeroMatched = newStr.match(/\.(0)+/);
+
+    if (!zeroMatched || zeroMatched[0]?.replace('.', '').split('').length < 3) {
+      return Number(
+        new Decimal(veryComplexDecimalsValue).toFixed(5).replace(/0+$/, ''),
+      ).toString();
+    }
+
+    const baseValue = newStr.split('.')[0];
+    const [matchedStr] = zeroMatched;
+    const totalZero = matchedStr.replace('.', '').split('').length;
+    const restValue = newStr.replace(`${baseValue}${matchedStr}`, '');
+
+    return `${baseValue}.0${this.getSubscriptStr(
+      (totalZero - 1).toString(),
+    )}${(restValue.length > 5 ? restValue.substring(0, 5) : restValue).replace(
+      /0+$/,
+      '',
+    )}`;
+  }
+
+  public getSubscriptStr(str: string): string | undefined {
+    const subscripts = {
+      '0': '₀',
+      '1': '₁',
+      '2': '₂',
+      '3': '₃',
+      '4': '₄',
+      '5': '₅',
+      '6': '₆',
+      '7': '₇',
+      '8': '₈',
+      '9': '₉',
+      '+': '₊',
+      '-': '₋',
+      '=': '₌',
+      '(': '₍',
+      ')': '₎',
+    };
+
+    return str
+      .split('')
+      .map((char) => subscripts[char])
+      .join('');
+  }
+
+  public getSupscriptStr(str: string): string | undefined {
+    const superscripts = {
+      '0': '⁰',
+      '1': '¹',
+      '2': '²',
+      '3': '³',
+      '4': '⁴',
+      '5': '⁵',
+      '6': '⁶',
+      '7': '⁷',
+      '8': '⁸',
+      '9': '⁹',
+      '+': '⁺',
+      '-': '⁻',
+      '=': '⁼',
+      '(': '⁽',
+      ')': '⁾',
+      n: 'ⁿ',
+      i: 'ⁱ',
+    };
+
+    return str
+      .split('')
+      .map((char) => superscripts[char])
+      .join('');
+  }
 }
 
 export class Timer {
   startedAt: DateTime;
   endedAt: DateTime;
+
   constructor(public name: string) {}
 
   start() {
@@ -168,4 +249,6 @@ export class Timer {
       } Ended@${this.endedAt.toISO()} Take:${seconds}s==========`,
     );
   }
+
+  expor;
 }
