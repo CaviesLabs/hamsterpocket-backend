@@ -63,15 +63,13 @@ export class PoolController {
       sortBy,
     });
   }
-
-  @Post('/:chainId/:ownerAddress')
-  createEmpty(@Param() params: CreateEmptyPoolDto) {
-    return this.poolService.createEmpty(params.ownerAddress, params.chainId);
-  }
-
   @Get('/:id/decimals-formatted')
   async getPocketDetailsWithDecimalsFormatted(@Param('id') id: string) {
     return this.poolService.getPoolDetailWithDecimalsFormatted(id);
+  }
+  @Post('/:chainId/:ownerAddress')
+  createEmpty(@Param() params: CreateEmptyPoolDto) {
+    return this.poolService.createEmpty(params.ownerAddress, params.chainId);
   }
 
   @Get('/:id/')

@@ -67,7 +67,10 @@ export class PoolService {
     });
 
     /** Filter & search stage */
-    const filter: FilterQuery<PoolDocument> = { ownerAddress, chainId };
+    const filter: FilterQuery<PoolDocument> = {
+      ownerAddress: { $regex: new RegExp(ownerAddress, 'i') },
+      chainId,
+    };
 
     if (search) {
       const regexSearch = new RegExp(search, 'i');
@@ -195,7 +198,10 @@ export class PoolService {
     });
 
     /** Filter & search stage */
-    const filter: FilterQuery<PoolDocument> = { ownerAddress, chainId };
+    const filter: FilterQuery<PoolDocument> = {
+      ownerAddress: { $regex: new RegExp(ownerAddress, 'i') },
+      chainId,
+    };
 
     if (search) {
       const regexSearch = new RegExp(search, 'i');
