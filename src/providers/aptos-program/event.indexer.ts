@@ -257,7 +257,7 @@ export class EventIndexer {
       query: `query fetchEvents($resourceAddress: String, $eventTags: [String], $limit: Int, $startFrom: bigint) {
                   events(
                     where: {account_address: {_eq: $resourceAddress}, type: {_in: $eventTags}, transaction_version: {_gte: $startFrom}}
-                    limit: 2000
+                    limit: $limit
                     order_by: {transaction_version: desc}
                   ) {
                     account_address
