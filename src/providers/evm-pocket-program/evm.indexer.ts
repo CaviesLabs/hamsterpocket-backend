@@ -12,15 +12,15 @@ import {
   StopConditions,
   TradingStopCondition,
   TradingStopType,
-} from '../../pool/entities/pool.entity';
+} from '@/pool/entities/pool.entity';
 import { Types } from './libs/contracts/PocketRegistry';
 import {
   ActivityType,
   PoolActivityEntity,
   PoolActivityStatus,
-} from '../../pool/entities/pool-activity.entity';
-import { PoolDocument } from '../../orm/model/pool.model';
-import { WhitelistDocument } from '../../orm/model/whitelist.model';
+} from '@/pool/entities/pool-activity.entity';
+import { PoolDocument } from '@/orm/model/pool.model';
+import { WhitelistDocument } from '@/orm/model/whitelist.model';
 
 export class EVMIndexer {
   public readonly provider: EVMBasedPocketProvider;

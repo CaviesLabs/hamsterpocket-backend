@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
-import { OrmModule } from '../orm/orm.module';
-import { RegistryProvider } from '../providers/registry.provider';
+import { OrmModule } from '@/orm/orm.module';
+import { RegistryProvider } from '@/providers/registry.provider';
 import { PoolController } from './controllers/pool.controller';
-import { SolanaPoolProvider } from '../providers/solana-pocket-program/solana-pool.provider';
+import { SolanaPoolProvider } from '@/providers/solana-pocket-program/solana-pool.provider';
 import { PoolMockService } from './services/pool-mock.service';
 import { PoolService } from './services/pool.service';
 import { SyncPoolService } from './services/sync-pool.service';
-import { PortfolioService } from '../portfolio/services/portfolio.service';
+import { PortfolioService } from '@/portfolio/services/portfolio.service';
 import { SyncPoolActivityService } from './services/sync-pool-activity.service';
 import { PoolActivityService } from './services/pool-activity.service';
 import { MigrateChainIdCommand } from './commands/migrate-chain-id';

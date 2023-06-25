@@ -168,6 +168,25 @@ export class RegistryProvider {
 
   public getChains(): PlatformConfigEntity {
     return {
+      aptos_testnet: {
+        chainName: 'Aptos Testnet',
+        chainLogo:
+          'https://assets.coingecko.com/coins/images/26455/small/aptos_round.png',
+        rpcUrl: this.getConfig().NETWORKS['aptos_testnet'].RPC_URL,
+        graphQLUrl: this.getConfig().NETWORKS['aptos_testnet'].GRAPHQL_URL,
+        explorerUrl: 'https://testnet.aptoscan.com/',
+        programAddress:
+          this.getConfig().NETWORKS['aptos_testnet'].POCKET_PROGRAM_ADDRESS,
+        whitelistedRouters: [
+          {
+            address: '',
+            isV3: false,
+            ammTag: 'pancakeswap',
+            ammName: 'Pancake Swap',
+            dexUrl: 'https://aptos.pancakeswap.finance/swap',
+          },
+        ],
+      },
       bnb: {
         wagmiKey: 'bsc',
         chainName: 'BNB',
@@ -195,6 +214,30 @@ export class RegistryProvider {
             ammTag: 'pancakeswap',
             ammName: 'Pancake Swap',
             dexUrl: 'https://pancakeswap.finance/swap/',
+          },
+        ],
+      },
+      gnosis: {
+        wagmiKey: 'gnosis',
+        chainName: 'Gnosis',
+        chainLogo:
+          'https://gnosisscan.io/images/svg/brands/main.svg?v=23.5.3.0',
+        rpcUrl: this.getConfig().NETWORKS['gnosis'].RPC_URL,
+        chainId: this.getConfig().NETWORKS['gnosis'].CHAIN_ID,
+        programAddress:
+          this.getConfig().NETWORKS['gnosis'].POCKET_PROGRAM_ADDRESS,
+        vaultAddress:
+          this.getConfig().NETWORKS['gnosis'].POCKET_VAULT_PROGRAM_ADDRESS,
+        registryAddress:
+          this.getConfig().NETWORKS['gnosis'].POCKET_REGISTRY_PROGRAM_ADDRESS,
+        explorerUrl: 'https://gnosisscan.io/',
+        whitelistedRouters: [
+          {
+            address: '0x1c232f01118cb8b424793ae03f870aa7d0ac7f77',
+            isV3: false,
+            ammTag: 'honeyswap',
+            ammName: 'Honey Swap',
+            dexUrl: 'https://honeyswap.1hive.eth.limo/',
           },
         ],
       },
@@ -245,52 +288,10 @@ export class RegistryProvider {
           },
         ],
       },
-      gnosis: {
-        wagmiKey: 'gnosis',
-        chainName: 'Gnosis',
-        chainLogo:
-          'https://gnosisscan.io/images/svg/brands/main.svg?v=23.5.3.0',
-        rpcUrl: this.getConfig().NETWORKS['gnosis'].RPC_URL,
-        chainId: this.getConfig().NETWORKS['gnosis'].CHAIN_ID,
-        programAddress:
-          this.getConfig().NETWORKS['gnosis'].POCKET_PROGRAM_ADDRESS,
-        vaultAddress:
-          this.getConfig().NETWORKS['gnosis'].POCKET_VAULT_PROGRAM_ADDRESS,
-        registryAddress:
-          this.getConfig().NETWORKS['gnosis'].POCKET_REGISTRY_PROGRAM_ADDRESS,
-        explorerUrl: 'https://gnosisscan.io/',
-        whitelistedRouters: [
-          {
-            address: '0x1c232f01118cb8b424793ae03f870aa7d0ac7f77',
-            isV3: false,
-            ammTag: 'honeyswap',
-            ammName: 'Honey Swap',
-            dexUrl: 'https://honeyswap.1hive.eth.limo/',
-          },
-        ],
-      },
-      ['aptos-testnet']: {
-        chainName: 'Aptos',
-        chainLogo:
-          'https://assets.coingecko.com/coins/images/4128/small/solana.png?1640133422',
-        rpcUrl: this.getConfig().NETWORKS['solana'].RPC_URL,
-        explorerUrl: 'https://solscan.io/',
-        programAddress:
-          this.getConfig().NETWORKS['solana'].POCKET_PROGRAM_ADDRESS,
-        whitelistedRouters: [
-          {
-            address: '',
-            isV3: false,
-            ammTag: 'raydium',
-            ammName: 'Raydium Swap',
-            dexUrl: 'https://raydium.io/swap/',
-          },
-        ],
-      },
       solana: {
         chainName: 'Solana',
         chainLogo:
-          'https://assets.coingecko.com/coins/images/4128/small/solana.png?1640133422',
+          'https://assets.coingecko.com/coins/images/4128/small/solana.png',
         rpcUrl: this.getConfig().NETWORKS['solana'].RPC_URL,
         explorerUrl: 'https://solscan.io/',
         programAddress:

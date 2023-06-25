@@ -2,13 +2,13 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model, PipelineStage, Types } from 'mongoose';
 
-import { CommonQueryDto } from '../../api-docs/dto/common-query.dto';
-import { PoolModel, PoolDocument } from '../../orm/model/pool.model';
-import { SolanaPoolProvider } from '../../providers/solana-pocket-program/solana-pool.provider';
+import { CommonQueryDto } from '@/api-docs/dto/common-query.dto';
+import { PoolModel, PoolDocument } from '@/orm/model/pool.model';
+import { SolanaPoolProvider } from '@/providers/solana-pocket-program/solana-pool.provider';
 import { FindPoolDto, FindPoolSortOption } from '../dtos/find-pool.dto';
 import { ChainID, PoolEntity } from '../entities/pool.entity';
-import { MarketModel } from '../../orm/model/market.model';
-import { EVMBasedPocketProvider } from '../../providers/evm-pocket-program/evm.provider';
+import { MarketModel } from '@/orm/model/market.model';
+import { EVMBasedPocketProvider } from '@/providers/evm-pocket-program/evm.provider';
 import { SyncEvmPoolService } from './sync-evm-pool.service';
 
 @Injectable()

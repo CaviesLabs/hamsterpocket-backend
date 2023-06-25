@@ -6,9 +6,9 @@ import {
   ActivityType,
   PoolActivityEntity,
   PoolActivityStatus,
-} from '../../pool/entities/pool-activity.entity';
+} from '@/pool/entities/pool-activity.entity';
 import { BaseModel } from '../base.model';
-import { ChainID } from '../../pool/entities/pool.entity';
+import { ChainID } from '@/pool/entities/pool.entity';
 
 @Injectable()
 @Schema({ collection: 'pool_activities', timestamps: false, autoIndex: true })

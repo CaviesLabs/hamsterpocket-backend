@@ -6,13 +6,23 @@ export interface TokenMetadata {
   decimals?: number;
 }
 
-export class NonEvmConfig {
+export class SolanaConfig {
   rpcUrl: string;
   programAddress: string;
   whitelistedRouters: WhitelistedRouter[];
   explorerUrl: string;
   chainName: string;
   chainLogo: string;
+}
+
+export class AptosConfig {
+  rpcUrl: string;
+  programAddress: string;
+  whitelistedRouters: WhitelistedRouter[];
+  explorerUrl: string;
+  chainName: string;
+  chainLogo: string;
+  graphQLUrl: string;
 }
 
 export class WhitelistedRouter {
@@ -37,8 +47,8 @@ export class EVMChainConfig {
 }
 
 export class PlatformConfigEntity {
-  solana: NonEvmConfig;
-  ['aptos-testnet']: NonEvmConfig;
+  solana: SolanaConfig;
+  aptos_testnet: AptosConfig;
   polygon_mumbai: EVMChainConfig;
   bnb: EVMChainConfig;
   avaxc: EVMChainConfig;

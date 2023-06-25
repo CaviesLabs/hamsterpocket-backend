@@ -38,6 +38,8 @@ export enum ChainID {
   OKT = 'okt',
   Gnosis = 'gnosis',
   AvaxC = 'avaxc',
+  AptosTestnet = 'aptos_testnet',
+  AptosMainnet = 'aptos_mainnet',
 }
 export class BuyCondition {
   type: PriceConditionType;
