@@ -6,10 +6,13 @@ import { CommonQueryDto } from '@/api-docs/dto/common-query.dto';
 import { PoolModel, PoolDocument } from '@/orm/model/pool.model';
 import { SolanaPoolProvider } from '@/providers/solana-pocket-program/solana-pool.provider';
 import { FindPoolDto, FindPoolSortOption } from '../dtos/find-pool.dto';
-import { ChainID, PoolEntity } from '../entities/pool.entity';
+import { ChainID, PoolEntity, TradingStopType } from '../entities/pool.entity';
 import { MarketModel } from '@/orm/model/market.model';
 import { EVMBasedPocketProvider } from '@/providers/evm-pocket-program/evm.provider';
+
 import { SyncEvmPoolService } from './sync-evm-pool.service';
+import { WhitelistDocument, WhitelistModel } from '@/orm/model/whitelist.model';
+import { UtilsProvider } from '@/providers/utils.provider';
 
 @Injectable()
 export class PoolService {
@@ -20,6 +23,8 @@ export class PoolService {
     private readonly poolRepo: Model<PoolDocument>,
     @InjectModel(MarketModel.name)
     private readonly marketDataRepo: Model<MarketModel>,
+    @InjectModel(WhitelistModel.name)
+    private readonly whitelistRepo: Model<WhitelistDocument>,
   ) {}
 
   async find({
@@ -60,7 +65,10 @@ export class PoolService {
     });
 
     /** Filter & search stage */
-    const filter: FilterQuery<PoolDocument> = { ownerAddress, chainId };
+    const filter: FilterQuery<PoolDocument> = {
+      ownerAddress: { $regex: new RegExp(ownerAddress, 'i') },
+      chainId,
+    };
 
     if (search) {
       const regexSearch = new RegExp(search, 'i');
@@ -150,6 +158,148 @@ export class PoolService {
     return this.poolRepo.aggregate<PoolModel>(stages);
   }
 
+  async getDisplayedPools({
+    chainId,
+    search,
+    limit,
+    offset,
+    ownerAddress,
+    sortBy,
+    statuses,
+  }: CommonQueryDto & FindPoolDto): Promise<PoolEntity[]> {
+    const stages: PipelineStage[] = [];
+    /** Map pool stage */
+    stages.push({
+      $addFields: {
+        idString: {
+          $toString: '$_id',
+        },
+      },
+    });
+
+    stages.push({
+      $lookup: {
+        from: 'whitelists',
+        as: 'baseTokenInfo',
+        localField: 'baseTokenAddress',
+        foreignField: 'address',
+      },
+    });
+
+    stages.push({
+      $lookup: {
+        from: 'whitelists',
+        as: 'targetTokenInfo',
+        localField: 'targetTokenAddress',
+        foreignField: 'address',
+      },
+    });
+
+    /** Filter & search stage */
+    const filter: FilterQuery<PoolDocument> = {
+      ownerAddress: { $regex: new RegExp(ownerAddress, 'i') },
+      chainId,
+    };
+
+    if (search) {
+      const regexSearch = new RegExp(search, 'i');
+
+      /**
+       * @dev Base token info
+       */
+      filter.$or = [
+        /**
+         * @dev Base token info
+         */
+        {
+          'baseTokenInfo.address': {
+            $regex: regexSearch,
+          },
+        },
+        {
+          'baseTokenInfo.symbol': {
+            $regex: regexSearch,
+          },
+        },
+        {
+          'baseTokenInfo.name': {
+            $regex: regexSearch,
+          },
+        },
+        /**
+         * @dev Target token info
+         */
+        {
+          'targetTokenInfo.address': {
+            $regex: regexSearch,
+          },
+        },
+        {
+          'targetTokenInfo.symbol': {
+            $regex: regexSearch,
+          },
+        },
+        {
+          'targetTokenInfo.name': {
+            $regex: regexSearch,
+          },
+        },
+        {
+          name: {
+            $regex: regexSearch,
+          },
+        },
+        {
+          idString: {
+            $regex: regexSearch,
+          },
+        },
+      ];
+    }
+
+    if (statuses && statuses.length >= 0) {
+      filter.status = { $in: statuses };
+    }
+
+    stages.push({ $match: filter });
+
+    /** Sort stage */
+    switch (sortBy) {
+      case FindPoolSortOption.DATE_START_DESC:
+        stages.push({ $sort: { startTime: -1 } });
+        break;
+      case FindPoolSortOption.DATE_CREATED_DESC:
+        stages.push({ $sort: { createdAt: -1 } });
+        break;
+      case FindPoolSortOption.PROGRESS_ASC:
+      case FindPoolSortOption.PROGRESS_DESC:
+        /** Sort progress stage */
+        stages.push({
+          $sort: {
+            progressPercent:
+              sortBy === FindPoolSortOption.PROGRESS_ASC ? 1 : -1,
+          },
+        });
+        break;
+    }
+
+    /** Paginate stage */
+    stages.push({ $skip: offset }, { $limit: limit });
+
+    const result = await this.poolRepo.aggregate<PoolDocument>(stages).exec();
+
+    return result.map((elm) => {
+      if ((elm as any).baseTokenInfo[0] && (elm as any).targetTokenInfo[0]) {
+        return this.getDisplayedDecimalsData(
+          elm,
+          (elm as any).baseTokenInfo[0] as WhitelistDocument,
+          (elm as any).targetTokenInfo[0] as WhitelistDocument,
+        );
+      }
+      return elm;
+    }) as unknown as PoolDocument[];
+  }
+
   /**
    * @dev Create empty pool
    * @param ownerAddress
@@ -177,14 +327,128 @@ export class PoolService {
    * @dev Get pool details
    * @param id
    */
+  async getPoolDetailWithDecimalsFormatted(id: string) {
+    const pool = await this.poolRepo.findById(id).exec();
+
+    if (!pool) {
+      throw new NotFoundException('OBJECT_NOT_FOUND');
+    }
+
+    const baseTokenInfo = await this.whitelistRepo.findOne({
+      address: pool.baseTokenAddress,
+    });
+    const targetTokenInfo = await this.whitelistRepo.findOne({
+      address: pool.targetTokenAddress,
+    });
+
+    return this.getDisplayedDecimalsData(
+      (pool as any)._doc as PoolDocument,
+      baseTokenInfo,
+      targetTokenInfo,
+    );
+  }
+
+  /**
+   * @dev Get pool details
+   * @param id
+   */
   async getPoolDetail(id: string) {
-    const pool = await this.poolRepo.findById(id);
+    const pool = await this.poolRepo.findById(id).exec();
 
     if (!pool) {
       throw new NotFoundException('OBJECT_NOT_FOUND');
     }
 
     return pool;
+  }
+
+  private getDisplayedDecimalsData(
+    pool: PoolDocument,
+    baseTokenInfo: WhitelistDocument,
+    targetTokenInfo: WhitelistDocument,
+  ) {
+    if (pool.buyCondition) {
+      (pool as any).buyCondition.value = pool.buyCondition.value.map((value) =>
+        new UtilsProvider().getDisplayedDecimals(
+          value / 10 ** targetTokenInfo.decimals,
+        ),
+      );
+    }
+
+    if (pool.stopConditions && pool.stopConditions.receivedTargetTokenReach) {
+      (pool as any).stopConditions.receivedTargetTokenReach =
+        new UtilsProvider().getDisplayedDecimals(
+          pool.stopConditions.receivedTargetTokenReach /
+            10 ** targetTokenInfo.decimals,
+        );
+    }
+
+    if (pool.stopConditions && pool.stopConditions.spentBaseTokenReach) {
+      (pool as any).stopConditions.spentBaseTokenReach =
+        new UtilsProvider().getDisplayedDecimals(
+          pool.stopConditions.spentBaseTokenReach /
+            10 ** baseTokenInfo.decimals,
+        );
+    }
+
+    if (pool.stopConditions && pool.stopConditions.batchAmountReach) {
+      (pool as any).stopConditions.batchAmountReach =
+        new UtilsProvider().getDisplayedDecimals(
+          pool.stopConditions.batchAmountReach / 10 ** baseTokenInfo.decimals,
+        );
+    }
+
+    if (
+      pool.stopLossCondition &&
+      pool.stopLossCondition.stopType === TradingStopType.Price
+    ) {
+      (pool as any).stopLossCondition.value =
+        new UtilsProvider().getDisplayedDecimals(
+          Number(pool.stopLossCondition.value) / 10 ** baseTokenInfo.decimals,
+        );
+    }
+
+    if (
+      pool.takeProfitCondition &&
+      pool.takeProfitCondition.stopType === TradingStopType.Price
+    ) {
+      (pool as any).takeProfitCondition.value =
+        new UtilsProvider().getDisplayedDecimals(
+          Number(pool.takeProfitCondition.value) / 10 ** baseTokenInfo.decimals,
+        );
+    }
+
+    return {
+      ...pool,
+      remainingBaseTokenBalance: new UtilsProvider().getDisplayedDecimals(
+        pool.remainingBaseTokenBalance / 10 ** baseTokenInfo.decimals,
+      ),
+      batchVolume: new UtilsProvider().getDisplayedDecimals(
+        pool.batchVolume / 10 ** baseTokenInfo.decimals,
+      ),
+      depositedAmount: new UtilsProvider().getDisplayedDecimals(
+        pool.depositedAmount / 10 ** baseTokenInfo.decimals,
+      ),
+      currentSpentBaseToken: new UtilsProvider().getDisplayedDecimals(
+        pool.currentSpentBaseToken / 10 ** baseTokenInfo.decimals,
+      ),
+      totalReceivedFundInBaseTokenAmount:
+        new UtilsProvider().getDisplayedDecimals(
+          pool.totalReceivedFundInBaseTokenAmount /
+            10 ** baseTokenInfo.decimals,
+        ),
+      currentTargetTokenBalance: new UtilsProvider().getDisplayedDecimals(
+        pool.currentTargetTokenBalance / 10 ** targetTokenInfo.decimals,
+      ),
+      currentReceivedTargetToken: new UtilsProvider().getDisplayedDecimals(
+        pool.currentReceivedTargetToken / 10 ** targetTokenInfo.decimals,
+      ),
+      totalClosedPositionInTargetTokenAmount:
+        new UtilsProvider().getDisplayedDecimals(
+          pool.totalClosedPositionInTargetTokenAmount /
+            10 ** targetTokenInfo.decimals,
+        ),
+    };
   }
 
   /**
