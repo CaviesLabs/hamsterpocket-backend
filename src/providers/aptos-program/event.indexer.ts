@@ -254,28 +254,29 @@ export class EventIndexer {
       expectedMaxBlock > desiredMaxBlock ? desiredMaxBlock - startBlock : limit;
 
     const { events } = (await this.aptosIndexer.queryIndexer({
-      query: `query fetchEvents($resourceAddress: String, $eventTags: [String], $limit: Int) {
-                      events(
-                        where: {account_address: {_eq: $resourceAddress}, type: {_in: $eventTags}}
-                        limit: $limit
-                        order_by: {transaction_version: desc}
-                      ) {
-                        account_address
-                        creation_number
-                        data
-                        event_index
-                        sequence_number
-                        transaction_block_height
-                        transaction_version
-                        type
-                      }
-                  }`,
+      query: `query fetchEvents($resourceAddress: String, $eventTags: [String], $limit: Int, $startFrom: bigint) {
+                  events(
+                    where: {account_address: {_eq: $resourceAddress}, type: {_in: $eventTags}, transaction_version: {_gte: $startFrom}}
+                    limit: 2000
+                    order_by: {transaction_version: desc}
+                  ) {
+                    account_address
+                    creation_number
+                    data
+                    event_index
+                    sequence_number
+                    transaction_block_height
+                    transaction_version
+                    type
+                  }
+                }`,
       variables: {
         resourceAddress: this.resourceAccount,
         eventTags: Object.keys(this.eventType).map(
           (key) => this.eventType[key],
         ),
         limit: newLimit,
+        startFrom: startBlock,
       },
     })) as QueryIndexerEventResponse<any>;
 
