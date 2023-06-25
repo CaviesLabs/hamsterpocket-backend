@@ -14,6 +14,9 @@ import { SyncEvmPoolActivityService } from './services/sync-evm-pool-activity.se
 import { SyncEvmPoolService } from './services/sync-evm-pool.service';
 import { EVMPoolController } from './controllers/evm-pool.controller';
 import { FixDecimalsEventData } from './commands/fix-decimals-event-data';
+import { SyncAptosActivityService } from '@/pool/services/sync-aptos-activity.service';
+import { SyncAptosPoolService } from '@/pool/services/sync-aptos-pool.service';
+import { AptosPoolController } from '@/pool/controllers/aptos-pool.controller';
 
 @Module({
   imports: [OrmModule],
@@ -30,12 +33,14 @@ import { FixDecimalsEventData } from './commands/fix-decimals-event-data';
     PortfolioService,
     SyncEvmPoolActivityService,
     SyncEvmPoolService,
+    SyncAptosActivityService,
+    SyncAptosPoolService,
     /**
      * @dev Commands
      */
     MigrateChainIdCommand,
     FixDecimalsEventData,
   ],
-  controllers: [PoolController, EVMPoolController],
+  controllers: [PoolController, AptosPoolController, EVMPoolController],
 })
 export class PoolModule {}

@@ -1,10 +1,6 @@
 import { Controller, Param, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
-import { RegistryProvider } from '../../providers/registry.provider';
-import { PoolActivityService } from '../services/pool-activity.service';
-import { PoolService } from '../services/pool.service';
-import { SyncPoolActivityService } from '../services/sync-pool-activity.service';
 import { SyncEvmPoolService } from '../services/sync-evm-pool.service';
 import { SyncEvmPoolActivityService } from '../services/sync-evm-pool-activity.service';
 import { SyncPoolsDto } from '../dtos/sync-pools.dto';
@@ -13,10 +9,6 @@ import { SyncPoolsDto } from '../dtos/sync-pools.dto';
 @ApiTags('evm/pool')
 export class EVMPoolController {
   constructor(
-    private readonly registry: RegistryProvider,
-    private readonly poolService: PoolService,
-    private readonly poolActivityService: PoolActivityService,
-    private readonly syncPoolActivityService: SyncPoolActivityService,
     private readonly syncEVMPoolService: SyncEvmPoolService,
     private readonly syncEvmPoolActivityService: SyncEvmPoolActivityService,
   ) {}

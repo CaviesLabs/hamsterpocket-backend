@@ -9,16 +9,17 @@ import {
 import { PoolDocument, PoolModel } from '@/orm/model/pool.model';
 import { Timer } from '@/providers/utils.provider';
 import { ChainID } from '../entities/pool.entity';
-import { EVMIndexer } from '@/providers/evm-pocket-program/evm.indexer';
 import { WhitelistDocument, WhitelistModel } from '@/orm/model/whitelist.model';
 import {
   SyncStatusDocument,
   SyncStatusModel,
 } from '@/orm/model/sync-status.model';
 import { ActivityType } from '../entities/pool-activity.entity';
+import { EventIndexer } from '@/providers/aptos-program/event.indexer';
+import { RegistryProvider } from '@/providers/registry.provider';
 
 @Injectable()
-export class SyncEvmPoolActivityService {
+export class SyncAptosActivityService {
   constructor(
     @InjectModel(PoolActivityModel.name)
     private readonly poolActivityRepo: Model<PoolActivityDocument>,
@@ -30,32 +31,15 @@ export class SyncEvmPoolActivityService {
     private readonly syncStatusRepo: Model<SyncStatusDocument>,
   ) {}
 
-  private async updateEvent(events) {
-    const updates = events.map((event) => {
-      return {
-        updateOne: {
-          filter: { eventHash: event.eventHash },
-          update: {
-            $set: {
-              eventHash: event.eventHash,
-              ...event,
-            },
-          },
-          upsert: true,
-        },
-      };
-    });
-    await this.poolActivityRepo.bulkWrite(updates);
-  }
-  async syncAllPoolActivities() {
-    const timer = new Timer('Sync All EVM Pools activities');
+  public async syncAllPoolActivities() {
+    const timer = new Timer('Sync All Aptos Pools activities');
     timer.start();
 
     const data = await this.poolRepo.aggregate([
       {
         $match: {
           chainId: {
-            $ne: ChainID.Solana,
+            $in: [ChainID.AptosMainnet, ChainID.AptosTestnet],
           },
         },
       },
@@ -76,11 +60,12 @@ export class SyncEvmPoolActivityService {
         /**
          * @dev Aggregate data
          */
-        const { data: events, syncedBlock } = await new EVMIndexer(
-          chainId,
+        const { data: events, syncedBlock } = await new EventIndexer(
+          chainId as ChainID.AptosTestnet | ChainID.AptosMainnet,
           this.poolRepo,
           this.whitelistRepo,
-        ).fetchEventEntities(syncStatus.syncedBlock + 1, syncStatus.blockDiff);
+          new RegistryProvider(),
+        ).fetchEvents(syncStatus.syncedBlock + 1, syncStatus.blockDiff);
 
         console.log(
           `Found ${events.length} event(s) from syncing chain ${chainId} ...`,
@@ -137,5 +122,23 @@ export class SyncEvmPoolActivityService {
     );
 
     timer.stop();
+  }
+
+  private async updateEvent(events) {
+    const updates = events.map((event) => {
+      return {
+        updateOne: {
+          filter: { eventHash: event.eventHash },
+          update: {
+            $set: {
+              eventHash: event.eventHash,
+              ...event,
+            },
+          },
+          upsert: true,
+        },
+      };
+    });
+    await this.poolActivityRepo.bulkWrite(updates);
   }
 }

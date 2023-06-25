@@ -20,6 +20,7 @@ import {
   UpdateTradingStatsEvent,
   UpdateWithdrawalStatsEvent,
 } from '@/providers/aptos-program/library/entities/pocket-events.entity';
+import { BadRequestException } from '@nestjs/common';
 
 interface EventData<T> {
   account_address: string;
@@ -47,6 +48,10 @@ export class EventIndexer {
     private readonly whitelist: Model<WhitelistDocument>,
     private readonly registryProvider: RegistryProvider,
   ) {
+    if (chainId !== ChainID.AptosMainnet && chainId !== ChainID.AptosTestnet) {
+      throw new BadRequestException('INVALID_CHAIN_ID');
+    }
+
     const registry = this.registryProvider.getChains()[
       this.chainId as string
     ] as AptosConfig;

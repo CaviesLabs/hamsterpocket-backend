@@ -8,8 +8,8 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
-import { CommonQueryDto } from '../../api-docs/dto/common-query.dto';
-import { RegistryProvider } from '../../providers/registry.provider';
+import { CommonQueryDto } from '@/api-docs/dto/common-query.dto';
+import { RegistryProvider } from '@/providers/registry.provider';
 import { FindPoolActivityDto } from '../dtos/find-pool-activity.dto';
 import { FindPoolDto } from '../dtos/find-pool.dto';
 import { PoolActivityEntity } from '../entities/pool-activity.entity';
@@ -53,15 +53,18 @@ export class PoolController {
     @Query() { search, limit, offset }: CommonQueryDto,
     @Query() { ownerAddress, statuses, sortBy, chainId }: FindPoolDto,
   ) {
-    return this.poolService.getDisplayedPools({
-      search,
-      chainId,
-      limit,
-      offset,
-      ownerAddress,
-      statuses,
-      sortBy,
-    });
+    return this.poolService.find(
+      {
+        search,
+        chainId,
+        limit,
+        offset,
+        ownerAddress,
+        statuses,
+        sortBy,
+      },
+      true,
+    );
   }
   @Get('/:id/decimals-formatted')
   async getPocketDetailsWithDecimalsFormatted(@Param('id') id: string) {
@@ -113,6 +116,27 @@ export class PoolController {
       offset,
       search,
     });
+  }
+
+  @Get('/activity/decimals-formatted')
+  async getPoolActivitiesWithDecimalsFormatted(
+    @Query() { limit, offset, search }: CommonQueryDto,
+    @Query()
+    { ownerAddress, timeFrom, chainId, timeTo, statuses }: FindPoolActivityDto,
+  ): Promise<PoolActivityEntity[]> {
+    return this.poolActivityService.find(
+      {
+        chainId,
+        ownerAddress,
+        timeFrom,
+        timeTo,
+        statuses,
+        limit,
+        offset,
+        search,
+      },
+      true,
+    );
   }
 
   @Post('/mock/generate')

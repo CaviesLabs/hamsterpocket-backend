@@ -13,12 +13,19 @@ import { EVMBasedPocketProvider } from '@/providers/evm-pocket-program/evm.provi
 import { SyncEvmPoolService } from './sync-evm-pool.service';
 import { WhitelistDocument, WhitelistModel } from '@/orm/model/whitelist.model';
 import { UtilsProvider } from '@/providers/utils.provider';
+import { TransactionBuilder } from '@/providers/aptos-program/library/transaction.builder';
+import { AptosConfig } from '@/token-metadata/entities/platform-config.entity';
+import { TransactionSigner } from '@/providers/aptos-program/library/transaction.client';
+import { HexString } from 'aptos';
+import { RegistryProvider } from '@/providers/registry.provider';
+import { SyncAptosPoolService } from '@/pool/services/sync-aptos-pool.service';
 
 @Injectable()
 export class PoolService {
   constructor(
     private readonly onChainPoolProvider: SolanaPoolProvider,
     private readonly syncEVMService: SyncEvmPoolService,
+    private readonly syncAptosService: SyncAptosPoolService,
     @InjectModel(PoolModel.name)
     private readonly poolRepo: Model<PoolDocument>,
     @InjectModel(MarketModel.name)
@@ -27,146 +34,18 @@ export class PoolService {
     private readonly whitelistRepo: Model<WhitelistDocument>,
   ) {}
 
-  async find({
-    chainId,
-    search,
-    limit,
-    offset,
-    ownerAddress,
-    sortBy,
-    statuses,
-  }: CommonQueryDto & FindPoolDto): Promise<PoolEntity[]> {
-    const stages: PipelineStage[] = [];
-    /** Map pool stage */
-    stages.push({
-      $addFields: {
-        idString: {
-          $toString: '$_id',
-        },
-      },
-    });
-
-    stages.push({
-      $lookup: {
-        from: 'whitelists',
-        as: 'baseTokenInfo',
-        localField: 'baseTokenAddress',
-        foreignField: 'address',
-      },
-    });
-
-    stages.push({
-      $lookup: {
-        from: 'whitelists',
-        as: 'targetTokenInfo',
-        localField: 'targetTokenAddress',
-        foreignField: 'address',
-      },
-    });
-
-    /** Filter & search stage */
-    const filter: FilterQuery<PoolDocument> = {
-      ownerAddress: { $regex: new RegExp(ownerAddress, 'i') },
+  async find(
+    {
       chainId,
-    };
-
-    if (search) {
-      const regexSearch = new RegExp(search, 'i');
-
-      /**
-       * @dev Base token info
-       */
-      filter.$or = [
-        /**
-         * @dev Base token info
-         */
-        {
-          'baseTokenInfo.address': {
-            $regex: regexSearch,
-          },
-        },
-        {
-          'baseTokenInfo.symbol': {
-            $regex: regexSearch,
-          },
-        },
-        {
-          'baseTokenInfo.name': {
-            $regex: regexSearch,
-          },
-        },
-        /**
-         * @dev Target token info
-         */
-        {
-          'targetTokenInfo.address': {
-            $regex: regexSearch,
-          },
-        },
-        {
-          'targetTokenInfo.symbol': {
-            $regex: regexSearch,
-          },
-        },
-        {
-          'targetTokenInfo.name': {
-            $regex: regexSearch,
-          },
-        },
-        {
-          name: {
-            $regex: regexSearch,
-          },
-        },
-        {
-          idString: {
-            $regex: regexSearch,
-          },
-        },
-      ];
-    }
-
-    if (statuses && statuses.length >= 0) {
-      filter.status = { $in: statuses };
-    }
-
-    stages.push({ $match: filter });
-
-    /** Sort stage */
-    switch (sortBy) {
-      case FindPoolSortOption.DATE_START_DESC:
-        stages.push({ $sort: { startTime: -1 } });
-        break;
-      case FindPoolSortOption.DATE_CREATED_DESC:
-        stages.push({ $sort: { createdAt: -1 } });
-        break;
-      case FindPoolSortOption.PROGRESS_ASC:
-      case FindPoolSortOption.PROGRESS_DESC:
-        /** Sort progress stage */
-        stages.push({
-          $sort: {
-            progressPercent:
-              sortBy === FindPoolSortOption.PROGRESS_ASC ? 1 : -1,
-          },
-        });
-        break;
-    }
-
-    /** Paginate stage */
-    stages.push({ $skip: offset }, { $limit: limit });
-
-    return this.poolRepo.aggregate<PoolModel>(stages);
-  }
-
-  async getDisplayedPools({
-    chainId,
-    search,
-    limit,
-    offset,
-    ownerAddress,
-    sortBy,
-    statuses,
-  }: CommonQueryDto & FindPoolDto): Promise<PoolEntity[]> {
+      search,
+      limit,
+      offset,
+      ownerAddress,
+      sortBy,
+      statuses,
+    }: CommonQueryDto & FindPoolDto,
+    formatDecimals = false,
+  ): Promise<PoolEntity[]> {
     const stages: PipelineStage[] = [];
     /** Map pool stage */
     stages.push({
@@ -288,16 +167,20 @@ export class PoolService {
 
     const result = await this.poolRepo.aggregate<PoolDocument>(stages).exec();
 
-    return result.map((elm) => {
-      if ((elm as any).baseTokenInfo[0] && (elm as any).targetTokenInfo[0]) {
-        return this.getDisplayedDecimalsData(
-          elm,
-          (elm as any).baseTokenInfo[0] as WhitelistDocument,
-          (elm as any).targetTokenInfo[0] as WhitelistDocument,
-        );
-      }
-      return elm;
-    }) as unknown as PoolDocument[];
+    if (formatDecimals) {
+      return result.map((elm) => {
+        if ((elm as any).baseTokenInfo[0] && (elm as any).targetTokenInfo[0]) {
+          return this.getDisplayedDecimalsData(
+            elm,
+            (elm as any).baseTokenInfo[0] as WhitelistDocument,
+            (elm as any).targetTokenInfo[0] as WhitelistDocument,
+          );
+        }
+        return elm;
+      }) as unknown as PoolDocument[];
+    }
+
+    return result;
   }
 
   /**
@@ -391,13 +274,6 @@ export class PoolService {
         );
     }
 
-    if (pool.stopConditions && pool.stopConditions.batchAmountReach) {
-      (pool as any).stopConditions.batchAmountReach =
-        new UtilsProvider().getDisplayedDecimals(
-          pool.stopConditions.batchAmountReach / 10 ** baseTokenInfo.decimals,
-        );
-    }
-
     if (
       pool.stopLossCondition &&
       pool.stopLossCondition.stopType === TradingStopType.Price
@@ -420,6 +296,15 @@ export class PoolService {
 
     return {
       ...pool,
+      currentROI: new UtilsProvider().getDisplayedDecimals(pool.currentROI),
+      currentROIValue: new UtilsProvider().getDisplayedDecimals(
+        pool.currentROIValue,
+      ),
+      avgPrice: new UtilsProvider().getDisplayedDecimals(pool.avgPrice),
+      realizedROI: new UtilsProvider().getDisplayedDecimals(pool.realizedROI),
+      realizedROIValue: new UtilsProvider().getDisplayedDecimals(
+        pool.realizedROIValue,
+      ),
       remainingBaseTokenBalance: new UtilsProvider().getDisplayedDecimals(
         pool.remainingBaseTokenBalance / 10 ** baseTokenInfo.decimals,
       ),
@@ -449,6 +334,94 @@ export class PoolService {
             10 ** targetTokenInfo.decimals,
         ),
     };
+  }
+
+  /**
+   * @dev Create aptos transaction builder
+   * @param chainId
+   * @private
+   */
+  private createAptosTransactionBuilder(
+    chainId: ChainID.AptosMainnet | ChainID.AptosTestnet,
+  ) {
+    const registryProvider = new RegistryProvider();
+
+    // get registry
+    const registry = registryProvider.getChains()[
+      chainId as string
+    ] as AptosConfig;
+    const resourceAccount = registry.programAddress;
+
+    // initialize and builder
+    return new TransactionBuilder(
+      new TransactionSigner(
+        HexString.ensure(
+          registryProvider.getConfig().NETWORKS[chainId].OPERATOR_SECRET_KEY,
+        ).toString(),
+        registry.rpcUrl,
+      ),
+      resourceAccount,
+    );
+  }
+
+  /**
+   * @dev Execute swap token on Aptos
+   * @param poolId
+   * @param chainId
+   */
+  async executeSwapTokenOnAptos(
+    poolId: string,
+    chainId: ChainID.AptosTestnet | ChainID.AptosMainnet,
+  ) {
+    const txBuilder = this.createAptosTransactionBuilder(chainId);
+    const pool = await this.poolRepo.findById(poolId);
+
+    try {
+      const tx = await txBuilder
+        .buildOperatorMakeDCASwapTransaction({
+          id: poolId,
+          baseCoinType: pool.baseTokenAddress,
+          targetCoinType: pool.targetTokenAddress,
+          minAmountOut: BigInt(0),
+        })
+        .execute();
+
+      console.log('[SWAPPED_SUCCESSFULLY] TxId:', tx.txId);
+    } catch (e) {
+      throw e;
+    } finally {
+      await this.syncAptosService.syncPoolById(poolId);
+    }
+  }
+
+  /**
+   * @dev Execute swap token on Aptos
+   * @param poolId
+   * @param chainId
+   */
+  async executeClosingPositionOnAptos(
+    poolId: string,
+    chainId: ChainID.AptosTestnet | ChainID.AptosMainnet,
+  ) {
+    const txBuilder = this.createAptosTransactionBuilder(chainId);
+    const pool = await this.poolRepo.findById(poolId);
+
+    try {
+      const tx = await txBuilder
+        .buildOperatorClosePositionTransaction({
+          id: poolId,
+          baseCoinType: pool.baseTokenAddress,
+          targetCoinType: pool.targetTokenAddress,
+          minAmountOut: BigInt(0),
+        })
+        .execute();
+
+      console.log('[SWAPPED_SUCCESSFULLY] TxId:', tx.txId);
+    } catch (e) {
+      throw e;
+    } finally {
+      await this.syncAptosService.syncPoolById(poolId);
+    }
   }
 
   /**

@@ -75,13 +75,7 @@ export class PocketIndexer {
     return Promise.all(
       pockets
         .map((pocket) => transformPocketEntity(pocket))
-        .map((pocket) => this.parsePocketData(pocket))
-        .map(async (pocket) => {
-          return {
-            ...pocket,
-            ...(await this.calculateSingleROIAndAvgPrice(pocket.id)),
-          };
-        }),
+        .map((pocket) => this.parsePocketData(pocket)),
     );
   }
 
@@ -90,10 +84,10 @@ export class PocketIndexer {
    * We will calculate and compare the balance based on the scenario that if we close position at market price, how much we get back in fund.
    * @param pocketId
    */
-  private async calculateSingleROIAndAvgPrice(pocketId: string): Promise<{
-    roi: number;
+  public async calculateSingleROIAndAvgPrice(pocketId: string): Promise<{
     avgPrice: number;
-    roiValue: number;
+    currentROI: number;
+    currentROIValue: number;
     realizedROI: number;
     realizedROIValue: number;
   }> {
@@ -105,15 +99,20 @@ export class PocketIndexer {
     const [amountOut] = await this.aptosTxBuilder
       .buildGetQuote({
         amountIn: amount.toBigInt(),
-        baseCoinType: pocket.baseTokenAddress,
+        baseCoinType: pocket.targetTokenAddress,
         targetCoinType: pocket.baseTokenAddress,
       })
       .execute()
-      .catch(() => [
-        BigNumber.from(`0x${(pocket.currentSpentBaseToken || 0).toString(16)}`)
-          .toNumber()
-          .toString(),
-      ]);
+      .catch((e) => {
+        console.log(e);
+        return [
+          BigNumber.from(
+            `0x${(pocket.currentSpentBaseToken || 0).toString(16)}`,
+          )
+            .toNumber()
+            .toString(),
+        ];
+      });
 
     return this.calculateROIAndAvgPrice(pocket.id, BigNumber.from(amountOut));
   }
@@ -201,10 +200,10 @@ export class PocketIndexer {
 
     if (!baseToken || !targetToken) {
       return {
-        roiValue: null,
+        currentROIValue: null,
+        currentROI: null,
         realizedROI: null,
         realizedROIValue: null,
-        roi: null,
         avgPrice: null,
       };
     }
@@ -237,16 +236,16 @@ export class PocketIndexer {
       10 ** baseToken.decimals;
 
     const result = {
-      roiValue: isNaN(roiValue) ? null : roiValue,
+      currentROIValue: isNaN(roiValue) ? null : roiValue,
       realizedROI: isNaN(realizedROI) ? null : realizedROI,
       realizedROIValue: isNaN(realizedROIValue) ? null : realizedROIValue,
-      roi: isNaN(roi) ? null : roi,
+      currentROI: isNaN(roi) ? null : roi,
       avgPrice: isNaN(avgPrice) ? null : avgPrice,
     };
 
     if (pocket.status === PoolStatus.ENDED) {
-      result.roi = 0;
-      result.roiValue = 0;
+      result.currentROI = 0;
+      result.currentROIValue = 0;
     }
 
     return result;

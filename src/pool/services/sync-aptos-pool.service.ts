@@ -10,7 +10,7 @@ import { PocketIndexer } from '@/providers/aptos-program/pocket.indexer';
 import { RegistryProvider } from '@/providers/registry.provider';
 
 @Injectable()
-export class SyncEvmPoolService {
+export class SyncAptosPoolService {
   constructor(
     @InjectModel(PoolModel.name)
     private readonly poolRepo: Model<PoolDocument>,
@@ -23,7 +23,7 @@ export class SyncEvmPoolService {
    * @param poolId
    */
   public async syncPoolById(poolId: string) {
-    const timer = new Timer('Sync single evm pool');
+    const timer = new Timer('Sync single aptos pool');
     timer.start();
 
     const pool = await this.poolRepo.findById(poolId);
@@ -54,6 +54,18 @@ export class SyncEvmPoolService {
       },
     );
 
+    // fetching quote after syncing
+    const quote = await indexer.calculateSingleROIAndAvgPrice(poolId);
+    await this.poolRepo.updateOne(
+      { _id: new Types.ObjectId(data.id) },
+      {
+        $set: quote,
+      },
+      {
+        upsert: true,
+      },
+    );
+
     timer.stop();
   }
 
@@ -63,7 +75,9 @@ export class SyncEvmPoolService {
    * @param chainId
    */
   public async syncPoolsByOwnerAddress(ownerAddress: string, chainId: ChainID) {
-    const timer = new Timer(`Sync evm pools by owner address ${ownerAddress}`);
+    const timer = new Timer(
+      `Sync aptos pools by owner address ${ownerAddress}`,
+    );
     timer.start();
 
     /** Only pick _id and status */
@@ -91,50 +105,6 @@ export class SyncEvmPoolService {
     );
 
     timer.stop();
-  }
-
-  private async syncMultiplePools(
-    poolIds: string[],
-    chainId: ChainID.AptosMainnet | ChainID.AptosTestnet,
-  ) {
-    console.log(
-      `Found ${poolIds.length} evm pocket(s) for syncing, on chain ${chainId} ...`,
-    );
-
-    const indexer = new PocketIndexer(
-      chainId,
-      this.poolRepo,
-      this.whitelistRepo,
-      new RegistryProvider(),
-    );
-
-    let pools = await indexer.fetchPockets(
-      poolIds.map((poolIds) => poolIds.toString()),
-    );
-    pools = pools.filter((pool) => !!pool);
-
-    if (pools.length === 0) {
-      console.log(`No valid pools for ${chainId}, skipped ...`);
-      return;
-    } else {
-      console.log(
-        `Found ${pools.length} valid pool(s) for ${chainId}, processing ...`,
-      );
-    }
-
-    await this.poolRepo.bulkWrite(
-      pools.map((pool) => {
-        return {
-          updateOne: {
-            filter: { _id: new Types.ObjectId(pool.id) },
-            update: {
-              $set: pool,
-            },
-            upsert: true,
-          },
-        };
-      }),
-    );
   }
 
   /**
@@ -182,5 +152,68 @@ export class SyncEvmPoolService {
     );
 
     timer.stop();
+  }
+
+  private async syncMultiplePools(
+    poolIds: string[],
+    chainId: ChainID.AptosMainnet | ChainID.AptosTestnet,
+  ) {
+    console.log(
+      `Found ${poolIds.length} aptos pocket(s) for syncing, on chain ${chainId} ...`,
+    );
+
+    const indexer = new PocketIndexer(
+      chainId,
+      this.poolRepo,
+      this.whitelistRepo,
+      new RegistryProvider(),
+    );
+
+    let pools = await indexer.fetchPockets(
+      poolIds.map((poolIds) => poolIds.toString()),
+    );
+    pools = pools.filter((pool) => !!pool);
+
+    if (pools.length === 0) {
+      console.log(`No valid pools for ${chainId}, skipped ...`);
+      return;
+    } else {
+      console.log(
+        `Found ${pools.length} valid pool(s) for ${chainId}, processing ...`,
+      );
+    }
+
+    // upsert
+    await this.poolRepo.bulkWrite(
+      pools.map((pool) => {
+        return {
+          updateOne: {
+            filter: { _id: new Types.ObjectId(pool.id) },
+            update: {
+              $set: pool,
+            },
+            upsert: true,
+          },
+        };
+      }),
+    );
+
+    // update quotes
+    await Promise.all(
+      pools.map(async (pool) => {
+        const quote = await indexer.calculateSingleROIAndAvgPrice(
+          pool.id.toString(),
+        );
+        await this.poolRepo.updateOne(
+          { _id: new Types.ObjectId(pool.id) },
+          {
+            $set: quote,
+          },
+          {
+            upsert: true,
+          },
+        );
+      }),
+    );
   }
 }
