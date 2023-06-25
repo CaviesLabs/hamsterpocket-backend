@@ -25,6 +25,8 @@ import { StatisticPublisher } from './statistic/statistic.publisher';
 import { SyncEvmPoolActivityService } from '../pool/services/sync-evm-pool-activity.service';
 import { SyncEvmPoolService } from '../pool/services/sync-evm-pool.service';
 import { StatisticsService } from '../statistics/services/statistics.service';
+import { SyncAptosPoolService } from '@/pool/services/sync-aptos-pool.service';
+import { SyncAptosActivityService } from '@/pool/services/sync-aptos-activity.service';
 
 @Module({
   imports: [
@@ -50,6 +52,8 @@ import { StatisticsService } from '../statistics/services/statistics.service';
     SyncPriceService,
     SyncEvmPoolService,
     SyncEvmPoolActivityService,
+    SyncAptosPoolService,
+    SyncAptosActivityService,
     StatisticsService,
     CoinGeckoClient,
     NetworkProvider,
