@@ -296,14 +296,18 @@ export class PoolService {
 
     return {
       ...pool,
-      currentROI: new UtilsProvider().getDisplayedDecimals(pool.currentROI),
-      currentROIValue: new UtilsProvider().getDisplayedDecimals(
-        pool.currentROIValue,
+      currentROI: new UtilsProvider().getDisplayedDecimals(
+        pool.currentROI || 0,
       ),
-      avgPrice: new UtilsProvider().getDisplayedDecimals(pool.avgPrice),
-      realizedROI: new UtilsProvider().getDisplayedDecimals(pool.realizedROI),
+      currentROIValue: new UtilsProvider().getDisplayedDecimals(
+        pool.currentROIValue || 0,
+      ),
+      avgPrice: new UtilsProvider().getDisplayedDecimals(pool.avgPrice || 0),
+      realizedROI: new UtilsProvider().getDisplayedDecimals(
+        pool.realizedROI || 0,
+      ),
       realizedROIValue: new UtilsProvider().getDisplayedDecimals(
-        pool.realizedROIValue,
+        pool.realizedROIValue || 0,
       ),
       remainingBaseTokenBalance: new UtilsProvider().getDisplayedDecimals(
         pool.remainingBaseTokenBalance / 10 ** baseTokenInfo.decimals,
