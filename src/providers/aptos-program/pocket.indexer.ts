@@ -59,6 +59,19 @@ export class PocketIndexer {
     this.aptosIndexer = new IndexerClient(registry.graphQLUrl);
   }
 
+  private async fetchSinglePocket(pocketId: string) {
+    try {
+      const [pocket] = await this.aptosTxBuilder
+        .buildGetPocket({
+          id: pocketId,
+        })
+        .execute();
+      return pocket;
+    } catch {
+      return null;
+    }
+  }
+
   /**
    * @dev Fetch multiple pockets and parse them into valid data
    * @param pocketIdList
@@ -66,11 +79,9 @@ export class PocketIndexer {
   public async fetchPockets(
     pocketIdList: string[],
   ): Promise<Partial<PoolEntity>[]> {
-    const [pockets] = await this.aptosTxBuilder
-      .buildGetMultiplePockets({
-        idList: pocketIdList,
-      })
-      .execute();
+    const pockets = (
+      await Promise.all(pocketIdList.map((id) => this.fetchSinglePocket(id)))
+    ).filter((pocket) => !!pocket);
 
     return Promise.all(
       pockets
