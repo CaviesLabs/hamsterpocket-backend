@@ -167,7 +167,7 @@ export class UtilsProvider {
     const restValue = newStr.replace(`${baseValue}${matchedStr}`, '');
 
     return `${baseValue}.0${this.getSubscriptStr(
-      (totalZero - 1).toString(),
+      totalZero.toString(),
     )}${(restValue.length > 5 ? restValue.substring(0, 5) : restValue).replace(
       /0+$/,
       '',
