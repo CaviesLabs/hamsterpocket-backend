@@ -71,7 +71,6 @@ export class EventIndexer {
       [EventReason.USER_CREATED_POCKET]: ActivityType.CREATED,
       [EventReason.USER_UPDATED_POCKET]: ActivityType.UPDATED,
       [EventReason.USER_DEPOSITED_ASSET]: ActivityType.UPDATED,
-      [EventReason.USER_CLOSED_POSITION]: ActivityType.UPDATED,
       [EventReason.USER_WITHDREW_ASSETS]: ActivityType.UPDATED,
       [EventReason.USER_PAUSED_POCKET]: ActivityType.PAUSED,
       [EventReason.USER_RESTARTED_POCKET]: ActivityType.RESTARTED,
@@ -81,6 +80,7 @@ export class EventIndexer {
         ActivityType.CLOSED,
       [EventReason.OPERATOR_CLOSED_POCKET_DUE_TO_STOP_CONDITION_REACHED]:
         ActivityType.CLOSED,
+      [EventReason.USER_CLOSED_POSITION]: ActivityType.CLOSED_POSITION,
       [EventReason.OPERATOR_TOOK_PROFIT]: ActivityType.CLOSED_POSITION,
       [EventReason.OPERATOR_STOPPED_LOSS]: ActivityType.CLOSED_POSITION,
     };
