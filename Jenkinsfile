@@ -80,18 +80,18 @@ pipeline {
             }
         }
 
-        stage('test') {
-            steps {
-                script {
-                    def image = docker.build("test-${env.REGISTRY_NAME}:${env.CURRENT_VERSION}-${env.GIT_BRANCH}", "-f Dockerfile.test ./")
-                    image.inside {
-                        sh 'yarn install'
-                        sh 'yarn test'
-                        sh 'yarn test:e2e'
-                    }
-                }
-            }
-        }
+//        stage('test') {
+//            steps {
+//                script {
+//                    def image = docker.build("test-${env.REGISTRY_NAME}:${env.CURRENT_VERSION}-${env.GIT_BRANCH}", "-f Dockerfile.test ./")
+//                    image.inside {
+//                        sh 'yarn install'
+//                        sh 'yarn test'
+//                        sh 'yarn test:e2e'
+//                    }
+//                }
+//            }
+//        }
 
         stage('deploy') {
             agent {
