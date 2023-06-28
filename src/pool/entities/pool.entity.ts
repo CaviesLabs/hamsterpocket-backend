@@ -49,7 +49,7 @@ export enum ChainID {
   Gnosis = 'gnosis',
   AvaxC = 'avaxc',
   AptosTestnet = 'aptos_testnet',
-  AptosMainnet = 'aptos_mainnet',
+  AptosMainnet = 'aptos',
 }
 export class BuyCondition {
   type: PriceConditionType;

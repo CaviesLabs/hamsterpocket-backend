@@ -1,9 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { ChainID } from '../../pool/entities/pool.entity';
+import { ChainID } from '@/pool/entities/pool.entity';
 import {
   EntityType,
   WhitelistEntity,
-} from '../../whitelist/entities/whitelist.entity';
+} from '@/whitelist/entities/whitelist.entity';
 import { BaseModel } from '../base.model';
 
 @Schema({ collection: 'whitelists' })

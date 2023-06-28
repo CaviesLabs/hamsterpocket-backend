@@ -168,6 +168,25 @@ export class RegistryProvider {
 
   public getChains(): PlatformConfigEntity {
     return {
+      aptos: {
+        chainName: 'Aptos',
+        chainLogo:
+          'https://assets.coingecko.com/coins/images/26455/small/aptos_round.png',
+        rpcUrl: this.getConfig().NETWORKS['aptos'].RPC_URL,
+        graphQLUrl: this.getConfig().NETWORKS['aptos'].GRAPHQL_URL,
+        explorerUrl: 'https://aptoscan.com/',
+        programAddress:
+          this.getConfig().NETWORKS['aptos'].POCKET_PROGRAM_ADDRESS,
+        whitelistedRouters: [
+          {
+            address: '',
+            isV3: false,
+            ammTag: 'pancakeswap',
+            ammName: 'Pancake Swap',
+            dexUrl: 'https://aptos.pancakeswap.finance/swap',
+          },
+        ],
+      },
       aptos_testnet: {
         chainName: 'Aptos Testnet',
         chainLogo:
