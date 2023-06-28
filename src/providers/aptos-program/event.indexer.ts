@@ -247,7 +247,7 @@ export class EventIndexer {
         if (additionalMap[event.memo])
           return {
             ...event,
-            eventHash: `${event.eventHash}-${new Date().getTime()}`,
+            eventHash: `${event.eventHash}-${additionalMap[event.memo]}`,
             type: additionalMap[event.memo],
             baseTokenAmount: undefined,
             targetTokenAmount: undefined,
