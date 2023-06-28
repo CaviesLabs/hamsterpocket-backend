@@ -81,6 +81,11 @@ export class EventIndexer {
         ActivityType.CLOSED,
       [EventReason.OPERATOR_CLOSED_POCKET_DUE_TO_STOP_CONDITION_REACHED]:
         ActivityType.CLOSED,
+      [EventReason.OPERATOR_TOOK_PROFIT]: ActivityType.CLOSED_POSITION,
+      [EventReason.OPERATOR_STOPPED_LOSS]: ActivityType.CLOSED_POSITION,
+    };
+
+    const additionalMap = {
       [EventReason.OPERATOR_TOOK_PROFIT]: ActivityType.TAKE_PROFIT,
       [EventReason.OPERATOR_STOPPED_LOSS]: ActivityType.STOP_LOSS,
     };
@@ -226,17 +231,29 @@ export class EventIndexer {
       },
     };
 
-    const events = await Promise.all(
-      data.map((event) => {
-        return EventMap[event.type](event)
-          .then((r) => r)
-          .catch(() => null);
-      }),
-    );
+    const events = (
+      await Promise.all(
+        data.map((event) => {
+          return EventMap[event.type](event)
+            .then((r) => r)
+            .catch(() => null);
+        }),
+      )
+    ).filter((event) => !!event);
+
+    const additionalEvents = events
+      .filter((event) => event.type === ActivityType.CLOSED_POSITION)
+      .map((event) => ({
+        ...event,
+        eventHash: `${event.eventHash}-${new Date().getTime()}`,
+        type: additionalMap[event.memo],
+        baseTokenAmount: undefined,
+        targetTokenAmount: undefined,
+      }));
 
     return {
       syncedBlock,
-      data: events.filter((event) => !!event),
+      data: events.concat(additionalEvents),
     };
   }
 
