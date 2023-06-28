@@ -226,11 +226,9 @@ export class EventIndexer {
 
     const events = await Promise.all(
       data.map((event) => {
-        try {
-          return EventMap[event.type](event);
-        } catch {
-          return null;
-        }
+        return EventMap[event.type](event)
+          .then((r) => r)
+          .catch(() => null);
       }),
     );
 
