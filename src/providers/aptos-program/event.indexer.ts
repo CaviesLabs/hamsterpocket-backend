@@ -225,12 +225,18 @@ export class EventIndexer {
     };
 
     const events = await Promise.all(
-      data.map((event) => EventMap[event.type](event)),
+      data.map((event) => {
+        try {
+          return EventMap[event.type](event);
+        } catch {
+          return null;
+        }
+      }),
     );
 
     return {
       syncedBlock,
-      data: events,
+      data: events.filter((event) => !!event),
     };
   }
 
