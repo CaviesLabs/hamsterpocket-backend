@@ -47,7 +47,7 @@ export class SyncAptosPoolService {
     await this.poolRepo.updateOne(
       { _id: new Types.ObjectId(data.id) },
       {
-        $set: data,
+        $set: { ...data },
       },
       {
         upsert: true,
@@ -59,7 +59,7 @@ export class SyncAptosPoolService {
     await this.poolRepo.updateOne(
       { _id: new Types.ObjectId(data.id) },
       {
-        $set: quote,
+        $set: { ...quote },
       },
       {
         upsert: true,
@@ -190,7 +190,7 @@ export class SyncAptosPoolService {
           updateOne: {
             filter: { _id: new Types.ObjectId(pool.id) },
             update: {
-              $set: pool,
+              $set: { ...pool },
             },
             upsert: true,
           },
@@ -207,7 +207,7 @@ export class SyncAptosPoolService {
         await this.poolRepo.updateOne(
           { _id: new Types.ObjectId(pool.id) },
           {
-            $set: quote,
+            $set: { ...quote },
           },
           {
             upsert: true,

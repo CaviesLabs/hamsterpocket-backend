@@ -106,7 +106,7 @@ export class SyncAptosActivityService {
               updateOne: {
                 filter: { _id: new Types.ObjectId(poolId) },
                 update: {
-                  $set: aggregatedSpecificDates[poolId],
+                  $set: { ...aggregatedSpecificDates[poolId] },
                 },
                 upsert: true,
               },
