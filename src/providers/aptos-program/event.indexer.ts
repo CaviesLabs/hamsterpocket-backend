@@ -1,4 +1,4 @@
-import { AptosClient, IndexerClient } from 'aptos';
+import { AptosClient, IndexerClient, TxnBuilderTypes } from 'aptos';
 import { Model, Types } from 'mongoose';
 
 import { ChainID } from '@/pool/entities/pool.entity';
@@ -21,6 +21,8 @@ import {
   UpdateWithdrawalStatsEvent,
 } from '@/providers/aptos-program/library/entities/pocket-events.entity';
 import { BadRequestException } from '@nestjs/common';
+
+const { AccountAddress } = TxnBuilderTypes;
 
 interface EventData<T> {
   account_address: string;
@@ -91,7 +93,7 @@ export class EventIndexer {
           poolId: new Types.ObjectId(event.data.id),
           chainId: this.chainId,
           eventHash: this.parseEventHash(event),
-          actor: event.data.actor,
+          actor: AccountAddress.fromHex(event.data.actor).toHexString(),
           status: PoolActivityStatus.SUCCESSFUL,
           type: memoMapping[event.data.reason],
           transactionId: `${event.transaction_version}`,
@@ -107,7 +109,7 @@ export class EventIndexer {
           poolId: new Types.ObjectId(event.data.id),
           chainId: this.chainId,
           eventHash: this.parseEventHash(event),
-          actor: event.data.actor,
+          actor: AccountAddress.fromHex(event.data.actor).toHexString(),
           status: PoolActivityStatus.SUCCESSFUL,
           type: memoMapping[event.data.reason],
           transactionId: `${event.transaction_version}`,
@@ -127,7 +129,7 @@ export class EventIndexer {
           poolId: new Types.ObjectId(event.data.id),
           chainId: this.chainId,
           eventHash: this.parseEventHash(event),
-          actor: event.data.actor,
+          actor: AccountAddress.fromHex(event.data.actor).toHexString(),
           status: PoolActivityStatus.SUCCESSFUL,
           type: ActivityType.DEPOSITED,
           baseTokenAmount: parseFloat(event.data.amount) / 10 ** token.decimals,
@@ -151,7 +153,7 @@ export class EventIndexer {
           poolId: new Types.ObjectId(event.data.id),
           chainId: this.chainId,
           eventHash: this.parseEventHash(event),
-          actor: event.data.actor,
+          actor: AccountAddress.fromHex(event.data.actor).toHexString(),
           status: PoolActivityStatus.SUCCESSFUL,
           type: ActivityType.WITHDRAWN,
           baseTokenAmount:
@@ -179,7 +181,7 @@ export class EventIndexer {
           poolId: new Types.ObjectId(event.data.id),
           chainId: this.chainId,
           eventHash: this.parseEventHash(event),
-          actor: event.data.actor,
+          actor: AccountAddress.fromHex(event.data.actor).toHexString(),
           status: PoolActivityStatus.SUCCESSFUL,
           type: ActivityType.SWAPPED,
           baseTokenAmount:
@@ -208,7 +210,7 @@ export class EventIndexer {
           poolId: new Types.ObjectId(event.data.id),
           chainId: this.chainId,
           eventHash: this.parseEventHash(event),
-          actor: event.data.actor,
+          actor: AccountAddress.fromHex(event.data.actor).toHexString(),
           status: PoolActivityStatus.SUCCESSFUL,
           type: memoMapping[event.data.reason],
           baseTokenAmount:

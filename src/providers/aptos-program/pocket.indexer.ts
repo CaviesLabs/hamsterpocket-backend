@@ -114,8 +114,7 @@ export class PocketIndexer {
         targetCoinType: pocket.baseTokenAddress,
       })
       .execute()
-      .catch((e) => {
-        console.log(e);
+      .catch(() => {
         return [
           BigNumber.from(
             `0x${(pocket.currentSpentBaseToken || 0).toString(16)}`,
