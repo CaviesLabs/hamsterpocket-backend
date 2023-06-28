@@ -243,13 +243,19 @@ export class EventIndexer {
 
     const additionalEvents = events
       .filter((event) => event.type === ActivityType.CLOSED_POSITION)
-      .map((event) => ({
-        ...event,
-        eventHash: `${event.eventHash}-${new Date().getTime()}`,
-        type: additionalMap[event.memo],
-        baseTokenAmount: undefined,
-        targetTokenAmount: undefined,
-      }));
+      .map((event) => {
+        if (additionalMap[event.memo])
+          return {
+            ...event,
+            eventHash: `${event.eventHash}-${new Date().getTime()}`,
+            type: additionalMap[event.memo],
+            baseTokenAmount: undefined,
+            targetTokenAmount: undefined,
+          };
+
+        return null;
+      })
+      .filter((event) => !!event);
 
     return {
       syncedBlock,
