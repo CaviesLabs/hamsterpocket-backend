@@ -85,6 +85,7 @@
     "tweetnacl": "1.0.3",
     "typechain": "8.1.0",
     "uuid": "9.0.0",
+    "@solana/web3.js": "1.73.2",
     "web3": "1.8.0"
   },
   "devDependencies": {
@@ -95,7 +96,6 @@
     "@nestjs/schematics": "9.0.4",
     "@nestjs/testing": "9.3.8",
     "@octokit/rest": "19.0.4",
-    "@solana/web3.js": "1.73.2",
     "@types/aes-js": "3.1.1",
     "@types/axios": "0.14.0",
     "@types/bull": "4.10.0",
