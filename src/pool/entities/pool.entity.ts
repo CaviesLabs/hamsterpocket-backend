@@ -50,6 +50,7 @@ export enum ChainID {
   AvaxC = 'avaxc',
   AptosTestnet = 'aptos_testnet',
   AptosMainnet = 'aptos',
+  Klaytn = 'klaytn',
 }
 export class BuyCondition {
   type: PriceConditionType;

@@ -127,7 +127,17 @@ export class SyncEvmPoolService {
       {
         $match: {
           chainId: {
-            $ne: ChainID.Solana,
+            $and: [
+              {
+                $ne: ChainID.Solana,
+              },
+              {
+                $ne: ChainID.AptosTestnet,
+              },
+              {
+                $ne: ChainID.AptosMainnet,
+              },
+            ],
           },
           status: {
             $in: [
@@ -180,7 +190,17 @@ export class SyncEvmPoolService {
             { chainId },
             {
               chainId: {
-                $ne: ChainID.Solana,
+                $and: [
+                  {
+                    $ne: ChainID.Solana,
+                  },
+                  {
+                    $ne: ChainID.AptosTestnet,
+                  },
+                  {
+                    $ne: ChainID.AptosMainnet,
+                  },
+                ],
               },
             },
           ],

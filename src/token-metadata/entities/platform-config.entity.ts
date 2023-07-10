@@ -31,6 +31,8 @@ export class WhitelistedRouter {
   ammTag: string;
   ammName: string;
   dexUrl: string;
+  inputTag: string;
+  outputTag: string;
 }
 
 export class EVMChainConfig {
@@ -55,5 +57,6 @@ export class PlatformConfigEntity {
   avaxc: EVMChainConfig;
   xdc: EVMChainConfig;
   okt: EVMChainConfig;
+  klaytn: EVMChainConfig;
   gnosis: EVMChainConfig;
 }

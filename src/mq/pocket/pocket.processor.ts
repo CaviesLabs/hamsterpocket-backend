@@ -105,7 +105,17 @@ export class PocketProcessor {
       const pools = await this.poolRepo
         .find({
           chainId: {
-            $ne: ChainID.Solana,
+            $and: [
+              {
+                $ne: ChainID.Solana,
+              },
+              {
+                $ne: ChainID.AptosTestnet,
+              },
+              {
+                $ne: ChainID.AptosMainnet,
+              },
+            ],
           },
           status: PoolStatus.ACTIVE,
           /**
@@ -160,7 +170,17 @@ export class PocketProcessor {
       const pools = await this.poolRepo
         .find({
           chainId: {
-            $ne: ChainID.Solana,
+            $and: [
+              {
+                $ne: ChainID.Solana,
+              },
+              {
+                $ne: ChainID.AptosTestnet,
+              },
+              {
+                $ne: ChainID.AptosMainnet,
+              },
+            ],
           },
           status: {
             $ne: PoolStatus.ENDED,
