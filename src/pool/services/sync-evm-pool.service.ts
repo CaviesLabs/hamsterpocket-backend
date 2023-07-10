@@ -38,6 +38,18 @@ export class SyncEvmPoolService {
     const data = await indexer.fetchPocketEntity(poolId);
     if (!data) throw new NotFoundException('POCKET_NOT_INITIALIZED');
 
+    await this.poolRepo.updateOne(
+      { _id: new Types.ObjectId(data.id) },
+      {
+        $set: {
+          ...data,
+        },
+      },
+      {
+        upsert: true,
+      },
+    );
+
     const roiAndAvgPrice = await indexer.calculateSingleROIAndAvgPrice(poolId);
 
     await this.poolRepo.updateOne(
