@@ -138,19 +138,11 @@ export class SyncEvmPoolService {
     const data = await this.poolRepo.aggregate([
       {
         $match: {
-          chainId: {
-            $and: [
-              {
-                $ne: ChainID.Solana,
-              },
-              {
-                $ne: ChainID.AptosTestnet,
-              },
-              {
-                $ne: ChainID.AptosMainnet,
-              },
-            ],
-          },
+          $and: [
+            { chainId: { $ne: ChainID.Solana } },
+            { chainId: { $ne: ChainID.AptosTestnet } },
+            { chainId: { $ne: ChainID.AptosMainnet } },
+          ],
           status: {
             $in: [
               PoolStatus.CREATED,
@@ -201,19 +193,11 @@ export class SyncEvmPoolService {
           $and: [
             { chainId },
             {
-              chainId: {
-                $and: [
-                  {
-                    $ne: ChainID.Solana,
-                  },
-                  {
-                    $ne: ChainID.AptosTestnet,
-                  },
-                  {
-                    $ne: ChainID.AptosMainnet,
-                  },
-                ],
-              },
+              $and: [
+                { chainId: { $ne: ChainID.Solana } },
+                { chainId: { $ne: ChainID.AptosTestnet } },
+                { chainId: { $ne: ChainID.AptosMainnet } },
+              ],
             },
           ],
         },

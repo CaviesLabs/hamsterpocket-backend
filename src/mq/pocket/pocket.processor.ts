@@ -104,19 +104,11 @@ export class PocketProcessor {
        */
       const pools = await this.poolRepo
         .find({
-          chainId: {
-            $and: [
-              {
-                $ne: ChainID.Solana,
-              },
-              {
-                $ne: ChainID.AptosTestnet,
-              },
-              {
-                $ne: ChainID.AptosMainnet,
-              },
-            ],
-          },
+          $and: [
+            { chainId: { $ne: ChainID.Solana } },
+            { chainId: { $ne: ChainID.AptosTestnet } },
+            { chainId: { $ne: ChainID.AptosMainnet } },
+          ],
           status: PoolStatus.ACTIVE,
           /**
            * @dev Date filtering
@@ -169,19 +161,11 @@ export class PocketProcessor {
        */
       const pools = await this.poolRepo
         .find({
-          chainId: {
-            $and: [
-              {
-                $ne: ChainID.Solana,
-              },
-              {
-                $ne: ChainID.AptosTestnet,
-              },
-              {
-                $ne: ChainID.AptosMainnet,
-              },
-            ],
-          },
+          $and: [
+            { chainId: { $ne: ChainID.Solana } },
+            { chainId: { $ne: ChainID.AptosTestnet } },
+            { chainId: { $ne: ChainID.AptosMainnet } },
+          ],
           status: {
             $ne: PoolStatus.ENDED,
           },
