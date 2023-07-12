@@ -189,27 +189,6 @@ export class RegistryProvider {
           },
         ],
       },
-      aptos_testnet: {
-        chainName: 'Aptos Testnet',
-        chainLogo:
-          'https://assets.coingecko.com/coins/images/26455/small/aptos_round.png',
-        rpcUrl: this.getConfig().NETWORKS['aptos_testnet'].RPC_URL,
-        graphQLUrl: this.getConfig().NETWORKS['aptos_testnet'].GRAPHQL_URL,
-        explorerUrl: 'https://testnet.aptoscan.com/',
-        programAddress:
-          this.getConfig().NETWORKS['aptos_testnet'].POCKET_PROGRAM_ADDRESS,
-        whitelistedRouters: [
-          {
-            address: '',
-            isV3: false,
-            ammTag: 'pancakeswap',
-            ammName: 'Pancake Swap',
-            dexUrl: 'https://aptos.pancakeswap.finance/swap',
-            inputTag: 'inputCurrency',
-            outputTag: 'outputCurrency',
-          },
-        ],
-      },
       bnb: {
         wagmiKey: 'bsc',
         chainName: 'BNB',
