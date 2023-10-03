@@ -51,7 +51,6 @@ export class EVMChainConfig {
 export class PlatformConfigEntity {
   solana: SolanaConfig;
   aptos: AptosConfig;
-  polygon_mumbai: EVMChainConfig;
   bnb: EVMChainConfig;
   avaxc: EVMChainConfig;
   xdc: EVMChainConfig;

@@ -371,34 +371,6 @@ export class RegistryProvider {
           },
         ],
       },
-      polygon_mumbai: {
-        wagmiKey: 'polygonMumbai',
-        chainName: 'Mumbai',
-        chainLogo:
-          'https://s2.coinmarketcap.com/static/img/coins/64x64/3890.png',
-        rpcUrl: this.getConfig().NETWORKS['polygon_mumbai'].RPC_URL,
-        chainId: this.getConfig().NETWORKS['polygon_mumbai'].CHAIN_ID,
-        programAddress:
-          this.getConfig().NETWORKS['polygon_mumbai'].POCKET_PROGRAM_ADDRESS,
-        explorerUrl: 'https://mumbai.polygonscan.com/',
-        vaultAddress:
-          this.getConfig().NETWORKS['polygon_mumbai']
-            .POCKET_VAULT_PROGRAM_ADDRESS,
-        registryAddress:
-          this.getConfig().NETWORKS['polygon_mumbai']
-            .POCKET_REGISTRY_PROGRAM_ADDRESS,
-        whitelistedRouters: [
-          {
-            address: '0x4648a43B2C14Da09FdF82B161150d3F634f40491',
-            isV3: true,
-            ammTag: 'uniswap',
-            ammName: 'Uniswap',
-            dexUrl: 'https://app.uniswap.org/#/swap',
-            inputTag: 'inputCurrency',
-            outputTag: 'outputCurrency',
-          },
-        ],
-      },
     };
   }
 }
