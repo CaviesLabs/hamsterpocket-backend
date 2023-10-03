@@ -31,8 +31,11 @@ export class SolanaPoolProvider implements OnModuleInit {
   constructor(private readonly registry: RegistryProvider) {}
 
   onModuleInit() {
-    const { POCKET_PROGRAM_ADDRESS, OPERATOR_SECRET_KEY, RPC_URL } =
-      this.registry.getConfig().NETWORKS['solana'];
+    const {
+      POCKET_PROGRAM_ADDRESS,
+      OPERATOR_SECRET_KEY,
+      INTERNAL_RPC_URL: RPC_URL,
+    } = this.registry.getConfig().NETWORKS['solana'];
 
     const defaultKeyPair = Keypair.fromSecretKey(
       Uint8Array.from(bs.decode(OPERATOR_SECRET_KEY)),

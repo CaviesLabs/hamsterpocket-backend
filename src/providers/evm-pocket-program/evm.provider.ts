@@ -32,7 +32,7 @@ export class EVMBasedPocketProvider {
   constructor(public readonly chainId: ChainID) {
     const registry = new RegistryProvider();
     const {
-      RPC_URL,
+      INTERNAL_RPC_URL: RPC_URL,
       OPERATOR_SECRET_KEY,
       POCKET_PROGRAM_ADDRESS,
       POCKET_REGISTRY_PROGRAM_ADDRESS,

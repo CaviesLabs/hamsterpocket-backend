@@ -50,7 +50,9 @@ export class PocketIndexer {
           this.registryProvider.getConfig().NETWORKS[this.chainId as string]
             .OPERATOR_SECRET_KEY,
         ).toString(),
-        registry.rpcUrl,
+        this.registryProvider.getConfig().NETWORKS[
+          this.chainId as string
+        ].INTERNAL_RPC_URL,
       ),
       this.resourceAccount,
     );
