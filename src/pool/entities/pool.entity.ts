@@ -44,14 +44,24 @@ export enum ChainID {
   Solana = 'solana',
   BSC = 'bnb',
   Mumbai = 'polygon_mumbai',
-  XDC = 'xdc',
   OKT = 'okt',
   Gnosis = 'gnosis',
+  XDC = 'xdc',
   AvaxC = 'avaxc',
   AptosTestnet = 'aptos_testnet',
   AptosMainnet = 'aptos',
   Klaytn = 'klaytn',
+  Mantle = 'mantle',
 }
+
+export const StoppedChains = [
+  ChainID.OKT,
+  ChainID.Gnosis,
+  ChainID.XDC,
+  ChainID.Mumbai,
+  ChainID.AptosTestnet,
+];
+
 export class BuyCondition {
   type: PriceConditionType;
   value: number[];

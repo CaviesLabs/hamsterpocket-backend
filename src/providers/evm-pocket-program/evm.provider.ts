@@ -31,6 +31,7 @@ export class EVMBasedPocketProvider {
    */
   constructor(public readonly chainId: ChainID) {
     const registry = new RegistryProvider();
+
     const {
       INTERNAL_RPC_URL: RPC_URL,
       OPERATOR_SECRET_KEY,
@@ -161,6 +162,7 @@ export class EVMBasedPocketProvider {
         pocketData.ammRouterAddress,
         pocketData.batchVolume,
       ),
+      0, // temporarily set slippage to non-slippage
     );
   }
 
@@ -179,6 +181,7 @@ export class EVMBasedPocketProvider {
         pocketData.ammRouterAddress,
         pocketData.targetTokenBalance,
       ),
+      0, // temporarily set slippage to non-slippage
     );
   }
 

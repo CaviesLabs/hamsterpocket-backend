@@ -181,6 +181,7 @@ export class RegistryProvider {
           {
             address: '',
             isV3: false,
+            routerVersion: '1',
             ammTag: 'pancakeswap',
             ammName: 'Pancake Swap',
             dexUrl: 'https://aptos.pancakeswap.finance/swap',
@@ -206,6 +207,7 @@ export class RegistryProvider {
           {
             address: '0x5Dc88340E1c5c6366864Ee415d6034cadd1A9897',
             isV3: true,
+            routerVersion: '0',
             ammTag: 'uniswap',
             ammName: 'Uniswap',
             dexUrl: 'https://app.uniswap.org/#/swap/',
@@ -215,9 +217,37 @@ export class RegistryProvider {
           {
             address: '0x10ED43C718714eb63d5aA57B78B54704E256024E',
             isV3: false,
+            routerVersion: '1',
             ammTag: 'pancakeswap',
             ammName: 'Pancake Swap',
             dexUrl: 'https://pancakeswap.finance/swap/',
+            inputTag: 'inputCurrency',
+            outputTag: 'outputCurrency',
+          },
+        ],
+      },
+      mantle: {
+        wagmiKey: 'mantle',
+        chainName: 'Mantle',
+        chainLogo:
+          'https://assets.coingecko.com/coins/images/30980/small/token-logo.png?1689320029',
+        rpcUrl: this.getConfig().NETWORKS['mantle'].RPC_URL,
+        chainId: this.getConfig().NETWORKS['mantle'].CHAIN_ID,
+        programAddress:
+          this.getConfig().NETWORKS['mantle'].POCKET_PROGRAM_ADDRESS,
+        vaultAddress:
+          this.getConfig().NETWORKS['mantle'].POCKET_VAULT_PROGRAM_ADDRESS,
+        registryAddress:
+          this.getConfig().NETWORKS['mantle'].POCKET_REGISTRY_PROGRAM_ADDRESS,
+        explorerUrl: 'https://explorer.mantle.xyz/',
+        whitelistedRouters: [
+          {
+            address: '0x319B69888b0d11cEC22caA5034e25FfFBDc88421',
+            isV3: true,
+            routerVersion: '2',
+            ammTag: 'agni',
+            ammName: 'Agni',
+            dexUrl: 'https://agni.finance/swap/',
             inputTag: 'inputCurrency',
             outputTag: 'outputCurrency',
           },
@@ -241,6 +271,7 @@ export class RegistryProvider {
           {
             address: '0xEf71750C100f7918d6Ded239Ff1CF09E81dEA92D',
             isV3: false,
+            routerVersion: '1',
             ammTag: 'claimswap',
             ammName: 'ClaimSwap',
             dexUrl: 'https://claimswap.org/trade',
@@ -267,6 +298,7 @@ export class RegistryProvider {
           {
             address: '0x60aE616a2155Ee3d9A68541Ba4544862310933d4',
             isV3: false,
+            routerVersion: '1',
             ammTag: 'traderjoe',
             ammName: 'TraderJoe',
             dexUrl: 'https://traderjoexyz.com/avalanche/trade',
@@ -287,6 +319,7 @@ export class RegistryProvider {
           {
             address: '',
             isV3: false,
+            routerVersion: '1',
             ammTag: 'raydium',
             ammName: 'Raydium Swap',
             dexUrl: 'https://raydium.io/swap/',

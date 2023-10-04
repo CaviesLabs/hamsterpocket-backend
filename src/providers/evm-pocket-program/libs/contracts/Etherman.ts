@@ -29,6 +29,7 @@ import type {
 
 export interface EthermanInterface extends utils.Interface {
   functions: {
+    "WETH()": FunctionFragment;
     "owner()": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
@@ -37,12 +38,14 @@ export interface EthermanInterface extends utils.Interface {
 
   getFunction(
     nameOrSignatureOrTopic:
+      | "WETH"
       | "owner"
       | "renounceOwnership"
       | "transferOwnership"
       | "unwrapWETH"
   ): FunctionFragment;
 
+  encodeFunctionData(functionFragment: "WETH", values?: undefined): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "renounceOwnership",
@@ -57,6 +60,7 @@ export interface EthermanInterface extends utils.Interface {
     values: [PromiseOrValue<BigNumberish>, PromiseOrValue<string>]
   ): string;
 
+  decodeFunctionResult(functionFragment: "WETH", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "renounceOwnership",
@@ -114,6 +118,8 @@ export interface Etherman extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
+    WETH(overrides?: CallOverrides): Promise<[string]>;
+
     owner(overrides?: CallOverrides): Promise<[string]>;
 
     renounceOwnership(
@@ -131,6 +137,8 @@ export interface Etherman extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
   };
+
+  WETH(overrides?: CallOverrides): Promise<string>;
 
   owner(overrides?: CallOverrides): Promise<string>;
 
@@ -150,6 +158,8 @@ export interface Etherman extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
+    WETH(overrides?: CallOverrides): Promise<string>;
+
     owner(overrides?: CallOverrides): Promise<string>;
 
     renounceOwnership(overrides?: CallOverrides): Promise<void>;
@@ -178,6 +188,8 @@ export interface Etherman extends BaseContract {
   };
 
   estimateGas: {
+    WETH(overrides?: CallOverrides): Promise<BigNumber>;
+
     owner(overrides?: CallOverrides): Promise<BigNumber>;
 
     renounceOwnership(
@@ -197,6 +209,8 @@ export interface Etherman extends BaseContract {
   };
 
   populateTransaction: {
+    WETH(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     renounceOwnership(

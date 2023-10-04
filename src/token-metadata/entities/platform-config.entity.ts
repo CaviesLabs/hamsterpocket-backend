@@ -28,6 +28,7 @@ export class AptosConfig {
 export class WhitelistedRouter {
   address: string;
   isV3: boolean;
+  routerVersion: '0' | '1' | '2'; // V3, V2, or V3NonUniversal
   ammTag: string;
   ammName: string;
   dexUrl: string;
@@ -54,4 +55,5 @@ export class PlatformConfigEntity {
   bnb: EVMChainConfig;
   avaxc: EVMChainConfig;
   klaytn: EVMChainConfig;
+  mantle: EVMChainConfig;
 }

@@ -12,6 +12,7 @@ import { Timer } from '../../providers/utils.provider';
 import { EVMBasedPocketProvider } from '../../providers/evm-pocket-program/evm.provider';
 import { EVMChainConfig } from '../../token-metadata/entities/platform-config.entity';
 import { RegistryProvider } from '../../providers/registry.provider';
+import { StoppedChains } from '@/pool/entities/pool.entity';
 
 @Injectable()
 export class SyncPriceService {
@@ -25,7 +26,11 @@ export class SyncPriceService {
     const timer = new Timer('Sync all whitelist currency price');
 
     timer.start();
-    const whitelists = await this.whiteListRepo.find();
+    const whitelists = await this.whiteListRepo.find({
+      chainId: {
+        $nin: StoppedChains,
+      },
+    });
 
     if (whitelists.length == 0) return;
 
@@ -69,6 +74,9 @@ export class SyncPriceService {
   async getPriceFromAMM(tokenAddress: string) {
     const baseToken = await this.whiteListRepo.findOne({
       address: tokenAddress,
+      chainId: {
+        $nin: StoppedChains,
+      },
     });
 
     if (!baseToken) return 0;

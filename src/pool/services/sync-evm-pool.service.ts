@@ -5,7 +5,7 @@ import { BigNumber } from 'ethers';
 
 import { PoolDocument, PoolModel } from '@/orm/model/pool.model';
 import { Timer } from '@/providers/utils.provider';
-import { ChainID, PoolStatus } from '../entities/pool.entity';
+import { ChainID, PoolStatus, StoppedChains } from '../entities/pool.entity';
 import { WhitelistDocument, WhitelistModel } from '@/orm/model/whitelist.model';
 import { EVMIndexer } from '@/providers/evm-pocket-program/evm.indexer';
 
@@ -27,7 +27,12 @@ export class SyncEvmPoolService {
     timer.start();
 
     const pool = await this.poolRepo.findById(poolId);
-    if (!pool || pool.chainId === ChainID.Solana) return;
+    if (
+      !pool ||
+      pool.chainId === ChainID.Solana ||
+      StoppedChains.includes(pool.chainId)
+    )
+      return;
 
     const indexer = new EVMIndexer(
       pool.chainId,
@@ -142,6 +147,7 @@ export class SyncEvmPoolService {
             { chainId: { $ne: ChainID.Solana } },
             { chainId: { $ne: ChainID.AptosTestnet } },
             { chainId: { $ne: ChainID.AptosMainnet } },
+            { chainId: { $nin: StoppedChains } },
           ],
           status: {
             $in: [
@@ -197,6 +203,7 @@ export class SyncEvmPoolService {
                 { chainId: { $ne: ChainID.Solana } },
                 { chainId: { $ne: ChainID.AptosTestnet } },
                 { chainId: { $ne: ChainID.AptosMainnet } },
+                { chainId: { $nin: StoppedChains } },
               ],
             },
           ],

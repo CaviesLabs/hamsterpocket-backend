@@ -15,8 +15,10 @@ import { WhitelistModel, WhitelistSchema } from './model/whitelist.model';
 import { MarketDataSchema, MarketModel } from './model/market.model';
 import { StatisticsModel, StatisticsSchema } from './model/statistic.model';
 import { SyncStatusModel, SyncStatusSchema } from './model/sync-status.model';
+import { ImportMantleCommand } from '@/orm/commands/import-mantle.command';
 
 @Module({
+  providers: [ImportMantleCommand],
   /**
    * @dev Declare models for the system to inject.
    */
