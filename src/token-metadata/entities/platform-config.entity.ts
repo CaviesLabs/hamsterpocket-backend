@@ -53,8 +53,5 @@ export class PlatformConfigEntity {
   aptos: AptosConfig;
   bnb: EVMChainConfig;
   avaxc: EVMChainConfig;
-  xdc: EVMChainConfig;
-  okt: EVMChainConfig;
   klaytn: EVMChainConfig;
-  gnosis: EVMChainConfig;
 }

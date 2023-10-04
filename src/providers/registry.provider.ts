@@ -249,32 +249,6 @@ export class RegistryProvider {
           },
         ],
       },
-      gnosis: {
-        wagmiKey: 'gnosis',
-        chainName: 'Gnosis',
-        chainLogo:
-          'https://gnosisscan.io/images/svg/brands/main.svg?v=23.5.3.0',
-        rpcUrl: this.getConfig().NETWORKS['gnosis'].RPC_URL,
-        chainId: this.getConfig().NETWORKS['gnosis'].CHAIN_ID,
-        programAddress:
-          this.getConfig().NETWORKS['gnosis'].POCKET_PROGRAM_ADDRESS,
-        vaultAddress:
-          this.getConfig().NETWORKS['gnosis'].POCKET_VAULT_PROGRAM_ADDRESS,
-        registryAddress:
-          this.getConfig().NETWORKS['gnosis'].POCKET_REGISTRY_PROGRAM_ADDRESS,
-        explorerUrl: 'https://gnosisscan.io/',
-        whitelistedRouters: [
-          {
-            address: '0x1c232f01118cb8b424793ae03f870aa7d0ac7f77',
-            isV3: false,
-            ammTag: 'honeyswap',
-            ammName: 'Honey Swap',
-            dexUrl: 'https://honeyswap.1hive.eth.limo/#/swap/',
-            inputTag: 'inputCurrency',
-            outputTag: 'outputCurrency',
-          },
-        ],
-      },
       avaxc: {
         wagmiKey: 'avalanche',
         chainName: 'AVAX-C',
@@ -301,31 +275,6 @@ export class RegistryProvider {
           },
         ],
       },
-      okt: {
-        wagmiKey: 'okc',
-        chainName: 'OKT',
-        chainLogo:
-          'https://s2.coinmarketcap.com/static/img/coins/64x64/8267.png',
-        rpcUrl: this.getConfig().NETWORKS['okt'].RPC_URL,
-        chainId: this.getConfig().NETWORKS['okt'].CHAIN_ID,
-        programAddress: this.getConfig().NETWORKS['okt'].POCKET_PROGRAM_ADDRESS,
-        vaultAddress:
-          this.getConfig().NETWORKS['okt'].POCKET_VAULT_PROGRAM_ADDRESS,
-        registryAddress:
-          this.getConfig().NETWORKS['okt'].POCKET_REGISTRY_PROGRAM_ADDRESS,
-        explorerUrl: 'https://oklink.com/oktc/',
-        whitelistedRouters: [
-          {
-            address: '0xc97b81B8a38b9146010Df85f1Ac714aFE1554343',
-            isV3: false,
-            ammTag: 'okswap',
-            ammName: 'OKTC Swap',
-            dexUrl: 'https://www.okx.com/oktc/swap/trade',
-            inputTag: 'inputCurrency',
-            outputTag: 'outputCurrency',
-          },
-        ],
-      },
       solana: {
         chainName: 'Solana',
         chainLogo:
@@ -341,31 +290,6 @@ export class RegistryProvider {
             ammTag: 'raydium',
             ammName: 'Raydium Swap',
             dexUrl: 'https://raydium.io/swap/',
-            inputTag: 'inputCurrency',
-            outputTag: 'outputCurrency',
-          },
-        ],
-      },
-      xdc: {
-        wagmiKey: 'xdc',
-        chainName: 'XDC',
-        chainLogo:
-          'https://s2.coinmarketcap.com/static/img/coins/64x64/2634.png',
-        rpcUrl: this.getConfig().NETWORKS['xdc'].RPC_URL,
-        chainId: this.getConfig().NETWORKS['xdc'].CHAIN_ID,
-        programAddress: this.getConfig().NETWORKS['xdc'].POCKET_PROGRAM_ADDRESS,
-        vaultAddress:
-          this.getConfig().NETWORKS['xdc'].POCKET_VAULT_PROGRAM_ADDRESS,
-        registryAddress:
-          this.getConfig().NETWORKS['xdc'].POCKET_REGISTRY_PROGRAM_ADDRESS,
-        explorerUrl: 'https://xdcscan.io/',
-        whitelistedRouters: [
-          {
-            address: '0xf9c5E4f6E627201aB2d6FB6391239738Cf4bDcf9',
-            isV3: false,
-            ammTag: 'xspswap',
-            ammName: 'XSP Swap',
-            dexUrl: 'https://app.xspswap.finance/swap',
             inputTag: 'inputCurrency',
             outputTag: 'outputCurrency',
           },
