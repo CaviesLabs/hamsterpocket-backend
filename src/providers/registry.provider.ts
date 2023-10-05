@@ -177,6 +177,12 @@ export class RegistryProvider {
         explorerUrl: 'https://aptoscan.com/',
         programAddress:
           this.getConfig().NETWORKS['aptos'].POCKET_PROGRAM_ADDRESS,
+        nativeToken: {
+          name: 'Aptos',
+          symbol: 'APT',
+          decimals: 8,
+          logo: 'https://assets.coingecko.com/coins/images/26455/small/aptos_round.png?1666839629',
+        },
         whitelistedRouters: [
           {
             address: '',
@@ -203,6 +209,12 @@ export class RegistryProvider {
         registryAddress:
           this.getConfig().NETWORKS['bnb'].POCKET_REGISTRY_PROGRAM_ADDRESS,
         explorerUrl: 'https://bscscan.com/',
+        nativeToken: {
+          name: 'BNB',
+          symbol: 'BNB',
+          decimals: 18,
+          logo: 'https://assets.coingecko.com/coins/images/825/small/bnb-icon2_2x.png?1696479808',
+        },
         whitelistedRouters: [
           {
             address: '0x5Dc88340E1c5c6366864Ee415d6034cadd1A9897',
@@ -239,6 +251,12 @@ export class RegistryProvider {
           this.getConfig().NETWORKS['mantle'].POCKET_VAULT_PROGRAM_ADDRESS,
         registryAddress:
           this.getConfig().NETWORKS['mantle'].POCKET_REGISTRY_PROGRAM_ADDRESS,
+        nativeToken: {
+          name: 'Mantle',
+          symbol: 'MNT',
+          decimals: 18,
+          logo: 'https://assets.coingecko.com/coins/images/30980/small/token-logo.png?1689320029',
+        },
         explorerUrl: 'https://explorer.mantle.xyz/',
         whitelistedRouters: [
           {
@@ -267,6 +285,12 @@ export class RegistryProvider {
         registryAddress:
           this.getConfig().NETWORKS['klaytn'].POCKET_REGISTRY_PROGRAM_ADDRESS,
         explorerUrl: 'https://scope.klaytn.com/',
+        nativeToken: {
+          name: 'Klaytn',
+          symbol: 'KLAY',
+          decimals: 18,
+          logo: 'https://assets.coingecko.com/coins/images/9672/small/klaytn.png?1660288824',
+        },
         whitelistedRouters: [
           {
             address: '0xEf71750C100f7918d6Ded239Ff1CF09E81dEA92D',
@@ -294,6 +318,12 @@ export class RegistryProvider {
         registryAddress:
           this.getConfig().NETWORKS['avaxc'].POCKET_REGISTRY_PROGRAM_ADDRESS,
         explorerUrl: 'https://snowtrace.io/',
+        nativeToken: {
+          name: 'Avalanche',
+          symbol: 'AVAX',
+          decimals: 18,
+          logo: 'https://assets.coingecko.com/coins/images/12559/small/Avalanche_Circle_RedWhite_Trans.png?1670992574',
+        },
         whitelistedRouters: [
           {
             address: '0x60aE616a2155Ee3d9A68541Ba4544862310933d4',
@@ -315,6 +345,12 @@ export class RegistryProvider {
         explorerUrl: 'https://solscan.io/',
         programAddress:
           this.getConfig().NETWORKS['solana'].POCKET_PROGRAM_ADDRESS,
+        nativeToken: {
+          name: 'Solana',
+          symbol: 'SOL',
+          decimals: 9,
+          logo: 'https://assets.coingecko.com/coins/images/4128/small/solana.png',
+        },
         whitelistedRouters: [
           {
             address: '',

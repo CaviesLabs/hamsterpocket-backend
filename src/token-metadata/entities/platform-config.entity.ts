@@ -13,6 +13,12 @@ export class SolanaConfig {
   explorerUrl: string;
   chainName: string;
   chainLogo: string;
+  nativeToken: {
+    name: string;
+    symbol: string;
+    decimals: number;
+    logo: string;
+  };
 }
 
 export class AptosConfig {
@@ -23,6 +29,12 @@ export class AptosConfig {
   chainName: string;
   chainLogo: string;
   graphQLUrl: string;
+  nativeToken: {
+    name: string;
+    symbol: string;
+    decimals: number;
+    logo: string;
+  };
 }
 
 export class WhitelistedRouter {
@@ -47,6 +59,12 @@ export class EVMChainConfig {
   vaultAddress: string;
   registryAddress: string;
   whitelistedRouters: WhitelistedRouter[];
+  nativeToken: {
+    name: string;
+    symbol: string;
+    decimals: number;
+    logo: string;
+  };
 }
 
 export class PlatformConfigEntity {
