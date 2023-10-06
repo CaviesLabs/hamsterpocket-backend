@@ -12,7 +12,7 @@ import { EntityType } from '@/whitelist/entities/whitelist.entity';
 
 @Injectable()
 @Command({ name: 'import-mantle' })
-export class ImportMantleCommand extends CommandRunner {
+export class ImportScrollCommand extends CommandRunner {
   constructor(
     @InjectModel(WhitelistModel.name)
     private readonly whitelistModel: Model<WhitelistDocument>,

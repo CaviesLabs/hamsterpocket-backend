@@ -16,9 +16,10 @@ import { MarketDataSchema, MarketModel } from './model/market.model';
 import { StatisticsModel, StatisticsSchema } from './model/statistic.model';
 import { SyncStatusModel, SyncStatusSchema } from './model/sync-status.model';
 import { ImportMantleCommand } from '@/orm/commands/import-mantle.command';
+import { ImportScrollCommand } from '@/orm/commands/import-scroll.command';
 
 @Module({
-  providers: [ImportMantleCommand],
+  providers: [ImportMantleCommand, ImportScrollCommand],
   /**
    * @dev Declare models for the system to inject.
    */
