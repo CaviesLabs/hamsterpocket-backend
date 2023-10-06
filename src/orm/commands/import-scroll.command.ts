@@ -11,7 +11,7 @@ import { ChainID } from '@/pool/entities/pool.entity';
 import { EntityType } from '@/whitelist/entities/whitelist.entity';
 
 @Injectable()
-@Command({ name: 'import-mantle' })
+@Command({ name: 'import-scroll' })
 export class ImportScrollCommand extends CommandRunner {
   constructor(
     @InjectModel(WhitelistModel.name)
