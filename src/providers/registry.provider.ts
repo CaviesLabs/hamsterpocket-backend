@@ -273,7 +273,7 @@ export class RegistryProvider {
       },
       scroll_sepolia: {
         wagmiKey: 'scroll_sepolia',
-        chainName: 'Scroll Alpha',
+        chainName: 'Scroll Sepolia',
         chainLogo:
           'https://uniswap-v3.scroll.io/static/media/scroll_logo.7578cf7e.svg',
         rpcUrl: this.getConfig().NETWORKS['scroll_sepolia'].RPC_URL,
