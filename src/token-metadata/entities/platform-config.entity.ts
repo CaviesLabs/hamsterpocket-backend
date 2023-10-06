@@ -72,6 +72,7 @@ export class PlatformConfigEntity {
   aptos: AptosConfig;
   bnb: EVMChainConfig;
   avaxc: EVMChainConfig;
+  scroll_sepolia: EVMChainConfig;
   klaytn: EVMChainConfig;
   mantle: EVMChainConfig;
 }

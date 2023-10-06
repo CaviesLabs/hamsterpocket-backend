@@ -52,6 +52,7 @@ export enum ChainID {
   AptosMainnet = 'aptos',
   Klaytn = 'klaytn',
   Mantle = 'mantle',
+  ScrollSepolia = 'scroll_sepolia',
 }
 
 export const StoppedChains = [

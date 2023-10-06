@@ -271,6 +271,40 @@ export class RegistryProvider {
           },
         ],
       },
+      scroll_sepolia: {
+        wagmiKey: 'scroll_sepolia',
+        chainName: 'Scroll Alpha',
+        chainLogo:
+          'https://uniswap-v3.scroll.io/static/media/scroll_logo.7578cf7e.svg',
+        rpcUrl: this.getConfig().NETWORKS['mantle'].RPC_URL,
+        chainId: this.getConfig().NETWORKS['mantle'].CHAIN_ID,
+        programAddress:
+          this.getConfig().NETWORKS['mantle'].POCKET_PROGRAM_ADDRESS,
+        vaultAddress:
+          this.getConfig().NETWORKS['mantle'].POCKET_VAULT_PROGRAM_ADDRESS,
+        registryAddress:
+          this.getConfig().NETWORKS['mantle'].POCKET_REGISTRY_PROGRAM_ADDRESS,
+        nativeToken: {
+          name: 'Ether',
+          symbol: 'ETH',
+          decimals: 18,
+          logo: 'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png',
+        },
+        explorerUrl: 'https://sepolia.scrollscan.dev/',
+        whitelistedRouters: [
+          {
+            address: '0x59a662Ed724F19AD019307126CbEBdcF4b57d6B1',
+            isV3: true,
+            routerVersion: '2',
+            ammTag: 'rubic',
+            ammName: 'Rubic Exchange',
+            dexUrl:
+              'https://testnet.rubic.exchange/?fromChain=SCROLL_SEPOLIA&toChain=SCROLL_SEPOLIA',
+            inputTag: 'from',
+            outputTag: 'to',
+          },
+        ],
+      },
       klaytn: {
         wagmiKey: 'klaytn',
         chainName: 'Klaytn',
