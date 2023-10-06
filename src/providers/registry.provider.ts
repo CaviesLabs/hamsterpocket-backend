@@ -276,14 +276,16 @@ export class RegistryProvider {
         chainName: 'Scroll Alpha',
         chainLogo:
           'https://uniswap-v3.scroll.io/static/media/scroll_logo.7578cf7e.svg',
-        rpcUrl: this.getConfig().NETWORKS['mantle'].RPC_URL,
-        chainId: this.getConfig().NETWORKS['mantle'].CHAIN_ID,
+        rpcUrl: this.getConfig().NETWORKS['scroll_sepolia'].RPC_URL,
+        chainId: this.getConfig().NETWORKS['scroll_sepolia'].CHAIN_ID,
         programAddress:
-          this.getConfig().NETWORKS['mantle'].POCKET_PROGRAM_ADDRESS,
+          this.getConfig().NETWORKS['scroll_sepolia'].POCKET_PROGRAM_ADDRESS,
         vaultAddress:
-          this.getConfig().NETWORKS['mantle'].POCKET_VAULT_PROGRAM_ADDRESS,
+          this.getConfig().NETWORKS['scroll_sepolia']
+            .POCKET_VAULT_PROGRAM_ADDRESS,
         registryAddress:
-          this.getConfig().NETWORKS['mantle'].POCKET_REGISTRY_PROGRAM_ADDRESS,
+          this.getConfig().NETWORKS['scroll_sepolia']
+            .POCKET_REGISTRY_PROGRAM_ADDRESS,
         nativeToken: {
           name: 'Ether',
           symbol: 'ETH',
