@@ -47,7 +47,7 @@ export class ImportScrollCommand extends CommandRunner {
       estimatedValue: 1636.06,
       chainId: ChainID.ScrollSepolia,
       coingeckoId: 'weth',
-      isNativeCoin: false,
+      isNativeCoin: true,
     });
 
     await this.whitelistModel.create({
