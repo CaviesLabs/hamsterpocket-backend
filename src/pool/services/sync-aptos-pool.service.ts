@@ -119,7 +119,7 @@ export class SyncAptosPoolService {
       {
         $match: {
           chainId: {
-            $in: [ChainID.AptosTestnet, ChainID.AptosMainnet],
+            $in: [ChainID.AptosMainnet],
           },
           status: {
             $in: [

@@ -8,7 +8,7 @@ import {
 } from '@/orm/model/pool-activity.model';
 import { PoolDocument, PoolModel } from '@/orm/model/pool.model';
 import { Timer } from '@/providers/utils.provider';
-import { ChainID } from '../entities/pool.entity';
+import { ChainID, StoppedChains } from '../entities/pool.entity';
 import { EVMIndexer } from '@/providers/evm-pocket-program/evm.indexer';
 import { WhitelistDocument, WhitelistModel } from '@/orm/model/whitelist.model';
 import {
@@ -58,6 +58,7 @@ export class SyncEvmPoolActivityService {
             { chainId: { $ne: ChainID.Solana } },
             { chainId: { $ne: ChainID.AptosTestnet } },
             { chainId: { $ne: ChainID.AptosMainnet } },
+            { chainId: { $nin: StoppedChains } },
           ],
         },
       },
