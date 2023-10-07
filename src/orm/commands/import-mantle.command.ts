@@ -96,8 +96,7 @@ export class ImportMantleCommand extends CommandRunner {
       address: '0x97174506AafcC846A40832719bD8899a588Bd05c',
       decimals: 18,
       entityType: EntityType.TOKEN,
-      image:
-        'https://assets.coingecko.com/coins/images/31013/small/wrapped-eth-mantle-bridge.png?1689742991',
+      image: 'https://agni.finance/static/realbenz.png',
       name: 'RealBenZ Token',
       symbol: 'RealBenZ',
       estimatedValue: 0.003316,
