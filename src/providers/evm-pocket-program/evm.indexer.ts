@@ -324,6 +324,12 @@ export class EVMIndexer {
       result.roiValue = 0;
     }
 
+    console.log({
+      ...result,
+      positionValue: positionValue.toString(),
+      currentSpentBaseToken: pocket.currentSpentBaseToken,
+    });
+
     return result;
   }
 
@@ -344,8 +350,8 @@ export class EVMIndexer {
       `0x${(pocket.currentReceivedTargetToken || 0).toString(16)}`,
     );
     const bestFee = await this.provider.getBestFee(
-      pocket.baseTokenAddress,
       pocket.targetTokenAddress,
+      pocket.baseTokenAddress,
       pocket.ammRouterAddress,
       amount,
     );
@@ -358,11 +364,13 @@ export class EVMIndexer {
         amount,
         BigNumber.from(bestFee),
       )
-      .catch(() => ({
-        amountOut: BigNumber.from(
-          `0x${(pocket.currentSpentBaseToken || 0).toString(16)}`,
-        ),
-      }));
+      .catch(() => {
+        return {
+          amountOut: BigNumber.from(
+            `0x${(pocket.currentSpentBaseToken || 0).toString(16)}`,
+          ),
+        };
+      });
 
     return this.calculateROIAndAvgPrice(pocket.id, amountOut);
   }
