@@ -1,9 +1,10 @@
-import { RedisMemoryServer } from 'redis-memory-server';
+// import { RedisMemoryServer } from 'redis-memory-server';
 
-let redis: RedisMemoryServer;
+// let redis: RedisMemoryServer;
 
 export const getRedisMemoryServerURI = async (): Promise<string> => {
-  redis = await RedisMemoryServer.create();
+  // redis = await RedisMemoryServer.create();
 
-  return `redis://${await redis.getHost()}:${await redis.getPort()}`;
+  return '';
+  // return `redis://${await redis.getHost()}:${await redis.getPort()}`;
 };
