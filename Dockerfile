@@ -2,7 +2,7 @@ FROM node:16.18.1
 
 ARG NODE_ENV=production
 ENV NODE_ENV ${NODE_ENV}
-WORKDIR /opt/app
+WORKDIR /app
 
 COPY . .
 
