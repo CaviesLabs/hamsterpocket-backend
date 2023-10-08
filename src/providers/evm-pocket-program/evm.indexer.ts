@@ -405,8 +405,8 @@ export class EVMIndexer {
             amount: elm.amount,
             ammRouterAddress: elm.ammRouterAddress,
             fee: await this.provider.getBestFee(
-              elm.baseTokenAddress,
               elm.targetTokenAddress,
+              elm.baseTokenAddress,
               elm.ammRouterAddress,
               elm.amount,
             ),
