@@ -174,7 +174,7 @@ export class RegistryProvider {
           'https://assets.coingecko.com/coins/images/26455/small/aptos_round.png',
         rpcUrl: this.getConfig().NETWORKS['aptos'].RPC_URL,
         graphQLUrl: this.getConfig().NETWORKS['aptos'].GRAPHQL_URL,
-        explorerUrl: 'https://aptoscan.com/',
+        explorerUrl: 'https://aptscan.ai/',
         programAddress:
           this.getConfig().NETWORKS['aptos'].POCKET_PROGRAM_ADDRESS,
         nativeToken: {
