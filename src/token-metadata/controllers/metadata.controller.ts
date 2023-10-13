@@ -78,9 +78,10 @@ export class MetadataController {
     });
 
     const evmProvider = new EVMBasedPocketProvider(chainId);
-    const amountIn = BigNumber.from(
-      `0x${(parseFloat(amount) * 10 ** baseToken.decimals).toString(16)}`,
-    );
+    // const amountIn = BigNumber.from(
+    //   `0x${(parseFloat(amount) * 10 ** baseToken.decimals).toString(16)}`,
+    // );
+    const amountIn = BigNumber.from(`0x${amount}`);
 
     let bestFee = BigNumber.from(0);
     if (useV3) {
