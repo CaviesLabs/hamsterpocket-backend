@@ -70,12 +70,12 @@ export class MetadataController {
     @Query('amountIn') amount: string,
     @Query('useV3') useV3: boolean,
   ) {
-    const baseToken = await this.whitelistRepo.findOne({
-      address: baseTokenAddress,
-    });
-    const targetToken = await this.whitelistRepo.findOne({
-      address: targetTokenAddress,
-    });
+    // const baseToken = await this.whitelistRepo.findOne({
+    //   address: baseTokenAddress,
+    // });
+    // const targetToken = await this.whitelistRepo.findOne({
+    //   address: targetTokenAddress,
+    // });
 
     const evmProvider = new EVMBasedPocketProvider(chainId);
     // const amountIn = BigNumber.from(
@@ -102,10 +102,8 @@ export class MetadataController {
     );
 
     return {
-      amountIn:
-        parseFloat(quote.amountIn.toString()) / 10 ** baseToken.decimals,
-      amountOut:
-        parseFloat(quote.amountOut.toString()) / 10 ** targetToken.decimals,
+      amountIn: quote.amountIn.toString(),
+      amountOut: quote.amountOut.toString(),
       fee: bestFee.toString(),
     };
   }

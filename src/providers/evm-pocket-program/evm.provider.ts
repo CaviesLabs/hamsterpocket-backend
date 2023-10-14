@@ -87,7 +87,7 @@ export class EVMBasedPocketProvider {
     const cacheKey = `${baseTokenAddress}-${targetTokenAddress}-${ammRouterAddress}-${amount.toString()}`;
     let bestFee = CacheStorage.get(cacheKey, null);
 
-    if (bestFee) {
+    if (bestFee && BigNumber.from(bestFee).gt(0)) {
       return BigNumber.from(bestFee);
     }
 
@@ -143,7 +143,6 @@ export class EVMBasedPocketProvider {
       );
 
     CacheStorage.set(cacheKey, bestFee.currentFee.toString(), CacheLevel.HARD);
-
     return bestFee.currentFee;
   }
 
